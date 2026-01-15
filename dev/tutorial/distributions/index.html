@@ -2,44 +2,44 @@
 <html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Distributions · RecurrenceMicrostatesAnalysis.jl</title><meta name="title" content="Distributions · RecurrenceMicrostatesAnalysis.jl"/><meta property="og:title" content="Distributions · RecurrenceMicrostatesAnalysis.jl"/><meta property="twitter:title" content="Distributions · RecurrenceMicrostatesAnalysis.jl"/><meta name="description" content="Documentation for RecurrenceMicrostatesAnalysis.jl."/><meta property="og:description" content="Documentation for RecurrenceMicrostatesAnalysis.jl."/><meta property="twitter:description" content="Documentation for RecurrenceMicrostatesAnalysis.jl."/><script data-outdated-warner src="../../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../search_index.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../../">RecurrenceMicrostatesAnalysis.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../../">Welcome</a></li><li><span class="tocitem">Tutorial</span><ul><li class="is-active"><a class="tocitem" href>Distributions</a><ul class="internal"><li><a class="tocitem" href="#Quick-start-with-RecurrenceMicrostatesAnalysis.jl"><span>Quick start with RecurrenceMicrostatesAnalysis.jl</span></a></li><li><a class="tocitem" href="#A-brief-review"><span>A brief review</span></a></li><li><a class="tocitem" href="#Computing-RMA-distributions"><span>Computing RMA distributions</span></a></li><li><a class="tocitem" href="#Cross-recurrence-plots"><span>Cross-recurrence plots</span></a></li><li><a class="tocitem" href="#Spatial-data"><span>Spatial data</span></a></li><li><a class="tocitem" href="#Histograms"><span>Histograms</span></a></li></ul></li><li><a class="tocitem" href="../quantifiers/">Quantifiers</a></li><li><a class="tocitem" href="../recurrences/">Recurrence Functions</a></li><li><a class="tocitem" href="../shapes_and_sampling/">Shapes and Sampling</a></li><li><a class="tocitem" href="../gpu/">GPU</a></li><li><a class="tocitem" href="../utils/">Utils</a></li></ul></li><li><span class="tocitem">Examples</span><ul><li><a class="tocitem" href="../../examples/ml/">Machine Learning</a></li></ul></li><li><a class="tocitem" href="../../dev/">Developers</a></li><li><a class="tocitem" href="../../refs/">References</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Tutorial</a></li><li class="is-active"><a href>Distributions</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Distributions</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/DynamicsUFPR/RecurrenceMicrostatesAnalysis.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/DynamicsUFPR/RecurrenceMicrostatesAnalysis.jl/blob/main/docs/src/tutorial/distributions.md" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Distributions"><a class="docs-heading-anchor" href="#Distributions">Distributions</a><a id="Distributions-1"></a><a class="docs-heading-anchor-permalink" href="#Distributions" title="Permalink"></a></h1><p>This section introduces the computation of Recurrence Microstates Analysis (RMA) distributions using <strong>RecurrenceMicrostatesAnalysis.jl</strong>.</p><p>We begin with a <a href="#Quick-start-with-RecurrenceMicrostatesAnalysis.jl">Quick start with RecurrenceMicrostatesAnalysis.jl</a>, which demonstrates a simple application example. Next, we present <a href="#A-brief-review">A brief review</a> of Recurrence Plots (RP) and RMA. Finally, we explain the <a href="#RecurrenceMicrostatesAnalysis.distribution"><code>distribution</code></a> function in <a href="#Computing-RMA-distributions">Computing RMA distributions</a>, including the role of <a href="#Histograms">Histograms</a>.</p><h2 id="Quick-start-with-RecurrenceMicrostatesAnalysis.jl"><a class="docs-heading-anchor" href="#Quick-start-with-RecurrenceMicrostatesAnalysis.jl">Quick start with RecurrenceMicrostatesAnalysis.jl</a><a id="Quick-start-with-RecurrenceMicrostatesAnalysis.jl-1"></a><a class="docs-heading-anchor-permalink" href="#Quick-start-with-RecurrenceMicrostatesAnalysis.jl" title="Permalink"></a></h2><p>This section presents concise examples illustrating how to use the package. RMA distributions are computed using the <a href="#RecurrenceMicrostatesAnalysis.distribution"><code>distribution</code></a> function, which returns a <a href="../../#ComplexityMeasures.Probabilities"><code>Probabilities</code></a> structure containing the microstate distribution.</p><p>We start with a simple example based on a uniform random process. First, we generate the data and convert it into a <a href="../../#StateSpaceSets.StateSpaceSet"><code>StateSpaceSet</code></a>:</p><pre><code class="language-julia hljs">using Distributions, RecurrenceMicrostatesAnalysis
 data = rand(Uniform(0, 1), 10_000);
 ssset = StateSpaceSet(data)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">1-dimensional StateSpaceSet{Float64} with 10000 points
- 0.3124108793319149
- 0.43800989638046695
- 0.45030379611126214
- 0.3871164935230199
- 0.21157555610916445
- 0.7912284319720387
- 0.5461465696586233
- 0.08680946078382401
- 0.40111049069691707
- 0.6301317151767888
+ 0.8987403496201045
+ 0.5731062236337273
+ 0.2943365841044099
+ 0.09174328265814924
+ 0.5848916508341745
+ 0.6333995626960629
+ 0.7244623655531827
+ 0.27867437759260105
+ 0.5349426000214444
+ 0.6606497718612081
  ⋮
- 0.12494586254604845
- 0.34415768846770944
- 0.8365649621510555
- 0.11564279664747246
- 0.08785121309211585
- 0.31944072479636165
- 0.02632321639949997
- 0.05164218178043167
- 0.41477582681738123</code></pre><p>Next, we compute the RMA distribution. This requires specifying the recurrence threshold <span>$\varepsilon$</span> and the microstate size <span>$N$</span>. These parameters are discussed in more detail in <a href="#A-brief-review">A brief review</a> and <a href="../utils/#Optimizing-a-parameter">Optimizing a parameter</a>.</p><pre><code class="language-julia hljs">ε = 0.27
+ 0.035999972598438235
+ 0.5116495431982356
+ 0.30381584831722563
+ 0.015470473761437509
+ 0.3221089083068873
+ 0.23446721667510395
+ 0.061040771156541274
+ 0.7099471274444827
+ 0.4171821851973966</code></pre><p>Next, we compute the RMA distribution. This requires specifying the recurrence threshold <span>$\varepsilon$</span> and the microstate size <span>$N$</span>. These parameters are discussed in more detail in <a href="#A-brief-review">A brief review</a> and <a href="../utils/#Optimizing-a-parameter">Optimizing a parameter</a>.</p><pre><code class="language-julia hljs">ε = 0.27
 N = 2
 dist = distribution(ssset, ε, N)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi"><span class="sgr33"> Probabilities{Float64,1} over 16 outcomes</span>
-  <span class="sgr90">1</span>  0.11206399038527898
-  <span class="sgr90">2</span>  0.04819963028613117
-  <span class="sgr90">3</span>  0.04810341106153009
-  <span class="sgr90">4</span>  0.08528423979111026
-  <span class="sgr90">5</span>  0.048354061141416056
-  <span class="sgr90">6</span>  0.08521702636186711
-  <span class="sgr90">7</span>  0.0761936234859725
-  <span class="sgr90">8</span>  0.0301356210970952
-  <span class="sgr90">9</span>  0.048170824530741244
- <span class="sgr90">10</span>  0.07621422760267502
- <span class="sgr90">11</span>  0.0854212671691804
- <span class="sgr90">12</span>  0.030105415061929375
- <span class="sgr90">13</span>  0.0854170663298527
- <span class="sgr90">14</span>  0.030252444438398793
- <span class="sgr90">15</span>  0.030109415861289086
- <span class="sgr90">16</span>  0.08075773539553202</code></pre><p>As another example, we use <a href="https://juliadynamics.github.io/DynamicalSystemsDocs.jl/dynamicalsystems/stable/">DynamicalSystems.jl</a> to generate data from the Hénon map, following the example presented in its documentation:</p><pre><code class="language-julia hljs">using DynamicalSystems
+  <span class="sgr90">1</span>  0.1094208622882852
+  <span class="sgr90">2</span>  0.047889368295785495
+  <span class="sgr90">3</span>  0.0479587821646765
+  <span class="sgr90">4</span>  0.08553128915157249
+  <span class="sgr90">5</span>  0.04827644563383764
+  <span class="sgr90">6</span>  0.08547027696133687
+  <span class="sgr90">7</span>  0.07664271321410018
+  <span class="sgr90">8</span>  0.030171828331300592
+  <span class="sgr90">9</span>  0.04866712369131353
+ <span class="sgr90">10</span>  0.07642647000870774
+ <span class="sgr90">11</span>  0.08488856073443474
+ <span class="sgr90">12</span>  0.03057830954624734
+ <span class="sgr90">13</span>  0.0849197669694405
+ <span class="sgr90">14</span>  0.030578109506279354
+ <span class="sgr90">15</span>  0.030987991400681855
+ <span class="sgr90">16</span>  0.08159210210199998</code></pre><p>As another example, we use <a href="https://juliadynamics.github.io/DynamicalSystemsDocs.jl/dynamicalsystems/stable/">DynamicalSystems.jl</a> to generate data from the Hénon map, following the example presented in its documentation:</p><pre><code class="language-julia hljs">using DynamicalSystems
 
 function henon_rule(u, p, n) # here `n` is &quot;time&quot;, but we don&#39;t use it.
     x, y = u # system state
@@ -76,124 +76,124 @@ X</code></pre><pre class="documenter-example-output"><code class="nohighlight hl
  -0.287758  -0.325562
   0.558512  -0.0863275
   0.476963   0.167554
-  0.849062   0.143089</code></pre><p>Finally, we compute the RMA distribution of the trajectory <code>X</code>. Here, the threshold is selected using <a href="../utils/#RecurrenceMicrostatesAnalysis.optimize"><code>optimize</code></a> by maximizing the recurrence microstate entropy:</p><pre><code class="language-julia hljs">ε, S = optimize(Threshold(), RecurrenceEntropy(), X, N)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">(0.8634133023499923, 2.608132896708381)</code></pre><pre><code class="language-julia hljs">dist = distribution(X, ε, N)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi"><span class="sgr33"> Probabilities{Float64,1} over 16 outcomes</span>
-  <span class="sgr90">1</span>  0.0502778
-  <span class="sgr90">2</span>  0.0266686
-  <span class="sgr90">3</span>  0.0536818
-  <span class="sgr90">4</span>  0.0535136
-  <span class="sgr90">5</span>  0.053478
-  <span class="sgr90">6</span>  0.0536856
-  <span class="sgr90">7</span>  0.1053138
-  <span class="sgr90">8</span>  0.0417494
-  <span class="sgr90">9</span>  0.0154186
- <span class="sgr90">10</span>  0.1306716
- <span class="sgr90">11</span>  0.065035
- <span class="sgr90">12</span>  0.043431
- <span class="sgr90">13</span>  0.0650894
- <span class="sgr90">14</span>  0.0433974
- <span class="sgr90">15</span>  0.0303336
- <span class="sgr90">16</span>  0.1682548</code></pre><h2 id="A-brief-review"><a class="docs-heading-anchor" href="#A-brief-review">A brief review</a><a id="A-brief-review-1"></a><a class="docs-heading-anchor-permalink" href="#A-brief-review" title="Permalink"></a></h2><p>Recurrence Plots (RPs) were introduced in 1987 by Eckmann et al. (<a href="../../refs/#Eckmann1987RP">Eckmann <em>et al.</em>, 1987</a>) as a method for analyzing dynamical systems through recurrence properties.</p><p>Consider a time series <span>$\vec{x}_i \in \mathbb{R}^d$</span>, <span>$i \in \{1, 2, \dots, K\}$</span>, where <span>$K$</span> is the length of the time series and <span>$d$</span> is the dimension of the phase space. The recurrence plot is defined by the recurrence matrix</p><p class="math-container">\[R_{i,j} = \Theta(\varepsilon - \|\vec x_i - \vec x_j\|),\]</p><p>where <span>$\Theta(\cdot)$</span> denotes the Heaviside step function and <span>$\varepsilon$</span> is the recurrence threshold.</p><p>The following figure shows examples of recurrence plots for different systems: (a) white noise; (b) a superposition of harmonic oscillators; (c) a logistic map with a linear trend; (d) Brownian motion.</p><p><img src="../../assets/rps.png" alt="Image of four RPs with their timeseries"/></p><p>A recurrence microstate is a local structure extracted from an RP. For a given microstate shape and size, the set of possible microstates is finite. For example, square microstates with size <span>$N = 2$</span> yield <span>$16$</span> distinct configurations.</p><p><img src="../../assets/microstates.png" alt="Image of the 16 squared microstates to N = 2"/></p><p>Recurrence Microstates Analysis (RMA) uses the probability distribution of these microstates as a source of information for characterizing dynamical systems.</p><h2 id="Computing-RMA-distributions"><a class="docs-heading-anchor" href="#Computing-RMA-distributions">Computing RMA distributions</a><a id="Computing-RMA-distributions-1"></a><a class="docs-heading-anchor-permalink" href="#Computing-RMA-distributions" title="Permalink"></a></h2><p>The computation of RMA distributions is the core functionality of RecurrenceMicrostatesAnalysis.jl. All other tools in the package rely on these distributions as their primary source of information.</p><p>RMA distributions are computed using the <a href="#RecurrenceMicrostatesAnalysis.distribution"><code>distribution</code></a> function:</p><article><details class="docstring" open="true"><summary id="RecurrenceMicrostatesAnalysis.distribution"><a class="docstring-binding" href="#RecurrenceMicrostatesAnalysis.distribution"><code>RecurrenceMicrostatesAnalysis.distribution</code></a> — <span class="docstring-category">Function</span></summary><section><div><pre><code class="language-julia hljs">distribution(core::RMACore, [x], [y])</code></pre><p>Compute an RMA distribution from the recurrence structure constructed using the input data <code>[x]</code> and <code>[y]</code>.</p><p>If <code>[x]</code> and <code>[y]</code> are identical, the result corresponds to a Recurrence Plot (RP); otherwise, it corresponds to a Cross-Recurrence Plot (CRP).</p><p>The <code>core</code> argument must be a subtype of <a href="../../dev/#RecurrenceMicrostatesAnalysis.RMACore"><code>RMACore</code></a> and defines how the computation is performed, including the execution backend (CPU or GPU), the microstate shape, the recurrence expression, and the sampling mode.</p><p>The result is returned as a <a href="../../#ComplexityMeasures.Probabilities"><code>Probabilities</code></a> object, where each index corresponds to the decimal representation of the associated microstate.</p><p>Internally, <code>distribution</code> calls <a href="#RecurrenceMicrostatesAnalysis.histogram"><code>histogram</code></a> and converts the resulting counts into probabilities.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/DynamicsUFPR/RecurrenceMicrostatesAnalysis.jl/blob/c284f98381fa0a7bd666b2b17596a08e7b4991e8/src/core/abstract_core.jl#L49-L67">source</a></section><section><div><pre><code class="language-julia hljs">distribution(core::CPUCore, [x], [y]; kwargs...)</code></pre><p>Compute an RMA distribution for the input data <code>[x]</code> and <code>[y]</code> using a CPU backend configuration defined by <code>core</code>, which must be a <a href="../../dev/#RecurrenceMicrostatesAnalysis.CPUCore"><code>CPUCore</code></a>.</p><p>For time-series analysis, the inputs <code>[x]</code> and <code>[y]</code> must be provided as <a href="../../#StateSpaceSets.StateSpaceSet"><code>StateSpaceSet</code></a> objects. For spatial analysis, the inputs must be provided as <code>AbstractArray</code>s.</p><p><strong>Arguments</strong></p><ul><li><code>core</code>: A <a href="../../dev/#RecurrenceMicrostatesAnalysis.CPUCore"><code>CPUCore</code></a> defining the <a href="../shapes_and_sampling/#RecurrenceMicrostatesAnalysis.MicrostateShape"><code>MicrostateShape</code></a>, <a href="../recurrences/#RecurrenceMicrostatesAnalysis.RecurrenceExpression"><code>RecurrenceExpression</code></a>, and <a href="../shapes_and_sampling/#RecurrenceMicrostatesAnalysis.SamplingMode"><code>SamplingMode</code></a> used in the computation.</li><li><code>[x]</code>: Input data provided as a <a href="../../#StateSpaceSets.StateSpaceSet"><code>StateSpaceSet</code></a> or an <code>AbstractArray</code>.</li><li><code>[y]</code>: Input data provided as a <a href="../../#StateSpaceSets.StateSpaceSet"><code>StateSpaceSet</code></a> or an <code>AbstractArray</code>.</li></ul><p><strong>Keyword Arguments</strong></p><ul><li><code>threads</code>: Number of threads used to compute the distribution. By default, this is set to <code>Threads.nthreads()</code>, which can be specified at Julia startup using <code>--threads N</code> or via the <code>JULIA_NUM_THREADS</code> environment variable.</li></ul><p><strong>Examples</strong></p><ul><li>Time series:</li></ul><pre><code class="language-julia hljs">ssset = StateSpaceSet(rand(Float64, (1000)))
+  0.849062   0.143089</code></pre><p>Finally, we compute the RMA distribution of the trajectory <code>X</code>. Here, the threshold is selected using <a href="../utils/#RecurrenceMicrostatesAnalysis.optimize"><code>optimize</code></a> by maximizing the recurrence microstate entropy:</p><pre><code class="language-julia hljs">ε, S = optimize(Threshold(), RecurrenceEntropy(), X, N)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">(0.8437716954718881, 2.6080038304444444)</code></pre><pre><code class="language-julia hljs">dist = distribution(X, ε, N)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi"><span class="sgr33"> Probabilities{Float64,1} over 16 outcomes</span>
+  <span class="sgr90">1</span>  0.053894
+  <span class="sgr90">2</span>  0.0300044
+  <span class="sgr90">3</span>  0.0570814
+  <span class="sgr90">4</span>  0.0523802
+  <span class="sgr90">5</span>  0.057186
+  <span class="sgr90">6</span>  0.0521658
+  <span class="sgr90">7</span>  0.107023
+  <span class="sgr90">8</span>  0.0404456
+  <span class="sgr90">9</span>  0.0159694
+ <span class="sgr90">10</span>  0.1352036
+ <span class="sgr90">11</span>  0.0661976
+ <span class="sgr90">12</span>  0.039212
+ <span class="sgr90">13</span>  0.0663042
+ <span class="sgr90">14</span>  0.0391814
+ <span class="sgr90">15</span>  0.026619
+ <span class="sgr90">16</span>  0.1611324</code></pre><h2 id="A-brief-review"><a class="docs-heading-anchor" href="#A-brief-review">A brief review</a><a id="A-brief-review-1"></a><a class="docs-heading-anchor-permalink" href="#A-brief-review" title="Permalink"></a></h2><p>Recurrence Plots (RPs) were introduced in 1987 by Eckmann et al. (<a href="../../refs/#Eckmann1987RP">Eckmann <em>et al.</em>, 1987</a>) as a method for analyzing dynamical systems through recurrence properties.</p><p>Consider a time series <span>$\vec{x}_i \in \mathbb{R}^d$</span>, <span>$i \in \{1, 2, \dots, K\}$</span>, where <span>$K$</span> is the length of the time series and <span>$d$</span> is the dimension of the phase space. The recurrence plot is defined by the recurrence matrix</p><p class="math-container">\[R_{i,j} = \Theta(\varepsilon - \|\vec x_i - \vec x_j\|),\]</p><p>where <span>$\Theta(\cdot)$</span> denotes the Heaviside step function and <span>$\varepsilon$</span> is the recurrence threshold.</p><p>The following figure shows examples of recurrence plots for different systems: (a) white noise; (b) a superposition of harmonic oscillators; (c) a logistic map with a linear trend; (d) Brownian motion.</p><p><img src="../../assets/rps.png" alt="Image of four RPs with their timeseries"/></p><p>A recurrence microstate is a local structure extracted from an RP. For a given microstate shape and size, the set of possible microstates is finite. For example, square microstates with size <span>$N = 2$</span> yield <span>$16$</span> distinct configurations.</p><p><img src="../../assets/microstates.png" alt="Image of the 16 squared microstates to N = 2"/></p><p>Recurrence Microstates Analysis (RMA) uses the probability distribution of these microstates as a source of information for characterizing dynamical systems.</p><h2 id="Computing-RMA-distributions"><a class="docs-heading-anchor" href="#Computing-RMA-distributions">Computing RMA distributions</a><a id="Computing-RMA-distributions-1"></a><a class="docs-heading-anchor-permalink" href="#Computing-RMA-distributions" title="Permalink"></a></h2><p>The computation of RMA distributions is the core functionality of RecurrenceMicrostatesAnalysis.jl. All other tools in the package rely on these distributions as their primary source of information.</p><p>RMA distributions are computed using the <a href="#RecurrenceMicrostatesAnalysis.distribution"><code>distribution</code></a> function:</p><article><details class="docstring" open="true"><summary id="RecurrenceMicrostatesAnalysis.distribution"><a class="docstring-binding" href="#RecurrenceMicrostatesAnalysis.distribution"><code>RecurrenceMicrostatesAnalysis.distribution</code></a> — <span class="docstring-category">Function</span></summary><section><div><pre><code class="language-julia hljs">distribution(core::RMACore, [x], [y])</code></pre><p>Compute an RMA distribution from the recurrence structure constructed using the input data <code>[x]</code> and <code>[y]</code>.</p><p>If <code>[x]</code> and <code>[y]</code> are identical, the result corresponds to a Recurrence Plot (RP); otherwise, it corresponds to a Cross-Recurrence Plot (CRP).</p><p>The <code>core</code> argument must be a subtype of <a href="../../dev/#RecurrenceMicrostatesAnalysis.RMACore"><code>RMACore</code></a> and defines how the computation is performed, including the execution backend (CPU or GPU), the microstate shape, the recurrence expression, and the sampling mode.</p><p>The result is returned as a <a href="../../#ComplexityMeasures.Probabilities"><code>Probabilities</code></a> object, where each index corresponds to the decimal representation of the associated microstate.</p><p>Internally, <code>distribution</code> calls <a href="#RecurrenceMicrostatesAnalysis.histogram"><code>histogram</code></a> and converts the resulting counts into probabilities.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/DynamicsUFPR/RecurrenceMicrostatesAnalysis.jl/blob/4e46087d3e53fa7e30cba1a378029e86a1590a8b/src/core/abstract_core.jl#L49-L67">source</a></section><section><div><pre><code class="language-julia hljs">distribution(core::CPUCore, [x], [y]; kwargs...)</code></pre><p>Compute an RMA distribution for the input data <code>[x]</code> and <code>[y]</code> using a CPU backend configuration defined by <code>core</code>, which must be a <a href="../../dev/#RecurrenceMicrostatesAnalysis.CPUCore"><code>CPUCore</code></a>.</p><p>For time-series analysis, the inputs <code>[x]</code> and <code>[y]</code> must be provided as <a href="../../#StateSpaceSets.StateSpaceSet"><code>StateSpaceSet</code></a> objects. For spatial analysis, the inputs must be provided as <code>AbstractArray</code>s.</p><p><strong>Arguments</strong></p><ul><li><code>core</code>: A <a href="../../dev/#RecurrenceMicrostatesAnalysis.CPUCore"><code>CPUCore</code></a> defining the <a href="../shapes_and_sampling/#RecurrenceMicrostatesAnalysis.MicrostateShape"><code>MicrostateShape</code></a>, <a href="../recurrences/#RecurrenceMicrostatesAnalysis.RecurrenceExpression"><code>RecurrenceExpression</code></a>, and <a href="../shapes_and_sampling/#RecurrenceMicrostatesAnalysis.SamplingMode"><code>SamplingMode</code></a> used in the computation.</li><li><code>[x]</code>: Input data provided as a <a href="../../#StateSpaceSets.StateSpaceSet"><code>StateSpaceSet</code></a> or an <code>AbstractArray</code>.</li><li><code>[y]</code>: Input data provided as a <a href="../../#StateSpaceSets.StateSpaceSet"><code>StateSpaceSet</code></a> or an <code>AbstractArray</code>.</li></ul><p><strong>Keyword Arguments</strong></p><ul><li><code>threads</code>: Number of threads used to compute the distribution. By default, this is set to <code>Threads.nthreads()</code>, which can be specified at Julia startup using <code>--threads N</code> or via the <code>JULIA_NUM_THREADS</code> environment variable.</li></ul><p><strong>Examples</strong></p><ul><li>Time series:</li></ul><pre><code class="language-julia hljs">ssset = StateSpaceSet(rand(Float64, (1000)))
 core = CPUCore(Rect(Standard(0.27), 2), SRandom(0.05))
 dist = distribution(core, ssset, ssset)</code></pre><ul><li>Spatial data:</li></ul><pre><code class="language-julia hljs">spatialdata = rand(Float64, (3, 50, 50))
 core = CPUCore(Rect(Standard(0.5), (2, 2, 1, 1)), SRandom(0.05))
-dist = distribution(core, spatialdata, spatialdata)</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/DynamicsUFPR/RecurrenceMicrostatesAnalysis.jl/blob/c284f98381fa0a7bd666b2b17596a08e7b4991e8/src/core/cpu_core.jl#L290-L324">source</a></section><section><div><pre><code class="language-julia hljs">distribution(core::GPUCore, [x], [y]; kwargs...)</code></pre><p>Compute an RMA distribution for the input data <code>[x]</code> and <code>[y]</code> using a GPU backend configuration defined by <code>core</code>, which must be a <a href="../../dev/#RecurrenceMicrostatesAnalysis.GPUCore"><code>GPUCore</code></a>.</p><p>The inputs <code>[x]</code> and <code>[y]</code> must be vectors of type <code>AbstractGPUVector</code>. This method supports time-series analysis only.</p><div class="admonition is-info" id="Note-3438f079c34d177d"><header class="admonition-header">Note<a class="admonition-anchor" href="#Note-3438f079c34d177d" title="Permalink"></a></header><div class="admonition-body"><p>The resulting distribution is copied from GPU memory back to the CPU.</p></div></div><p><strong>Arguments</strong></p><ul><li><code>core</code>: A <a href="../../dev/#RecurrenceMicrostatesAnalysis.GPUCore"><code>GPUCore</code></a> defining the <a href="../shapes_and_sampling/#RecurrenceMicrostatesAnalysis.MicrostateShape"><code>MicrostateShape</code></a>, <a href="../recurrences/#RecurrenceMicrostatesAnalysis.RecurrenceExpression"><code>RecurrenceExpression</code></a>, and <a href="../shapes_and_sampling/#RecurrenceMicrostatesAnalysis.SamplingMode"><code>SamplingMode</code></a> used in the computation.</li><li><code>[x]</code>: Input data provided as an <code>AbstractGPUVector</code>.</li><li><code>[y]</code>: Input data provided as an <code>AbstractGPUVector</code>.</li></ul><p><strong>Keyword Arguments</strong></p><ul><li><code>groupsize</code>: Number of threads per GPU workgroup.</li></ul><p><strong>Examples</strong></p><pre><code class="language-julia hljs">using CUDA
+dist = distribution(core, spatialdata, spatialdata)</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/DynamicsUFPR/RecurrenceMicrostatesAnalysis.jl/blob/4e46087d3e53fa7e30cba1a378029e86a1590a8b/src/core/cpu_core.jl#L290-L324">source</a></section><section><div><pre><code class="language-julia hljs">distribution(core::GPUCore, [x], [y]; kwargs...)</code></pre><p>Compute an RMA distribution for the input data <code>[x]</code> and <code>[y]</code> using a GPU backend configuration defined by <code>core</code>, which must be a <a href="../../dev/#RecurrenceMicrostatesAnalysis.GPUCore"><code>GPUCore</code></a>.</p><p>The inputs <code>[x]</code> and <code>[y]</code> must be vectors of type <code>AbstractGPUVector</code>. This method supports time-series analysis only.</p><div class="admonition is-info" id="Note-3438f079c34d177d"><header class="admonition-header">Note<a class="admonition-anchor" href="#Note-3438f079c34d177d" title="Permalink"></a></header><div class="admonition-body"><p>The resulting distribution is copied from GPU memory back to the CPU.</p></div></div><p><strong>Arguments</strong></p><ul><li><code>core</code>: A <a href="../../dev/#RecurrenceMicrostatesAnalysis.GPUCore"><code>GPUCore</code></a> defining the <a href="../shapes_and_sampling/#RecurrenceMicrostatesAnalysis.MicrostateShape"><code>MicrostateShape</code></a>, <a href="../recurrences/#RecurrenceMicrostatesAnalysis.RecurrenceExpression"><code>RecurrenceExpression</code></a>, and <a href="../shapes_and_sampling/#RecurrenceMicrostatesAnalysis.SamplingMode"><code>SamplingMode</code></a> used in the computation.</li><li><code>[x]</code>: Input data provided as an <code>AbstractGPUVector</code>.</li><li><code>[y]</code>: Input data provided as an <code>AbstractGPUVector</code>.</li></ul><p><strong>Keyword Arguments</strong></p><ul><li><code>groupsize</code>: Number of threads per GPU workgroup.</li></ul><p><strong>Examples</strong></p><pre><code class="language-julia hljs">using CUDA
 gpudata = StateSpaceSet(Float32.(data)) |&gt; CuVector
 core = GPUCore(CUDABackend(), Rect(Standard(0.27f0; metric = GPUEuclidean()), 2), SRandom(0.05))
-dist = distribution(core, gpudata, gpudata)</code></pre><div class="admonition is-warning" id="Warning-b020c985c43b8e90"><header class="admonition-header">Warning<a class="admonition-anchor" href="#Warning-b020c985c43b8e90" title="Permalink"></a></header><div class="admonition-body"><p>Spatial data are not supported by <a href="../../dev/#RecurrenceMicrostatesAnalysis.GPUCore"><code>GPUCore</code></a>.</p></div></div></div><a class="docs-sourcelink" target="_blank" href="https://github.com/DynamicsUFPR/RecurrenceMicrostatesAnalysis.jl/blob/c284f98381fa0a7bd666b2b17596a08e7b4991e8/src/core/gpu/gpu_core.jl#L232-L263">source</a></section></details></article><p>A commonly used convenience interface is:</p><pre><code class="language-julia hljs">distribution([x], ε::Float, n::Int; kwargs...)</code></pre><p>This method automatically selects a <a href="../../dev/#RecurrenceMicrostatesAnalysis.CPUCore"><code>CPUCore</code></a> when <code>x</code> is a <a href="../../#StateSpaceSets.StateSpaceSet"><code>StateSpaceSet</code></a> and a <a href="../../dev/#RecurrenceMicrostatesAnalysis.GPUCore"><code>GPUCore</code></a> when <code>x</code> is an <code>AbstractGPUVector</code>. By default, square microstates of size <code>n</code> are used.</p><p>Additional keyword arguments include:</p><ul><li><code>rate::Float64</code>: Sampling rate (default: <code>0.05</code>).</li><li><code>sampling::SamplingMode</code>: Sampling mode (default: <a href="../shapes_and_sampling/#RecurrenceMicrostatesAnalysis.SRandom"><code>SRandom</code></a>).</li><li><code>metric::Metric</code>: Distance metric from <a href="https://github.com/JuliaStats/Distances.jl">Distances.jl</a>. When using a <a href="../../dev/#RecurrenceMicrostatesAnalysis.GPUCore"><code>GPUCore</code></a>, a <a href="../gpu/#RecurrenceMicrostatesAnalysis.GPUMetric"><code>GPUMetric</code></a> must be provided.</li></ul><div class="admonition is-warning" id="Warning-cf5254368949e8ae"><header class="admonition-header">Warning<a class="admonition-anchor" href="#Warning-cf5254368949e8ae" title="Permalink"></a></header><div class="admonition-body"><p>GPU backends require inputs of type <code>Float32</code>. <code>Float64</code> inputs are not supported on GPU.</p></div></div><p>Alternatively, a <a href="../recurrences/#RecurrenceMicrostatesAnalysis.RecurrenceExpression"><code>RecurrenceExpression</code></a> can be specified directly:</p><pre><code class="language-julia hljs">distribution([x], expr::RecurrenceExpression, n::Int; kwargs...)</code></pre><p><strong>Example:</strong></p><pre><code class="language-julia hljs">expr = Corridor(0.05, 0.27)
+dist = distribution(core, gpudata, gpudata)</code></pre><div class="admonition is-warning" id="Warning-b020c985c43b8e90"><header class="admonition-header">Warning<a class="admonition-anchor" href="#Warning-b020c985c43b8e90" title="Permalink"></a></header><div class="admonition-body"><p>Spatial data are not supported by <a href="../../dev/#RecurrenceMicrostatesAnalysis.GPUCore"><code>GPUCore</code></a>.</p></div></div></div><a class="docs-sourcelink" target="_blank" href="https://github.com/DynamicsUFPR/RecurrenceMicrostatesAnalysis.jl/blob/4e46087d3e53fa7e30cba1a378029e86a1590a8b/src/core/gpu/gpu_core.jl#L232-L263">source</a></section></details></article><p>A commonly used convenience interface is:</p><pre><code class="language-julia hljs">distribution([x], ε::Float, n::Int; kwargs...)</code></pre><p>This method automatically selects a <a href="../../dev/#RecurrenceMicrostatesAnalysis.CPUCore"><code>CPUCore</code></a> when <code>x</code> is a <a href="../../#StateSpaceSets.StateSpaceSet"><code>StateSpaceSet</code></a> and a <a href="../../dev/#RecurrenceMicrostatesAnalysis.GPUCore"><code>GPUCore</code></a> when <code>x</code> is an <code>AbstractGPUVector</code>. By default, square microstates of size <code>n</code> are used.</p><p>Additional keyword arguments include:</p><ul><li><code>rate::Float64</code>: Sampling rate (default: <code>0.05</code>).</li><li><code>sampling::SamplingMode</code>: Sampling mode (default: <a href="../shapes_and_sampling/#RecurrenceMicrostatesAnalysis.SRandom"><code>SRandom</code></a>).</li><li><code>metric::Metric</code>: Distance metric from <a href="https://github.com/JuliaStats/Distances.jl">Distances.jl</a>. When using a <a href="../../dev/#RecurrenceMicrostatesAnalysis.GPUCore"><code>GPUCore</code></a>, a <a href="../gpu/#RecurrenceMicrostatesAnalysis.GPUMetric"><code>GPUMetric</code></a> must be provided.</li></ul><div class="admonition is-warning" id="Warning-cf5254368949e8ae"><header class="admonition-header">Warning<a class="admonition-anchor" href="#Warning-cf5254368949e8ae" title="Permalink"></a></header><div class="admonition-body"><p>GPU backends require inputs of type <code>Float32</code>. <code>Float64</code> inputs are not supported on GPU.</p></div></div><p>Alternatively, a <a href="../recurrences/#RecurrenceMicrostatesAnalysis.RecurrenceExpression"><code>RecurrenceExpression</code></a> can be specified directly:</p><pre><code class="language-julia hljs">distribution([x], expr::RecurrenceExpression, n::Int; kwargs...)</code></pre><p><strong>Example:</strong></p><pre><code class="language-julia hljs">expr = Corridor(0.05, 0.27)
 dist = distribution(ssset, expr, 2)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi"><span class="sgr33"> Probabilities{Float64,1} over 16 outcomes</span>
-  <span class="sgr90">1</span>  0.17905837586349752
-  <span class="sgr90">2</span>  0.08165371441213955
-  <span class="sgr90">3</span>  0.08150748519554207
-  <span class="sgr90">4</span>  0.06378174359236975
-  <span class="sgr90">5</span>  0.08168952156640896
-  <span class="sgr90">6</span>  0.06383315386414205
-  <span class="sgr90">7</span>  0.055551699229506056
-  <span class="sgr90">8</span>  0.023726140482868478
-  <span class="sgr90">9</span>  0.08204819322900715
- <span class="sgr90">10</span>  0.055841957223053164
- <span class="sgr90">11</span>  0.06370392804482336
- <span class="sgr90">12</span>  0.023623720019259848
- <span class="sgr90">13</span>  0.06366412009119422
- <span class="sgr90">14</span>  0.023800955430895093
- <span class="sgr90">15</span>  0.023751145478866677
- <span class="sgr90">16</span>  0.03276414627642603</code></pre><p>If a custom <a href="../shapes_and_sampling/#RecurrenceMicrostatesAnalysis.MicrostateShape"><code>MicrostateShape</code></a> is required, the call simplifies to:</p><pre><code class="language-julia hljs">distribution([x], shape::MicrostateShape; kwargs...)</code></pre><p><strong>Example:</strong></p><pre><code class="language-julia hljs">shape = Triangle(Standard(0.27), 3)
+  <span class="sgr90">1</span>  0.17469470400185957
+  <span class="sgr90">2</span>  0.08236905733765607
+  <span class="sgr90">3</span>  0.08251968743354922
+  <span class="sgr90">4</span>  0.06317742284908524
+  <span class="sgr90">5</span>  0.08239686289320607
+  <span class="sgr90">6</span>  0.0633310535444982
+  <span class="sgr90">7</span>  0.056641917055027594
+  <span class="sgr90">8</span>  0.024378670858437517
+  <span class="sgr90">9</span>  0.08248888127847943
+ <span class="sgr90">10</span>  0.056427474209347024
+ <span class="sgr90">11</span>  0.06309840706173094
+ <span class="sgr90">12</span>  0.02432526018698536
+ <span class="sgr90">13</span>  0.06306740086669317
+ <span class="sgr90">14</span>  0.024309857109450467
+ <span class="sgr90">15</span>  0.02458411190555873
+ <span class="sgr90">16</span>  0.0321892314084354</code></pre><p>If a custom <a href="../shapes_and_sampling/#RecurrenceMicrostatesAnalysis.MicrostateShape"><code>MicrostateShape</code></a> is required, the call simplifies to:</p><pre><code class="language-julia hljs">distribution([x], shape::MicrostateShape; kwargs...)</code></pre><p><strong>Example:</strong></p><pre><code class="language-julia hljs">shape = Triangle(Standard(0.27), 3)
 dist = distribution(ssset, shape)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi"><span class="sgr33"> Probabilities{Float64,1} over 64 outcomes</span>
-  <span class="sgr90">1</span>  0.03388694800181112
-  <span class="sgr90">2</span>  0.027857937603453863
-  <span class="sgr90">3</span>  0.013997396158984363
-  <span class="sgr90">4</span>  0.01339475522313821
-  <span class="sgr90">5</span>  0.01557722777566471
-  <span class="sgr90">6</span>  0.01199339495930473
-  <span class="sgr90">7</span>  0.024583428454696188
-  <span class="sgr90">8</span>  0.023609439053733684
-  <span class="sgr90">9</span>  0.013847136085006786
- <span class="sgr90">10</span>  0.011838132885527633
+  <span class="sgr90">1</span>  0.0331100373929497
+  <span class="sgr90">2</span>  0.02723268762851388
+  <span class="sgr90">3</span>  0.014324727025864941
+  <span class="sgr90">4</span>  0.013108840914597656
+  <span class="sgr90">5</span>  0.01580091720669924
+  <span class="sgr90">6</span>  0.011919165282279855
+  <span class="sgr90">7</span>  0.025092231874303348
+  <span class="sgr90">8</span>  0.023685869610670346
+  <span class="sgr90">9</span>  0.013277508347837466
+ <span class="sgr90">10</span>  0.011836532245591787
   ⋮  
- <span class="sgr90">56</span>  0.006881551244187426
- <span class="sgr90">57</span>  0.021608639133925744
- <span class="sgr90">58</span>  0.01928871162690844
- <span class="sgr90">59</span>  0.007677069292303063
- <span class="sgr90">60</span>  0.008021206878510028
- <span class="sgr90">61</span>  0.00805422007718686
- <span class="sgr90">62</span>  0.007629450254211634
- <span class="sgr90">63</span>  0.019854537844230122
- <span class="sgr90">64</span>  0.01952620657738964</code></pre><hr/><h2 id="Cross-recurrence-plots"><a class="docs-heading-anchor" href="#Cross-recurrence-plots">Cross-recurrence plots</a><a id="Cross-recurrence-plots-1"></a><a class="docs-heading-anchor-permalink" href="#Cross-recurrence-plots" title="Permalink"></a></h2><p>RMA distributions can also be computed from Cross-Recurrence Plots (CRPs) by providing two time series:</p><pre><code class="language-julia hljs">distribution([x], [y], expr::RecurrenceExpression, n::Int; kwargs...)
+ <span class="sgr90">56</span>  0.006840334765839382
+ <span class="sgr90">57</span>  0.021288711226748455
+ <span class="sgr90">58</span>  0.02004201279671613
+ <span class="sgr90">59</span>  0.007645856813554059
+ <span class="sgr90">60</span>  0.008261302868886981
+ <span class="sgr90">61</span>  0.008163663832800353
+ <span class="sgr90">62</span>  0.007914964402768227
+ <span class="sgr90">63</span>  0.02035493790417409
+ <span class="sgr90">64</span>  0.02070027597033294</code></pre><hr/><h2 id="Cross-recurrence-plots"><a class="docs-heading-anchor" href="#Cross-recurrence-plots">Cross-recurrence plots</a><a id="Cross-recurrence-plots-1"></a><a class="docs-heading-anchor-permalink" href="#Cross-recurrence-plots" title="Permalink"></a></h2><p>RMA distributions can also be computed from Cross-Recurrence Plots (CRPs) by providing two time series:</p><pre><code class="language-julia hljs">distribution([x], [y], expr::RecurrenceExpression, n::Int; kwargs...)
 distribution([x], [y], shape::MicrostateShape; kwargs...)</code></pre><p><strong>Example:</strong></p><pre><code class="language-julia hljs">data_1 = StateSpaceSet(rand(Uniform(0, 1), 1000))
 data_2 = StateSpaceSet(rand(Uniform(0, 1), 2000))
 dist = distribution(data_1, data_2, 0.27, 2)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi"><span class="sgr33"> Probabilities{Float64,1} over 16 outcomes</span>
-  <span class="sgr90">1</span>  0.10626833982634125
-  <span class="sgr90">2</span>  0.04930346215861634
-  <span class="sgr90">3</span>  0.05034501407096574
-  <span class="sgr90">4</span>  0.08534716727924607
-  <span class="sgr90">5</span>  0.04913320848063615
-  <span class="sgr90">6</span>  0.08294358594305515
-  <span class="sgr90">7</span>  0.07765570700343512
-  <span class="sgr90">8</span>  0.031106348459204215
-  <span class="sgr90">9</span>  0.04973410381468388
- <span class="sgr90">10</span>  0.07772581145907402
- <span class="sgr90">11</span>  0.08386495878859501
- <span class="sgr90">12</span>  0.03026509499153739
- <span class="sgr90">13</span>  0.08612833121350813
- <span class="sgr90">14</span>  0.031036244003565312
- <span class="sgr90">15</span>  0.03132667674835505
- <span class="sgr90">16</span>  0.07781594575918117</code></pre><div class="admonition is-danger" id="Danger-a6057953b0753371"><header class="admonition-header">Danger<a class="admonition-anchor" href="#Danger-a6057953b0753371" title="Permalink"></a></header><div class="admonition-body"><p>The inputs <code>x</code> and <code>y</code> must have the same phase-space dimensionality. The following example is invalid and will raise an exception:</p><pre><code class="language-julia hljs">data_1 = StateSpaceSet(rand(Uniform(0, 1), (1000, 2)))
+  <span class="sgr90">1</span>  0.1027130424332255
+  <span class="sgr90">2</span>  0.04985428288149343
+  <span class="sgr90">3</span>  0.049423641225425884
+  <span class="sgr90">4</span>  0.085807853702016
+  <span class="sgr90">5</span>  0.049874312725961684
+  <span class="sgr90">6</span>  0.08312385454326947
+  <span class="sgr90">7</span>  0.08059007921803488
+  <span class="sgr90">8</span>  0.031076303692501826
+  <span class="sgr90">9</span>  0.04840211915754474
+ <span class="sgr90">10</span>  0.07981893020600694
+ <span class="sgr90">11</span>  0.08475628686743247
+ <span class="sgr90">12</span>  0.029854483179938107
+ <span class="sgr90">13</span>  0.08695956975894083
+ <span class="sgr90">14</span>  0.029443871368338825
+ <span class="sgr90">15</span>  0.030405303902815196
+ <span class="sgr90">16</span>  0.07789606513705422</code></pre><div class="admonition is-danger" id="Danger-a6057953b0753371"><header class="admonition-header">Danger<a class="admonition-anchor" href="#Danger-a6057953b0753371" title="Permalink"></a></header><div class="admonition-body"><p>The inputs <code>x</code> and <code>y</code> must have the same phase-space dimensionality. The following example is invalid and will raise an exception:</p><pre><code class="language-julia hljs">data_1 = StateSpaceSet(rand(Uniform(0, 1), (1000, 2)))
 data_2 = StateSpaceSet(rand(Uniform(0, 1), (2000, 3)))
 dist = distribution(data_1, data_2, 0.27, 2)</code></pre></div></div><hr/><h2 id="Spatial-data"><a class="docs-heading-anchor" href="#Spatial-data">Spatial data</a><a id="Spatial-data-1"></a><a class="docs-heading-anchor-permalink" href="#Spatial-data" title="Permalink"></a></h2><p>The package also provides experimental support for spatial data, following <em>&quot;Generalised Recurrence Plot Analysis for Spatial Data&quot;</em> (<a href="../../refs/#Marwan2007Spatial">Marwan <em>et al.</em>, 2007</a>). In this context, input data are provided as <code>AbstractArray</code>s:</p><p class="math-container">\[    \vec{x}_{\vec i} \in \mathbb{R}^m,\quad \vec{i} \in \mathbb{Z}^d\]</p><p>For example:</p><pre><code class="language-julia hljs">spatialdata = rand(Uniform(0, 1), (2, 50, 50))</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">2×50×50 Array{Float64, 3}:
 [:, :, 1] =
- 0.825718  0.868135  0.844208   0.747319  …  0.981834  0.36416   0.448778
- 0.369803  0.336853  0.0529868  0.671622     0.179985  0.935705  0.725479
+ 0.370877  0.816432  0.0419753  0.809871  …  0.892263  0.281085  0.769359
+ 0.875541  0.334345  0.998788   0.691295     0.459034  0.656883  0.808236
 
 [:, :, 2] =
- 0.662238  0.398042  0.929002   0.63979   …  0.716344  0.471653  0.531246
- 0.586166  0.518463  0.0254832  0.855396     0.293596  0.357478  0.685357
+ 0.793542  0.331349  0.212457  0.133883  …  0.932701  0.97846   0.298291
+ 0.940876  0.721091  0.108814  0.305976     0.347119  0.492994  0.325127
 
 [:, :, 3] =
- 0.478715  0.140635  0.489378  0.606742  …  0.67911    0.987873  0.279316
- 0.709877  0.577933  0.995426  0.361619     0.0188308  0.737253  0.871888
+ 0.75005   0.500123  0.993715   0.67956   …  0.399809   0.619946  0.552787
+ 0.172523  0.623065  0.0857646  0.590034     0.0481878  0.115603  0.61298
 
 ;;; … 
 
 [:, :, 48] =
- 0.261698  0.133988  0.826197  0.896944  …  0.635698   0.121252  0.721472
- 0.473768  0.33917   0.597274  0.989652     0.0933098  0.910948  0.881094
+ 0.557737  0.124231  0.437364  0.834236  …  0.452633  0.540583  0.0872919
+ 0.429083  0.963867  0.505861  0.155581     0.746271  0.871868  0.576899
 
 [:, :, 49] =
- 0.379862  0.998739   0.117926  0.848868  …  0.704898  0.377044  0.105839
- 0.800324  0.0307064  0.658353  0.259253     0.65962   0.523404  0.783692
+ 0.0213098  0.508109  0.461492  0.761325   …  0.490273  0.233975  0.256751
+ 0.609601   0.543798  0.469168  0.0774911     0.426613  0.284695  0.618731
 
 [:, :, 50] =
- 0.218654  0.37711   0.596794  0.173845  …  0.327279  0.696644  0.35895
- 0.869817  0.865069  0.838229  0.317062     0.430315  0.300398  0.952722</code></pre><p>Due to the high dimensionality of spatial recurrence plots, direct visualization is often infeasible. RMA distributions provide a compact alternative by sampling microstates directly from the data.</p><p><strong>Examples:</strong></p><ul><li>Full <span>$2 \times d$</span> microstates:</li></ul><pre><code class="language-julia hljs">distribution(spatialdata, Rect(Standard(0.27), (2, 2, 2, 2)))</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi"><span class="sgr33"> Probabilities{Float64,1} over 65536 outcomes</span>
-     <span class="sgr90">1</span>  0.047553956584941076
-     <span class="sgr90">2</span>  0.008381874889415454
-     <span class="sgr90">3</span>  0.008288203274343344
-     <span class="sgr90">4</span>  0.0025950506694051158
-     <span class="sgr90">5</span>  0.00798984183374329
-     <span class="sgr90">6</span>  0.0023487290149562345
-     <span class="sgr90">7</span>  0.0020260823408189675
-     <span class="sgr90">8</span>  0.0008742684073396915
-     <span class="sgr90">9</span>  0.008028004343587485
-    <span class="sgr90">10</span>  0.0022619960380376143
+ 0.655952  0.134694  0.590693  0.262488   …  0.979136  0.975719  0.0650634
+ 0.820437  0.261371  0.469445  0.0140072     0.969552  0.210467  0.954795</code></pre><p>Due to the high dimensionality of spatial recurrence plots, direct visualization is often infeasible. RMA distributions provide a compact alternative by sampling microstates directly from the data.</p><p><strong>Examples:</strong></p><ul><li>Full <span>$2 \times d$</span> microstates:</li></ul><pre><code class="language-julia hljs">distribution(spatialdata, Rect(Standard(0.27), (2, 2, 2, 2)))</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi"><span class="sgr33"> Probabilities{Float64,1} over 65536 outcomes</span>
+     <span class="sgr90">1</span>  0.05520380514916337
+     <span class="sgr90">2</span>  0.008423506718336393
+     <span class="sgr90">3</span>  0.00898553640876905
+     <span class="sgr90">4</span>  0.002480563139872537
+     <span class="sgr90">5</span>  0.00899247504692254
+     <span class="sgr90">6</span>  0.002320974462342276
+     <span class="sgr90">7</span>  0.0023695449294167032
+     <span class="sgr90">8</span>  0.000773658154114092
+     <span class="sgr90">9</span>  0.0091208398527621
+    <span class="sgr90">10</span>  0.0023175051432655315
      ⋮  
  <span class="sgr90">65528</span>  0.0
  <span class="sgr90">65529</span>  0.0
@@ -203,19 +203,19 @@ dist = distribution(data_1, data_2, 0.27, 2)</code></pre></div></div><hr/><h2 id
  <span class="sgr90">65533</span>  0.0
  <span class="sgr90">65534</span>  0.0
  <span class="sgr90">65535</span>  0.0
- <span class="sgr90">65536</span>  3.4693190767448072e-6</code></pre><pre><code class="language-julia hljs">spatialdata_1 = rand(Uniform(0, 1), (2, 50, 50))
+ <span class="sgr90">65536</span>  0.0</code></pre><pre><code class="language-julia hljs">spatialdata_1 = rand(Uniform(0, 1), (2, 50, 50))
 spatialdata_2 = rand(Uniform(0, 1), (2, 25, 25))
 distribution(spatialdata_1, spatialdata_2, Rect(Standard(0.27), (2, 2, 2, 2)))</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi"><span class="sgr33"> Probabilities{Float64,1} over 65536 outcomes</span>
-     <span class="sgr90">1</span>  0.0547802571259165
-     <span class="sgr90">2</span>  0.008647992017238138
-     <span class="sgr90">3</span>  0.00925537607196055
-     <span class="sgr90">4</span>  0.0023283055431025756
-     <span class="sgr90">5</span>  0.008922760994374467
-     <span class="sgr90">6</span>  0.0018799982646169864
-     <span class="sgr90">7</span>  0.002371690118439891
-     <span class="sgr90">8</span>  0.0007953838811841097
-     <span class="sgr90">9</span>  0.008951684044599343
-    <span class="sgr90">10</span>  0.0021403057166408767
+     <span class="sgr90">1</span>  0.05895963788341119
+     <span class="sgr90">2</span>  0.009211991496623233
+     <span class="sgr90">3</span>  0.009559068099321754
+     <span class="sgr90">4</span>  0.0022849209677652605
+     <span class="sgr90">5</span>  0.00898060709482422
+     <span class="sgr90">6</span>  0.002545228419789151
+     <span class="sgr90">7</span>  0.002227074867315507
+     <span class="sgr90">8</span>  0.0008387684565214248
+     <span class="sgr90">9</span>  0.009645837249996384
+    <span class="sgr90">10</span>  0.002675382145801096
      ⋮  
  <span class="sgr90">65528</span>  0.0
  <span class="sgr90">65529</span>  0.0
@@ -226,42 +226,42 @@ distribution(spatialdata_1, spatialdata_2, Rect(Standard(0.27), (2, 2, 2, 2)))</
  <span class="sgr90">65534</span>  0.0
  <span class="sgr90">65535</span>  0.0
  <span class="sgr90">65536</span>  0.0</code></pre><ul><li>Projected microstates:</li></ul><pre><code class="language-julia hljs">distribution(spatialdata, Rect(Standard(0.27), (2, 1, 2, 1)))</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi"><span class="sgr33"> Probabilities{Float64,1} over 16 outcomes</span>
-  <span class="sgr90">1</span>  0.44721032902957103
-  <span class="sgr90">2</span>  0.09684964598084132
-  <span class="sgr90">3</span>  0.09701624323198667
-  <span class="sgr90">4</span>  0.0252628071636818
-  <span class="sgr90">5</span>  0.0976393169512703
-  <span class="sgr90">6</span>  0.025269471053727614
-  <span class="sgr90">7</span>  0.023833402748854645
-  <span class="sgr90">8</span>  0.003275301957517701
-  <span class="sgr90">9</span>  0.095676801332778
- <span class="sgr90">10</span>  0.024216576426488962
- <span class="sgr90">11</span>  0.025132861307788423
- <span class="sgr90">12</span>  0.003388588088296543
- <span class="sgr90">13</span>  0.024889629321116203
- <span class="sgr90">14</span>  0.003278633902540608
- <span class="sgr90">15</span>  0.0033785922532278217
- <span class="sgr90">16</span>  0.0036817992503123697</code></pre><pre><code class="language-julia hljs">distribution(spatialdata_1, spatialdata_2, Rect(Standard(0.27), (2, 1, 2, 1)))</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi"><span class="sgr33"> Probabilities{Float64,1} over 16 outcomes</span>
-  <span class="sgr90">1</span>  0.45937414965986395
-  <span class="sgr90">2</span>  0.09526530612244898
-  <span class="sgr90">3</span>  0.09468027210884354
-  <span class="sgr90">4</span>  0.02495238095238095
-  <span class="sgr90">5</span>  0.09476190476190476
-  <span class="sgr90">6</span>  0.02546938775510204
-  <span class="sgr90">7</span>  0.02182312925170068
-  <span class="sgr90">8</span>  0.0032380952380952383
-  <span class="sgr90">9</span>  0.09440816326530613
- <span class="sgr90">10</span>  0.02251700680272109
- <span class="sgr90">11</span>  0.02489795918367347
- <span class="sgr90">12</span>  0.003346938775510204
- <span class="sgr90">13</span>  0.024421768707482992
- <span class="sgr90">14</span>  0.003564625850340136
- <span class="sgr90">15</span>  0.0032244897959183673
- <span class="sgr90">16</span>  0.004054421768707483</code></pre><h2 id="Histograms"><a class="docs-heading-anchor" href="#Histograms">Histograms</a><a id="Histograms-1"></a><a class="docs-heading-anchor-permalink" href="#Histograms" title="Permalink"></a></h2><p>The <a href="#RecurrenceMicrostatesAnalysis.histogram"><code>histogram</code></a> function counts the occurrences of each microstate identified during sampling. It is called internally by <a href="#RecurrenceMicrostatesAnalysis.distribution"><code>distribution</code></a> , which converts the resulting <a href="../../#ComplexityMeasures.Counts"><code>Counts</code></a> into <a href="../../#ComplexityMeasures.Probabilities"><code>Probabilities</code></a>.</p><article><details class="docstring" open="true"><summary id="RecurrenceMicrostatesAnalysis.histogram"><a class="docstring-binding" href="#RecurrenceMicrostatesAnalysis.histogram"><code>RecurrenceMicrostatesAnalysis.histogram</code></a> — <span class="docstring-category">Function</span></summary><section><div><pre><code class="language-julia hljs">histogram(core::RMACore, [x], [y])</code></pre><p>Compute the histogram of recurrence microstates for the input data <code>[x]</code> and <code>[y]</code> using the specified backend <code>core</code>, which must be an <a href="../../dev/#RecurrenceMicrostatesAnalysis.RMACore"><code>RMACore</code></a>.</p><p>This function executes the full backend pipeline: sampling the recurrence space, constructing microstates, and evaluating recurrences.</p><p>The result is returned as a <a href="../../#ComplexityMeasures.Counts"><code>Counts</code></a> object, where each index corresponds to the decimal representation of the associated microstate.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/DynamicsUFPR/RecurrenceMicrostatesAnalysis.jl/blob/c284f98381fa0a7bd666b2b17596a08e7b4991e8/src/core/abstract_core.jl#L28-L39">source</a></section><section><div><pre><code class="language-julia hljs">histogram(core::StandardCPUCore, [x], [y]; kwargs...)</code></pre><p>Compute the histogram of recurrence microstates for an abstract recurrence structure constructed from the input data <code>[x]</code> and <code>[y]</code>.</p><p>If <code>[x]</code> and <code>[y]</code> are identical, the result corresponds to a Recurrence Plot (RP); otherwise, it corresponds to a Cross-Recurrence Plot (CRP).</p><p>The result is returned as a <a href="../../#ComplexityMeasures.Counts"><code>Counts</code></a> object representing the histogram of recurrence microstates for the given input data.</p><p>This method implements the CPU backend using a <a href="../../dev/#RecurrenceMicrostatesAnalysis.CPUCore"><code>CPUCore</code></a>, specifically the <a href="../../dev/#RecurrenceMicrostatesAnalysis.StandardCPUCore"><code>StandardCPUCore</code></a> implementation.</p><p><strong>Arguments</strong></p><ul><li><code>core</code>: A <a href="../../dev/#RecurrenceMicrostatesAnalysis.StandardCPUCore"><code>StandardCPUCore</code></a> defining the CPU backend configuration.</li><li><code>[x]</code>: Input data provided as a <a href="../../#StateSpaceSets.StateSpaceSet"><code>StateSpaceSet</code></a> or an <code>AbstractArray</code>.</li><li><code>[y]</code>: Input data provided as a <a href="../../#StateSpaceSets.StateSpaceSet"><code>StateSpaceSet</code></a> or an <code>AbstractArray</code>.</li></ul><div class="admonition is-info" id="Note-7926efeefa2ae215"><header class="admonition-header">Note<a class="admonition-anchor" href="#Note-7926efeefa2ae215" title="Permalink"></a></header><div class="admonition-body"><p><a href="../../#StateSpaceSets.StateSpaceSet"><code>StateSpaceSet</code></a> and <code>AbstractArray</code> inputs use different internal backends and therefore different histogram implementations. Both interfaces share the same method signature, differing only in the input data representation.</p></div></div><p><strong>Keyword Arguments</strong></p><ul><li><code>threads</code>: Number of threads used to compute the histogram. By default, this is set to <code>Threads.nthreads()</code>, which can be specified at Julia startup using <code>--threads N</code> or via the <code>JULIA_NUM_THREADS</code> environment variable.</li></ul><p><strong>Examples</strong></p><ul><li>Time series:</li></ul><pre><code class="language-julia hljs">ssset = StateSpaceSet(rand(Float64, (1000)))
+  <span class="sgr90">1</span>  0.4612911286963765
+  <span class="sgr90">2</span>  0.09512369845897543
+  <span class="sgr90">3</span>  0.09680299875052062
+  <span class="sgr90">4</span>  0.0238600583090379
+  <span class="sgr90">5</span>  0.09498708871303624
+  <span class="sgr90">6</span>  0.02416326530612245
+  <span class="sgr90">7</span>  0.022040816326530613
+  <span class="sgr90">8</span>  0.0028754685547688463
+  <span class="sgr90">9</span>  0.09524031653477717
+ <span class="sgr90">10</span>  0.022673885880882965
+ <span class="sgr90">11</span>  0.023973344439816743
+ <span class="sgr90">12</span>  0.0028754685547688463
+ <span class="sgr90">13</span>  0.02440649729279467
+ <span class="sgr90">14</span>  0.0029087880049979177
+ <span class="sgr90">15</span>  0.002945439400249896
+ <span class="sgr90">16</span>  0.0038317367763431903</code></pre><pre><code class="language-julia hljs">distribution(spatialdata_1, spatialdata_2, Rect(Standard(0.27), (2, 1, 2, 1)))</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi"><span class="sgr33"> Probabilities{Float64,1} over 16 outcomes</span>
+  <span class="sgr90">1</span>  0.46643537414965985
+  <span class="sgr90">2</span>  0.09442176870748299
+  <span class="sgr90">3</span>  0.09251700680272108
+  <span class="sgr90">4</span>  0.02202721088435374
+  <span class="sgr90">5</span>  0.0945578231292517
+  <span class="sgr90">6</span>  0.026938775510204082
+  <span class="sgr90">7</span>  0.021727891156462585
+  <span class="sgr90">8</span>  0.003183673469387755
+  <span class="sgr90">9</span>  0.09176870748299319
+ <span class="sgr90">10</span>  0.022530612244897958
+ <span class="sgr90">11</span>  0.026408163265306123
+ <span class="sgr90">12</span>  0.0035918367346938775
+ <span class="sgr90">13</span>  0.02251700680272109
+ <span class="sgr90">14</span>  0.003551020408163265
+ <span class="sgr90">15</span>  0.0036054421768707485
+ <span class="sgr90">16</span>  0.004217687074829932</code></pre><h2 id="Histograms"><a class="docs-heading-anchor" href="#Histograms">Histograms</a><a id="Histograms-1"></a><a class="docs-heading-anchor-permalink" href="#Histograms" title="Permalink"></a></h2><p>The <a href="#RecurrenceMicrostatesAnalysis.histogram"><code>histogram</code></a> function counts the occurrences of each microstate identified during sampling. It is called internally by <a href="#RecurrenceMicrostatesAnalysis.distribution"><code>distribution</code></a> , which converts the resulting <a href="../../#ComplexityMeasures.Counts"><code>Counts</code></a> into <a href="../../#ComplexityMeasures.Probabilities"><code>Probabilities</code></a>.</p><article><details class="docstring" open="true"><summary id="RecurrenceMicrostatesAnalysis.histogram"><a class="docstring-binding" href="#RecurrenceMicrostatesAnalysis.histogram"><code>RecurrenceMicrostatesAnalysis.histogram</code></a> — <span class="docstring-category">Function</span></summary><section><div><pre><code class="language-julia hljs">histogram(core::RMACore, [x], [y])</code></pre><p>Compute the histogram of recurrence microstates for the input data <code>[x]</code> and <code>[y]</code> using the specified backend <code>core</code>, which must be an <a href="../../dev/#RecurrenceMicrostatesAnalysis.RMACore"><code>RMACore</code></a>.</p><p>This function executes the full backend pipeline: sampling the recurrence space, constructing microstates, and evaluating recurrences.</p><p>The result is returned as a <a href="../../#ComplexityMeasures.Counts"><code>Counts</code></a> object, where each index corresponds to the decimal representation of the associated microstate.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/DynamicsUFPR/RecurrenceMicrostatesAnalysis.jl/blob/4e46087d3e53fa7e30cba1a378029e86a1590a8b/src/core/abstract_core.jl#L28-L39">source</a></section><section><div><pre><code class="language-julia hljs">histogram(core::StandardCPUCore, [x], [y]; kwargs...)</code></pre><p>Compute the histogram of recurrence microstates for an abstract recurrence structure constructed from the input data <code>[x]</code> and <code>[y]</code>.</p><p>If <code>[x]</code> and <code>[y]</code> are identical, the result corresponds to a Recurrence Plot (RP); otherwise, it corresponds to a Cross-Recurrence Plot (CRP).</p><p>The result is returned as a <a href="../../#ComplexityMeasures.Counts"><code>Counts</code></a> object representing the histogram of recurrence microstates for the given input data.</p><p>This method implements the CPU backend using a <a href="../../dev/#RecurrenceMicrostatesAnalysis.CPUCore"><code>CPUCore</code></a>, specifically the <a href="../../dev/#RecurrenceMicrostatesAnalysis.StandardCPUCore"><code>StandardCPUCore</code></a> implementation.</p><p><strong>Arguments</strong></p><ul><li><code>core</code>: A <a href="../../dev/#RecurrenceMicrostatesAnalysis.StandardCPUCore"><code>StandardCPUCore</code></a> defining the CPU backend configuration.</li><li><code>[x]</code>: Input data provided as a <a href="../../#StateSpaceSets.StateSpaceSet"><code>StateSpaceSet</code></a> or an <code>AbstractArray</code>.</li><li><code>[y]</code>: Input data provided as a <a href="../../#StateSpaceSets.StateSpaceSet"><code>StateSpaceSet</code></a> or an <code>AbstractArray</code>.</li></ul><div class="admonition is-info" id="Note-7926efeefa2ae215"><header class="admonition-header">Note<a class="admonition-anchor" href="#Note-7926efeefa2ae215" title="Permalink"></a></header><div class="admonition-body"><p><a href="../../#StateSpaceSets.StateSpaceSet"><code>StateSpaceSet</code></a> and <code>AbstractArray</code> inputs use different internal backends and therefore different histogram implementations. Both interfaces share the same method signature, differing only in the input data representation.</p></div></div><p><strong>Keyword Arguments</strong></p><ul><li><code>threads</code>: Number of threads used to compute the histogram. By default, this is set to <code>Threads.nthreads()</code>, which can be specified at Julia startup using <code>--threads N</code> or via the <code>JULIA_NUM_THREADS</code> environment variable.</li></ul><p><strong>Examples</strong></p><ul><li>Time series:</li></ul><pre><code class="language-julia hljs">ssset = StateSpaceSet(rand(Float64, (1000)))
 core = CPUCore(Rect(Standard(0.27), 2), SRandom(0.05))
 dist = histogram(core, ssset, ssset)</code></pre><ul><li>Spatial data:</li></ul><pre><code class="language-julia hljs">spatialdata = rand(Float64, (3, 50, 50))
 core = CPUCore(Rect(Standard(0.5), (2, 2, 1, 1)), SRandom(0.05))
-dist = histogram(core, spatialdata, spatialdata)</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/DynamicsUFPR/RecurrenceMicrostatesAnalysis.jl/blob/c284f98381fa0a7bd666b2b17596a08e7b4991e8/src/core/cpu_core.jl#L72-L116">source</a></section><section><div><pre><code class="language-julia hljs">histogram(core::StandardGPUCore, [x], [y]; kwargs...)</code></pre><p>Compute the histogram of recurrence microstates for an abstract recurrence structure constructed from the input data <code>[x]</code> and <code>[y]</code>.</p><p>If <code>[x]</code> and <code>[y]</code> are identical, the result corresponds to a Recurrence Plot (RP); otherwise, it corresponds to a Cross-Recurrence Plot (CRP).</p><p>The result is returned as a <a href="../../#ComplexityMeasures.Counts"><code>Counts</code></a> object representing the histogram of recurrence microstates for the given input data.</p><div class="admonition is-info" id="Note-bce255cd790968fb"><header class="admonition-header">Note<a class="admonition-anchor" href="#Note-bce255cd790968fb" title="Permalink"></a></header><div class="admonition-body"><p>The resulting histogram is copied from GPU memory back to the CPU.</p></div></div><p>This method implements the GPU backend using a <a href="../../dev/#RecurrenceMicrostatesAnalysis.GPUCore"><code>GPUCore</code></a>, specifically the <a href="../../dev/#RecurrenceMicrostatesAnalysis.StandardGPUCore"><code>StandardGPUCore</code></a> implementation.</p><p><strong>Arguments</strong></p><ul><li><code>core</code>: A <a href="../../dev/#RecurrenceMicrostatesAnalysis.StandardGPUCore"><code>StandardGPUCore</code></a> defining the GPU backend configuration.</li><li><code>[x]</code>: Input data provided as an <code>AbstractGPUVector</code>.</li><li><code>[y]</code>: Input data provided as an <code>AbstractGPUVector</code>.</li></ul><p><strong>Keyword Arguments</strong></p><ul><li><code>groupsize</code>: Number of threads per GPU workgroup.</li></ul><p><strong>Examples</strong></p><pre><code class="language-julia hljs">using CUDA
+dist = histogram(core, spatialdata, spatialdata)</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/DynamicsUFPR/RecurrenceMicrostatesAnalysis.jl/blob/4e46087d3e53fa7e30cba1a378029e86a1590a8b/src/core/cpu_core.jl#L72-L116">source</a></section><section><div><pre><code class="language-julia hljs">histogram(core::StandardGPUCore, [x], [y]; kwargs...)</code></pre><p>Compute the histogram of recurrence microstates for an abstract recurrence structure constructed from the input data <code>[x]</code> and <code>[y]</code>.</p><p>If <code>[x]</code> and <code>[y]</code> are identical, the result corresponds to a Recurrence Plot (RP); otherwise, it corresponds to a Cross-Recurrence Plot (CRP).</p><p>The result is returned as a <a href="../../#ComplexityMeasures.Counts"><code>Counts</code></a> object representing the histogram of recurrence microstates for the given input data.</p><div class="admonition is-info" id="Note-bce255cd790968fb"><header class="admonition-header">Note<a class="admonition-anchor" href="#Note-bce255cd790968fb" title="Permalink"></a></header><div class="admonition-body"><p>The resulting histogram is copied from GPU memory back to the CPU.</p></div></div><p>This method implements the GPU backend using a <a href="../../dev/#RecurrenceMicrostatesAnalysis.GPUCore"><code>GPUCore</code></a>, specifically the <a href="../../dev/#RecurrenceMicrostatesAnalysis.StandardGPUCore"><code>StandardGPUCore</code></a> implementation.</p><p><strong>Arguments</strong></p><ul><li><code>core</code>: A <a href="../../dev/#RecurrenceMicrostatesAnalysis.StandardGPUCore"><code>StandardGPUCore</code></a> defining the GPU backend configuration.</li><li><code>[x]</code>: Input data provided as an <code>AbstractGPUVector</code>.</li><li><code>[y]</code>: Input data provided as an <code>AbstractGPUVector</code>.</li></ul><p><strong>Keyword Arguments</strong></p><ul><li><code>groupsize</code>: Number of threads per GPU workgroup.</li></ul><p><strong>Examples</strong></p><pre><code class="language-julia hljs">using CUDA
 gpudata = StateSpaceSet(Float32.(data)) |&gt; CuVector
 core = GPUCore(CUDABackend(), Rect(Standard(0.27f0; metric = GPUEuclidean()), 2), SRandom(0.05))
-dist = histogram(core, gpudata, gpudata)</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/DynamicsUFPR/RecurrenceMicrostatesAnalysis.jl/blob/c284f98381fa0a7bd666b2b17596a08e7b4991e8/src/core/gpu/gpu_core.jl#L68-L101">source</a></section></details></article></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../../">« Welcome</a><a class="docs-footer-nextpage" href="../quantifiers/">Quantifiers »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.16.1 on <span class="colophon-date" title="Thursday 15 January 2026 04:32">Thursday 15 January 2026</span>. Using Julia version 1.12.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+dist = histogram(core, gpudata, gpudata)</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/DynamicsUFPR/RecurrenceMicrostatesAnalysis.jl/blob/4e46087d3e53fa7e30cba1a378029e86a1590a8b/src/core/gpu/gpu_core.jl#L68-L101">source</a></section></details></article></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../../">« Welcome</a><a class="docs-footer-nextpage" href="../quantifiers/">Quantifiers »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.16.1 on <span class="colophon-date" title="Thursday 15 January 2026 05:25">Thursday 15 January 2026</span>. Using Julia version 1.12.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
