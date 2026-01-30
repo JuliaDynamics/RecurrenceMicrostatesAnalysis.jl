@@ -37,6 +37,8 @@ struct StandardCPUCore{M<:MicrostateShape, S<:SamplingMode} <: CPUCore{M, S}
     shape::M
     sampling::S
 end
+
+
 #.........................................................................................
 CPUCore(shape::M, sampling::S) where {M<:MicrostateShape, S<:SamplingMode} = StandardCPUCore(shape, sampling)
 
@@ -217,7 +219,7 @@ distribution(
 ) = distribution(CPUCore(shape, sampling), x, y; threads = threads)
 #.........................................................................................
 distribution(
-    x::StateSpaceSet, 
+    x::StateSpaceSet,
     y::StateSpaceSet,
     expr::RecurrenceExpression,
     n::Int;
@@ -282,7 +284,7 @@ distribution(
 ) = distribution(x, x, shape; rate = rate, sampling = sampling, threads = threads)
 #.........................................................................................
 distribution(
-    core::CPUCore, 
+    core::CPUCore,
     x;
     threads = Threads.nthreads()
 ) = distribution(core, x, x; threads = threads)

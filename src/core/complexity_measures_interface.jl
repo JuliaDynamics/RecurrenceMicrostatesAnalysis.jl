@@ -8,6 +8,26 @@ struct RecurrenceMicrostates{MS<:MicrostateShape, RE <: RecurrenceExpression, SM
     what_else # ?
 end
 
+# convenience constructors
+
+function RecurrenceMicrostates(;
+        ε = nothing,
+        N = 2,
+        core = CPUCore(),
+        whatever_else
+    )
+
+    # create the data structure
+    RecurrenceMicrostates(...)
+end
+
+
+# downstream convenience
+function compute_motif(ospace::RecurrenceMicrostates, x, y = x)
+    compute_motif(ospace.expression, ..., x, y)
+end
+
+
 # Define necessary functions to actually make it an `OutcomeSpace`
 
 function ComplexityMeasures.counts_and_outcomes(rmspace::RecurrenceMicrostates, x, y = x)
