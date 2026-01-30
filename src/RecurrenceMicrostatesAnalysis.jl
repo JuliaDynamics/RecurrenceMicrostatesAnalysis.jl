@@ -27,6 +27,8 @@ const DEFAULT_METRIC = Euclidean()
 ##########################################################################################
 #   Core API types and functions
 ##########################################################################################
+include("core/recurrence_microstates.jl")
+
 include("core/abstract_core.jl")
 include("core/recurrence.jl")
 include("core/shape.jl")
