@@ -49,6 +49,7 @@ end
 
 # TODOs:
 
-# all microstate shape types need to be renamed; they conflict with
+# DONE - all microstate shape types need to be renamed; they conflict with
 # plotting packages too much.
+#
 # Furthermore, they should be orthogonal inputs to the main outcome space t
