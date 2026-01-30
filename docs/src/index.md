@@ -1,12 +1,12 @@
 #   RecurrenceMicrostatesAnalysis.jl
+
 ```@docs
 RecurrenceMicrostatesAnalysis
 ```
 
-!!! todo "GitHub"
-    RecurrenceMicrostatesAnalysis.jl is an open-source package available on [GitHub](https://github.com/DynamicsUFPR/RecurrenceMicrostatesAnalysis.jl).
+!!! info "Citation and credit"
     If you find this package useful, please consider giving it a star on GitHub and don't forget to cite [our work](https://doi.org/10.1063/5.0293708). 😉
-    
+
 
 ##  About the documentation
 The documentation of **RecurrenceMicrostatesAnalysis.jl** is designed to explain how to use the package while also introducing the theoretical background of the RMA framework. The bibliography used throughout the documentation is listed in the [References](@ref) section; **please remember to cite the appropriate works if you use them**.
