@@ -11,13 +11,13 @@ Operation that permutes the rows of a microstate \$\\mathbf{M}\$.
 To initialize a `PermuteRows` operation, a rectangular microstate shape must be
 provided via a [`Rect`](@ref) structure:
 ```julia
-PermuteRows(::Rect2{R, C, B, E})
+PermuteRows(::Rect2Microstate{R, C, B, E})
 ```
 
 #   Examples
 ```julia
-PermuteRows(Rect(3, 3))     #   Microstate 3 x 3
-PermuteRows(Rest(3, 1))     #   Microstate 3 x 1 (it is a column)
+PermuteRows(RectMicrostate(3, 3))     #   Microstate 3 x 3
+PermuteRows(RectMicrostate(3, 1))     #   Microstate 3 x 1 (it is a column)
 ```
 
 This operation is applied via the [`operate`](@ref) function:
@@ -35,7 +35,7 @@ The resulting microstate binary identifier (1-based).
 """
 struct PermuteRows{R, C} <: Operation end
 
-PermuteRows(::Rect2{R, C, B, E}) where {R, C, B, E} = PermuteRows{R, C}()
+PermuteRows(::Rect2Microstate{R, C, B}) where {R, C, B} = PermuteRows{R, C}()
 
 ##########################################################################################
 #   Operate a permutation of rows

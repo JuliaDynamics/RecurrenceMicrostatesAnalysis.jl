@@ -1,3 +1,22 @@
+
+##########################################################################################
+#   Interface with ComplexityMeasures.jl
+##########################################################################################
+function ComplexityMeasures.counts_and_outcomes(rmspace::RecurrenceMicrostates, x, y = x)
+    counts = histogram(rmspace, x, y)
+    outcomes = eachindex(counts)
+    return Counts(counts, outcomes)
+end
+
+function ComplexityMeasures.codify(rmspace::RecurrenceMicrostates, x, y = x)
+    return histogram(rmspace, x, y)
+end
+
+function ComplexityMeasures.outcome_space(rmspace::RecurrenceMicrostates, x, y = x)
+    return eachindex(1:get_histogram_size(rmspace.shape))
+end
+
+#=
 # Define outcome space
 
 struct RecurrenceMicrostates{MS<:MicrostateShape, RE <: RecurrenceExpression, SM<:SamplingMode, C<:Core} <: CountBasedOutcomeSpace
@@ -44,6 +63,7 @@ end
 function ComplexityMeasures.outcome_space(rmspace::RecurrenceMicrostates, x, y = x)
     # TODO
 end
+=#
 
 # The rest is taken care of by ComplexityMeasures.jl. Including `entropy(...)`.
 

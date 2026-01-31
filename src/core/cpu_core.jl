@@ -4,43 +4,12 @@ export CPUCore, StandardCPUCore
 #   RMACore: CPU
 ##########################################################################################
 """
-    CPUCore{M<:MicrostateShape, S<:SamplingMode} <: RMACore
+    CPUCore <: RMACore
 
-Abstract CPU backend that implements the **RecurrenceMicrostatesAnalysis.jl** execution pipeline on
+Type which represents the pipeline executed by **RecurrenceMicrostatesAnalysis.jl** on
 central processing units.
-
-The package provides a default implementation via [`StandardCPUCore`](@ref).
-
-Concrete subtypes of `CPUCore` must define the following fields:
-- `shape`: the [`MicrostateShape`](@ref) used to construct microstates.
-- `sampling`: the [`SamplingMode`](@ref) used to sample the recurrence space.
-
-#   Implementations
-- [`StandardCPUCore`](@ref)
 """
-abstract type CPUCore{M<:MicrostateShape, S<:SamplingMode} <: RMACore end
-#.........................................................................................
-"""
-    StandardCPUCore{M<:MicrostateShape, S<:SamplingMode} <: CPUCore{M, S}
-
-Default CPU backend implementation for **RecurrenceMicrostatesAnalysis.jl**.
-
-This type provides the standard execution pipeline for computing recurrence microstate distributions
-on CPU devices.
-
-#   Initialization
-```julia
-core = CPUCore(shape, sampling)
-```
-"""
-struct StandardCPUCore{M<:MicrostateShape, S<:SamplingMode} <: CPUCore{M, S}
-    shape::M
-    sampling::S
-end
-
-
-#.........................................................................................
-CPUCore(shape::M, sampling::S) where {M<:MicrostateShape, S<:SamplingMode} = StandardCPUCore(shape, sampling)
+struct CPUCore <: RMACore end
 
 ##########################################################################################
 #   Implementation: compute_motif
@@ -71,64 +40,24 @@ end
 ##########################################################################################
 #   Based on time series: (CPU)
 #.........................................................................................
-"""
-    histogram(core::StandardCPUCore, [x], [y]; kwargs...)
 
-Compute the histogram of recurrence microstates for an abstract recurrence structure constructed
-from the input data `[x]` and `[y]`.
-
-If `[x]` and `[y]` are identical, the result corresponds to a Recurrence Plot (RP); otherwise, it
-corresponds to a Cross-Recurrence Plot (CRP).
-
-The result is returned as a [`Counts`](@ref) object representing the histogram of recurrence
-microstates for the given input data.
-
-This method implements the CPU backend using a [`CPUCore`](@ref), specifically the
-[`StandardCPUCore`](@ref) implementation.
-
-### Arguments
-- `core`: A [`StandardCPUCore`](@ref) defining the CPU backend configuration.
-- `[x]`: Input data provided as a [`StateSpaceSet`](@ref) or an `AbstractArray`.
-- `[y]`: Input data provided as a [`StateSpaceSet`](@ref) or an `AbstractArray`.
-
-!!! note
-    [`StateSpaceSet`](@ref) and `AbstractArray` inputs use different internal backends and therefore
-    different histogram implementations. Both interfaces share the same method signature, differing
-    only in the input data representation.
-
-### Keyword Arguments
-- `threads`: Number of threads used to compute the histogram. By default, this is set to
-  `Threads.nthreads()`, which can be specified at Julia startup using `--threads N` or via the
-  `JULIA_NUM_THREADS` environment variable.
-
-### Examples
-- Time series:
-```julia
-ssset = StateSpaceSet(rand(Float64, (1000)))
-core = CPUCore(Rect(Standard(0.27), 2), SRandom(0.05))
-dist = histogram(core, ssset, ssset)
-```
-
-- Spatial data:
-```julia
-spatialdata = rand(Float64, (3, 50, 50))
-core = CPUCore(Rect(Standard(0.5), (2, 2, 1, 1)), SRandom(0.05))
-dist = histogram(core, spatialdata, spatialdata)
-```
-"""
 function histogram(
-    core::StandardCPUCore,
-    x::StateSpaceSet,
-    y::StateSpaceSet;
+    rmspace::RecurrenceMicrostates{MS, RE, SM, C},
+    x::Union{StateSpaceSet, Vector{<: Real}},
+    y::Union{StateSpaceSet, Vector{<: Real}} = x;
     threads = Threads.nthreads()
-)
+) where {MS <: MicrostateShape, RE <: RecurrenceExpression, SM <: SamplingMode, C <: CPUCore}
+
+    if (x isa Vector); x = StateSpaceSet(x); end
+    if (y isa Vector); y = StateSpaceSet(y); end
+
     #   Info
-    space = SamplingSpace(core.shape, x, y)
-    samples = get_num_samples(core.sampling, space)
+    space = SamplingSpace(rmspace.shape, x, y)
+    samples = get_num_samples(rmspace.sampling, space)
 
     #   Allocate memory
-    pv = get_power_vector(core, core.shape)
-    offsets = get_offsets(core, core.shape)
+    pv = get_power_vector(rmspace.core, rmspace.shape)
+    offsets = get_offsets(rmspace.core, rmspace.shape)
 
     #   Compute the histogram
     chunk = ceil(Int, samples / threads)
@@ -136,15 +65,15 @@ function histogram(
 
     for t in 1:threads
         tasks[t] = Threads.@spawn begin
-            local_hist = zeros(Int, get_histogram_size(core.shape))
+            local_hist = zeros(Int, get_histogram_size(rmspace.shape))
             local_rng = TaskLocalRNG()
 
             start = (t - 1) * chunk + 1
             stop  = min(t * chunk, samples)
 
             for m in start:stop
-                i, j = get_sample(core, core.sampling, space, local_rng, m)
-                idx = compute_motif(core.shape.expr, x, y, i, j, pv, offsets)
+                i, j = get_sample(rmspace.core, rmspace.sampling, space, local_rng, m)
+                idx = compute_motif(rmspace.expr, x, y, i, j, pv, offsets)
                 @inbounds local_hist[idx] += 1
             end
 
@@ -153,27 +82,25 @@ function histogram(
     end
 
     res = reduce(+, fetch.(tasks))
-    out = eachindex(res)
-
-    return Counts(res, out)
+    return res
 end
 #.........................................................................................
 #   Based on spatial data: (CPU only)
 #.........................................................................................
 function histogram(
-    core::StandardCPUCore,
+    rmspace::RecurrenceMicrostates{MS, RE, SM, C},
     x::AbstractArray{<: Real},
-    y::AbstractArray{<: Real};
+    y::AbstractArray{<: Real} = x;
     threads = Threads.nthreads()
-)
+) where {MS <: MicrostateShape, RE <: RecurrenceExpression, SM <: SamplingMode, C <: CPUCore}
     #   Info
-    space = SamplingSpace(core.shape, x, y)
-    samples = get_num_samples(core.sampling, space)
+    space = SamplingSpace(rmspace.shape, x, y)
+    samples = get_num_samples(rmspace.sampling, space)
     dim_x = ndims(x) - 1
     dim_y = ndims(y) - 1
 
     #   Allocate memory
-    pv = get_power_vector(core, core.shape)
+    pv = get_power_vector(rmspace.core, rmspace.shape)
 
     #   Compute the histogram
     chunk = ceil(Int, samples / threads)
@@ -181,7 +108,7 @@ function histogram(
 
     for t in 1:threads
         tasks[t] = Threads.@spawn begin
-            local_hist = zeros(Int, get_histogram_size(core.shape))
+            local_hist = zeros(Int, get_histogram_size(rmspace.shape))
             local_rng = TaskLocalRNG()
 
             start = (t - 1) * chunk + 1
@@ -191,8 +118,8 @@ function histogram(
             itr = zeros(Int, dim_x + dim_y)
 
             for m in start:stop
-                get_sample(core, core.sampling, space, idx, local_rng, m)
-                i = compute_motif(core.shape, x, y, idx, itr, pv)
+                get_sample(rmspace.core, rmspace.sampling, space, idx, local_rng, m)
+                i = compute_motif(rmspace.shape, rmspace.expr, x, y, idx, itr, pv)
                 @inbounds local_hist[i] += 1
             end
 
@@ -201,9 +128,7 @@ function histogram(
     end
 
     res =  reduce(+, fetch.(tasks))
-    out = eachindex(res)
-
-    return Counts(res, out)
+    return res
 end
 
 ##########################################################################################

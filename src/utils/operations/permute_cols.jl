@@ -11,7 +11,7 @@ Operation that permutes the columns of a microstate \$\\mathbf{M}\$.
 To initialize a `PermuteColumns` operation, a rectangular microstate shape must be
 provided via a [`Rect`](@ref) structure:
 ```julia
-PermuteColumns(::Rect2{R, C, B, E}; S::Vector{Vector{Int}} = collect(permutations(1:C))
+PermuteColumns(::Rect2Microstate{R, C, B}; S::Vector{Vector{Int}} = collect(permutations(1:C))
 ```
 Here, the keyword argument `S` defines the set \$S_n\$ of column permutations. The
 `PermuteColumns` struct precomputes the column permutations for each row of the microstate.
@@ -19,8 +19,8 @@ These precomputed permutations can be accessed via the field `Q`.
 
 #   Examples
 ```julia
-PermuteColumns(Rect(3, 3))     #   Microstate 3 x 3
-PermuteColumns(Rest(1, 3))     #   Microstate 1 x 3 (it is a line)
+PermuteColumns(RectMicrostate(3, 3))     #   Microstate 3 x 3
+PermuteColumns(RectMicrostate(1, 3))     #   Microstate 1 x 3 (it is a line)
 ```
 
 This operation is applied via the [`operate`](@ref) function:
@@ -41,9 +41,9 @@ struct PermuteColumns{R, C} <: Operation
 end
 
 PermuteColumns(
-        ::Rect2{R, C, B, E};
+        ::Rect2Microstate{R, C, B};
         S::Vector{Vector{Int}} = collect(permutations(1:C))
-    ) where {R, C, B, E} = PermuteColumns{R, C}(precompute_Q(R, C, S))
+    ) where {R, C, B} = PermuteColumns{R, C}(precompute_Q(R, C, S))
 
 ##########################################################################################
 #   Operate a permutation of columns

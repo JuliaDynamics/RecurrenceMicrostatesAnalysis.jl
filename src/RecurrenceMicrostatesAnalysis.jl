@@ -11,7 +11,6 @@ end RecurrenceMicrostatesAnalysis
 ##########################################################################################
 using Atomix
 using Combinatorics
-using ComplexityMeasures
 using Distances
 using GPUArraysCore
 using KernelAbstractions
@@ -20,6 +19,7 @@ using Reexport
 using StaticArrays
 
 @reexport using Adapt
+@reexport using ComplexityMeasures
 @reexport using StateSpaceSets
 
 const DEFAULT_METRIC = Euclidean()
@@ -27,21 +27,21 @@ const DEFAULT_METRIC = Euclidean()
 ##########################################################################################
 #   Core API types and functions
 ##########################################################################################
-include("core/recurrence_microstates.jl")
-
 include("core/abstract_core.jl")
 include("core/recurrence.jl")
 include("core/shape.jl")
 include("core/sampling.jl")
+include("core/gpu/gpu_metric.jl")
+include("core/recurrence_microstates.jl")
 
 include("core/cpu_core.jl")
-
-include("core/gpu/gpu_metric.jl")
 include("core/gpu/gpu_core.jl")
 
 include("core/measures.jl")
 include("core/optimize.jl")
 include("core/operation.jl")
+
+include("core/complexity_measures_interface.jl")
 
 ##########################################################################################
 #   Recurrence functions, motif shapes, and sampling modes
