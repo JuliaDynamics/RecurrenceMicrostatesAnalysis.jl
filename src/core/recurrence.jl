@@ -15,7 +15,7 @@ which defines how recurrence between two states is evaluated.
 - [`Standard`](@ref)
 - [`Corridor`](@ref)
 """
-abstract type RecurrenceExpression end
+abstract type RecurrenceExpression{T, M} end
 
 ##########################################################################################
 #   Function: recurrence

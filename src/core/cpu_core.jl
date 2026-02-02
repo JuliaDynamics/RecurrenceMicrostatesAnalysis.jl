@@ -1,5 +1,3 @@
-export CPUCore, StandardCPUCore
-
 ##########################################################################################
 #   RMACore: CPU
 ##########################################################################################
@@ -42,22 +40,24 @@ end
 #.........................................................................................
 
 function histogram(
-    rmspace::RecurrenceMicrostates{MS, RE, SM, C},
+    rmspace::RecurrenceMicrostates{MS, RE, SM},
     x::Union{StateSpaceSet, Vector{<: Real}},
     y::Union{StateSpaceSet, Vector{<: Real}} = x;
     threads = Threads.nthreads()
-) where {MS <: MicrostateShape, RE <: RecurrenceExpression, SM <: SamplingMode, C <: CPUCore}
+) where {MS <: MicrostateShape, RE <: RecurrenceExpression, SM <: SamplingMode}
 
     if (x isa Vector); x = StateSpaceSet(x); end
     if (y isa Vector); y = StateSpaceSet(y); end
+
+    core = CPUCore()
 
     #   Info
     space = SamplingSpace(rmspace.shape, x, y)
     samples = get_num_samples(rmspace.sampling, space)
 
     #   Allocate memory
-    pv = get_power_vector(rmspace.core, rmspace.shape)
-    offsets = get_offsets(rmspace.core, rmspace.shape)
+    pv = get_power_vector(core, rmspace.shape)
+    offsets = get_offsets(core, rmspace.shape)
 
     #   Compute the histogram
     chunk = ceil(Int, samples / threads)
@@ -72,7 +72,7 @@ function histogram(
             stop  = min(t * chunk, samples)
 
             for m in start:stop
-                i, j = get_sample(rmspace.core, rmspace.sampling, space, local_rng, m)
+                i, j = get_sample(core, rmspace.sampling, space, local_rng, m)
                 idx = compute_motif(rmspace.expr, x, y, i, j, pv, offsets)
                 @inbounds local_hist[idx] += 1
             end
@@ -88,19 +88,21 @@ end
 #   Based on spatial data: (CPU only)
 #.........................................................................................
 function histogram(
-    rmspace::RecurrenceMicrostates{MS, RE, SM, C},
+    rmspace::RecurrenceMicrostates{MS, RE, SM},
     x::AbstractArray{<: Real},
     y::AbstractArray{<: Real} = x;
     threads = Threads.nthreads()
-) where {MS <: MicrostateShape, RE <: RecurrenceExpression, SM <: SamplingMode, C <: CPUCore}
+) where {MS <: MicrostateShape, RE <: RecurrenceExpression, SM <: SamplingMode}
     #   Info
     space = SamplingSpace(rmspace.shape, x, y)
     samples = get_num_samples(rmspace.sampling, space)
     dim_x = ndims(x) - 1
     dim_y = ndims(y) - 1
 
+    core = CPUCore()
+
     #   Allocate memory
-    pv = get_power_vector(rmspace.core, rmspace.shape)
+    pv = get_power_vector(core, rmspace.shape)
 
     #   Compute the histogram
     chunk = ceil(Int, samples / threads)
@@ -118,7 +120,7 @@ function histogram(
             itr = zeros(Int, dim_x + dim_y)
 
             for m in start:stop
-                get_sample(rmspace.core, rmspace.sampling, space, idx, local_rng, m)
+                get_sample(core, rmspace.sampling, space, idx, local_rng, m)
                 i = compute_motif(rmspace.shape, rmspace.expr, x, y, idx, itr, pv)
                 @inbounds local_hist[i] += 1
             end

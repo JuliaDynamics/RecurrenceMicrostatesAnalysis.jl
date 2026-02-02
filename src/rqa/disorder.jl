@@ -86,29 +86,49 @@ function measure(settings::Disorder{N}, probs::Probabilities, norm_param::Int) w
     return total_entropy / norm_param
 end
 #.........................................................................................
-function measure(settings::Disorder{N}, x::StateSpaceSet; th::Float64 = optimize(Threshold(), Disorder(N), x)[1], th_min::Float64 = 0.85 * th, th_max::Float64 = 1.25 * th, num_tests::Int = 40) where {N}
+function measure(
+        settings::Disorder{N}, 
+        x::Union{StateSpaceSet, Vector{<:Real}}, 
+        y::Union{StateSpaceSet, Vector{<:Real}} = x; 
+        th::Float64 = optimize(Threshold(), Disorder(N), x)[1], 
+        th_min::Float64 = 0.85 * th, 
+        th_max::Float64 = 1.25 * th, 
+        num_tests::Int = 40,
+        metric::Metric = DEFAULT_METRIC
+    ) where {N}
     A = get_disorder_norm_factor(settings, x)
+    Ay = get_disorder_norm_factor(settings, y)
+    A = Ay > A ? Ay : A
+
     values = zeros(typeof(th), num_tests)
     th_range = range(th_min, th_max, num_tests)
 
     for i in eachindex(th_range)
-        probs = distribution(x, th_range[i], N; sampling = Full())
+        rmspace = RecurrenceMicrostates(th_range[i], N; sampling = Full(), metric = metric)
+        probs = probabilities(rmspace, x, y)
         values[i] = measure(settings, probs, A)
     end
 
     return maximum(values)
 end
 #.........................................................................................
-function measure(settings::Disorder{N}, dataset::Vector{<:AbstractGPUVector{SVector{D, Float32}}}, th_min::Float32, th_max::Float32; num_tests::Int = 40, metric::GPUMetric = GPUEuclidean()) where {N, D}
+function measure(
+        settings::Disorder{N}, 
+        dataset::Vector{<:AbstractGPUVector{SVector{D, Float32}}}, 
+        th_min::Float32, 
+        th_max::Float32; 
+        num_tests::Int = 40, 
+        metric::GPUMetric = GPUEuclidean()
+    ) where {N, D}
     A = _norm_factor(Val(N), Val(D))
     values = zeros(Float32, num_tests, length(dataset))
     th_range = Float32.(range(th_min, th_max, num_tests))
     backend = get_backend(dataset[1])
 
     for i ∈ eachindex(th_range)
-        core = GPUCore(backend, Rect(Standard(th_range[i]; metric = metric), N), Full())
+        rmspace = RecurrenceMicrostates(th_range[i], N; sampling = Full(), metric = metric, core = GPUCore(backend))
         for j in eachindex(dataset)
-            probs = distribution(core, dataset[j], dataset[j])
+            probs = probabilities(rmspace, dataset[j])
             values[i, j] = measure(settings, probs, A)
         end
     end
@@ -122,15 +142,22 @@ function measure(settings::Disorder{N}, dataset::Vector{<:AbstractGPUVector{SVec
     return results
 end
 #.........................................................................................
-function measure(settings::Disorder{N}, dataset::Vector{StateSpaceSet}, th_min::Float64, th_max::Float64; num_tests::Int = 40, metric::Metric = DEFAULT_METRIC) where {N}
+function measure(
+        settings::Disorder{N}, 
+        dataset::Vector{StateSpaceSet}, 
+        th_min::Float64, 
+        th_max::Float64; 
+        num_tests::Int = 40, 
+        metric::Metric = DEFAULT_METRIC
+    ) where {N}
     A = get_disorder_norm_factor(settings, dataset[1])
     values = zeros(Float64, num_tests, length(dataset))
     th_range = range(th_min, th_max, num_tests)
 
     for i ∈ eachindex(th_range)
-        core = CPUCore(Rect(Standard(th_range[i]; metric = metric), N), Full())
+        rmspace = RecurrenceMicrostates(th_range[i], N; sampling = Full(), metric = metric)
         for j in eachindex(dataset)
-            probs = distribution(core, dataset[j], dataset[j])
+            probs = probabilities(rmspace, dataset[j])
             values[i, j] = measure(settings, probs, A)
         end
     end
@@ -159,7 +186,7 @@ _norm_factor(::Val{5}, ::Val{D}) where D = D > 1 ? throw(ArgumentError("Disorder
 ##########################################################################################
 function compute_labels(N::Int)
     S = collect(permutations(1:N))
-    shape = Rect(Standard(0.27), N)
+    shape = RectMicrostate(N)
 
     row_permutation = PermuteRows(shape)
     col_permutation = PermuteColumns(shape; S = S)

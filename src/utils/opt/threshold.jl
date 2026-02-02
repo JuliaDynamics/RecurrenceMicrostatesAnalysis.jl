@@ -54,7 +54,7 @@ function optimize(
         ::Threshold, 
         qm::RecurrenceEntropy, 
         x, 
-        n::Int; 
+        N::Int; 
         rate::Float64 = 0.05,
         sampling::SamplingMode = SRandom(rate),
         th_max_range::Float64 = 0.5,
@@ -75,7 +75,8 @@ function optimize(
     fmax = 0.0
     for _ ∈ 1:fraction
         for _ ∈ 1:fraction
-            probs = distribution(x, ε, n; sampling = sampling)
+            rmspace = RecurrenceMicrostates(ε, N; sampling = sampling)
+            probs = probabilities(rmspace, x)
             f = measure(qm, probs)
 
             if f > fmax
@@ -121,7 +122,8 @@ function optimize(
     fmax = 0.0
     for _ ∈ 1:fraction
         for _ ∈ 1:fraction
-            probs = distribution(x, ε, N; sampling = sampling)
+            rmspace = RecurrenceMicrostates(ε, N; sampling = sampling)
+            probs = probabilities(rmspace, x)
             f = measure(qm, probs, A)
 
             if f > fmax

@@ -1,6 +1,6 @@
 using Test
 using RecurrenceMicrostatesAnalysis
 
-@test_throws ArgumentError operate(PermuteColumns(Rect(3, 3)))
-@test_throws ArgumentError operate(PermuteRows(Rect(3, 3)))
-@test_throws ArgumentError operate(Transpose(Rect(3, 3)))
+@test_throws ArgumentError operate(PermuteColumns(RectMicrostate(3)))
+@test_throws ArgumentError operate(PermuteRows(RectMicrostate(3)))
+@test_throws ArgumentError operate(Transpose(RectMicrostate(3)))

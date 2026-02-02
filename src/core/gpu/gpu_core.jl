@@ -1,5 +1,3 @@
-export GPUCore, StandardGPUCore
-
 ##########################################################################################
 #   RMACore: GPU
 ##########################################################################################
@@ -15,9 +13,7 @@ GPUCore(backend)
 ```
 Here, `backend` is the GPU device backend, e.g., `MetalBackend`, `CUDABackend`.
 """
-struct GPUCore{B} <: RMACore 
-    backend::B
-end
+struct GPUCore <: RMACore end
 
 ##########################################################################################
 #   Implementation: compute_motif
@@ -41,35 +37,39 @@ end
 #   Based on time series: (GPU)
 #.........................................................................................
 function histogram(
-    rmspace::RecurrenceMicrostates{MS, RE, SM, C},
-    x::AbstractGPUVector{SVector{N, Float32}},
-    y::AbstractGPUVector{SVector{N, Float32}} = x;
+    rmspace::RecurrenceMicrostates{MS, <: RecurrenceExpression{T, M}, SM},
+    x::AbstractGPUVector{SVector{N, T}},
+    y::AbstractGPUVector{SVector{N, T}} = x;
     groupsize::Int = 256
-) where {N, MS <: MicrostateShape, RE <: RecurrenceExpression, SM <: SamplingMode, C <: GPUCore}
+) where {MS <: MicrostateShape, SM <: SamplingMode, N, T <: Real, M <: GPUMetric}
+
+    #   Get backend.
+    backend = KernelAbstractions.get_backend(x)
+    core = GPUCore()
 
     #   Info
     space = SamplingSpace(rmspace.shape, x, y)
     samples = get_num_samples(rmspace.sampling, space)
 
     #   Allocate memory
-    pv = get_power_vector(rmspace.core, rmspace.shape)
-    offsets = get_offsets(rmspace.core, rmspace.shape)
+    pv = get_power_vector(core, rmspace.shape)
+    offsets = get_offsets(core, rmspace.shape)
 
-    hist = KernelAbstractions.zeros(rmspace.core.backend, Int32, get_histogram_size(rmspace.shape))
+    hist = KernelAbstractions.zeros(backend, Int32, get_histogram_size(rmspace.shape))
 
     #   Call the kernel
     if rmspace.sampling isa Full
-        gpu_rng = KernelAbstractions.zeros(rmspace.core.backend, Int32, 1)
-        gpu_histogram!(rmspace.core.backend, groupsize)(x, y, pv, offsets, rmspace.core, rmspace.expr, rmspace.sampling, space, Int32(samples), hist, gpu_rng, Int32(N); ndrange = samples)
+        gpu_rng = KernelAbstractions.zeros(backend, Int32, 1)
+        gpu_histogram!(backend, groupsize)(x, y, pv, offsets, core, rmspace.expr, rmspace.sampling, space, Int32(samples), hist, gpu_rng, Int32(N); ndrange = samples)
     else
-        rng = get_sample(rmspace.core, rmspace.sampling, space, samples)
-        gpu_rng = KernelAbstractions.zeros(rmspace.core.backend, SVector{2,Int32}, samples)
+        rng = get_sample(core, rmspace.sampling, space, samples)
+        gpu_rng = KernelAbstractions.zeros(backend, SVector{2,Int32}, samples)
         copyto!(gpu_rng, rng)
 
-        gpu_histogram!(rmspace.core.backend, groupsize)(x, y, pv, offsets, rmspace.core, rmspace.expr, rmspace.sampling, space, Int32(samples), hist, gpu_rng, Int32(N); ndrange = samples)
+        gpu_histogram!(backend, groupsize)(x, y, pv, offsets, core, rmspace.expr, rmspace.sampling, space, Int32(samples), hist, gpu_rng, Int32(N); ndrange = samples)
     end
 
-    KernelAbstractions.synchronize(rmspace.core.backend)
+    KernelAbstractions.synchronize(backend)
     res =  hist |> Vector
     return res
 end

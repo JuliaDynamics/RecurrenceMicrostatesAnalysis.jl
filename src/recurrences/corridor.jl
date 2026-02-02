@@ -32,9 +32,9 @@ Corridor(0.05, 0.27; metric = Cityblock())
 The recurrence evaluation is performed via the [`recurrence`](@ref) function. For GPU
 execution, the corresponding implementation is provided by `gpu_recurrence`.
 """
-struct Corridor{F <: Real, M <: Metric} <: RecurrenceExpression
-    ε_min::F
-    ε_max::F
+struct Corridor{T <: Real, M <: Metric} <: RecurrenceExpression{T, M}
+    ε_min::T
+    ε_max::T
     metric::M
 end
 #.........................................................................................

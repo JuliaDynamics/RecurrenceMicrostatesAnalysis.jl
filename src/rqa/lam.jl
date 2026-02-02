@@ -74,8 +74,12 @@ struct Laminarity <: QuantificationMeasure end
 ##########################################################################################
 #       Using as input a RMA distribution.
 #.........................................................................................
-function measure(::Laminarity, dist::Probabilities)
-    if (length(dist) == 512)
+function measure(
+        ::Laminarity, 
+        rmspace::RecurrenceMicrostates, 
+        dist::Probabilities
+    )
+    if (rmspace.shape isa Rect2Microstate{3, 3, 2} && length(dist) == 512)
         rr = measure(RecurrenceRate(), dist)
 
         values = zeros(Int, 64)
@@ -94,7 +98,7 @@ function measure(::Laminarity, dist::Probabilities)
 
         return 1 - ((1/rr) * pl)
 
-    elseif (length(dist) == 8)
+   elseif (rmspace.shape isa Rect2Microstate{1, 3} && length(dist) == 8)
         rr = measure(RecurrenceRate(), dist)
         return 1 - ((1/rr) * dist[3])
     else
@@ -105,9 +109,16 @@ end
 #.........................................................................................
 #       Using as input a time series
 #.........................................................................................
-function measure(::Laminarity, x::StateSpaceSet; threshold::Real = optimize(Threshold(), RecurrenceEntropy(), x, 3)[1])
-    dist = distribution(x, Rect(Standard(threshold); rows = 1, cols = 3))
-    measure(Laminarity(), dist)
+function measure(
+    op::Laminarity, 
+    x::Union{StateSpaceSet, Vector{<:Real}}, 
+    y::Union{StateSpaceSet, Vector{<:Real}} = x; 
+    threshold::Real = optimize(Threshold(), RecurrenceEntropy(), x, 3)[1],
+    metric::Metric = DEFAULT_METRIC
+    )
+    rmspace = RecurrenceMicrostates(threshold, RectMicrostate(1, 3); metric = metric)
+    dist = probabilities(rmspace, x, y)
+    measure(op, rmspace, dist)
 end
 
 ##########################################################################################

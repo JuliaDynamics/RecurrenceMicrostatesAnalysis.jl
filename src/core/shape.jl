@@ -29,8 +29,9 @@ abstract type MicrostateShape end
 #.........................................................................................
 function compute_motif(
     shape::MicrostateShape,
-    x::AbstractArray{<: Real},
-    y::AbstractArray{<: Real},
+    ::RecurrenceExpression,
+    ::AbstractArray{<: Real},
+    ::AbstractArray{<: Real},
     ::Vector{Int},
     ::Vector{Int},
     ::SVector{N, Int}

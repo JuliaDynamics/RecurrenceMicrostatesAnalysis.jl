@@ -31,8 +31,8 @@ Standard(0.27; metric = Cityblock())
 The recurrence evaluation is performed via the [`recurrence`](@ref) function.
 For GPU execution, the corresponding implementation is provided by `gpu_recurrence`.
 """
-struct Standard{F <: Real, M <: Metric} <: RecurrenceExpression
-    ε::F
+struct Standard{T <: Real, M <: Metric} <: RecurrenceExpression{T, M}
+    ε::T
     metric::M
 end
 #.........................................................................................

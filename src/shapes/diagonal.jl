@@ -30,7 +30,7 @@ diagonal = DiagonalMicrostate(expr, 3)
 """
 struct DiagonalMicrostate{N, B} <: MicrostateShape end
 
-DiagonalMicrostate(N::Int; B::Int = 2) = DiagonalMicrostate{N, B}(expr)
+DiagonalMicrostate(N::Int; B::Int = 2) = DiagonalMicrostate{N, B}()
 
 ##########################################################################################
 #   Implementations: SamplingSpace

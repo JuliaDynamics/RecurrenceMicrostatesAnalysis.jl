@@ -5,11 +5,11 @@ using KernelAbstractions
 using RecurrenceMicrostatesAnalysis
 
 ##  Full not implemented for spatial data:
-@test_throws ArgumentError distribution(rand(2, 100), Rect(Standard(0.27), (2, 2)); sampling = Full())
+@test_throws ArgumentError probabilities(RecurrenceMicrostates(0.27, (2, 1, 2, 1); sampling = Full()), rand(1, 10, 10))
 
 @testset "num samples" begin
     data = rand(100) |> StateSpaceSet
-    space = SamplingSpace(Rect(2, 2), data, data)
+    space = SamplingSpace(RectMicrostate(2), data, data)
 
     @test RecurrenceMicrostatesAnalysis.get_num_samples(Full(), space) == space.W * space.H
     @test RecurrenceMicrostatesAnalysis.get_num_samples(Full(), space) isa Integer
@@ -19,12 +19,12 @@ end
     @testset "CPU" begin
         data_1 = rand(50) |> StateSpaceSet
         data_2 = rand(20) |> StateSpaceSet
-        space = SamplingSpace(Rect(2, 2), data_1, data_2)
-        core = CPUCore(Rect(Standard(0.27), 3), Full())
+        space = SamplingSpace(RectMicrostate(2), data_1, data_2)
+        core = RecurrenceMicrostatesAnalysis.CPUCore()
 
         @test RecurrenceMicrostatesAnalysis.get_sample(core, Full(), space, nothing, 10) isa Tuple{<: Integer, <: Integer}
         
-        samples = RecurrenceMicrostatesAnalysis.get_num_samples(core.sampling, space)
+        samples = RecurrenceMicrostatesAnalysis.get_num_samples(Full(), space)
         for m ∈ 1:samples
             i, j = RecurrenceMicrostatesAnalysis.get_sample(core, Full(), space, nothing, m)
             @test 1 ≤ i ≤ space.W
@@ -35,12 +35,12 @@ end
     @testset "GPU" begin
         data_1 = rand(50) |> StateSpaceSet
         data_2 = rand(20) |> StateSpaceSet
-        space = SamplingSpace(Rect(2, 2), data_1, data_2)
-        core = GPUCore(CPU(), Rect(Standard(0.27f0), 3), Full())
+        space = SamplingSpace(RectMicrostate(2), data_1, data_2)
+        core = RecurrenceMicrostatesAnalysis.GPUCore()
 
         @test RecurrenceMicrostatesAnalysis.get_sample(core, Full(), space, nothing, 10) isa Tuple{<: Integer, <: Integer}
 
-        samples = RecurrenceMicrostatesAnalysis.get_num_samples(core.sampling, space)
+        samples = RecurrenceMicrostatesAnalysis.get_num_samples(Full(), space)
         for m ∈ 1:samples
             i, j = RecurrenceMicrostatesAnalysis.get_sample(core, Full(), space, nothing, m)
             @test 1 ≤ i ≤ space.W
@@ -52,7 +52,8 @@ end
 @testset "values" begin
     x = StateSpaceSet(rand(100))
     y = StateSpaceSet(rand(50))
+    rmspace = RecurrenceMicrostates(0.27, 3; sampling = Full())
 
-    @test js_divergence(distribution(x, 0.27, 3; sampling = Full()), distribution(x, 0.27, 3; sampling = Full())) == 0
-    @test js_divergence(distribution(x, y, 0.27, 3; sampling = Full()), distribution(x, y, 0.27, 3; sampling = Full())) == 0
+    @test js_divergence(probabilities(rmspace, x), probabilities(rmspace, x)) == 0
+    @test js_divergence(probabilities(rmspace, x, y), probabilities(rmspace, x, y)) == 0
 end

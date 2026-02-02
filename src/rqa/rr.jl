@@ -60,7 +60,10 @@ struct RecurrenceRate <: QuantificationMeasure end
 ##########################################################################################
 #       Using as input a RMA distribution.
 #.........................................................................................
-function measure(::RecurrenceRate, dist::Probabilities)
+function measure(
+        ::RecurrenceRate, 
+        dist::Probabilities
+    )
     result = 0.0
     hv = Int(log2(length(dist)))
 
@@ -74,8 +77,15 @@ end
 #.........................................................................................
 #       Using as input a time series
 #.........................................................................................
-function measure(::RecurrenceRate, x::StateSpaceSet; n::Integer = 3, threshold::Real = optimize(Threshold(), RecurrenceEntropy(), x, n)[1])
-    dist = distribution(x, threshold, n)
+function measure(
+        ::RecurrenceRate, 
+        x::Union{StateSpaceSet, Vector{<:Real}}, 
+        y::Union{StateSpaceSet, Vector{<:Real}} = x; 
+        n::Integer = 3, 
+        threshold::Real = optimize(Threshold(), RecurrenceEntropy(), x, n)[1],
+        metric::Metric = DEFAULT_METRIC
+    )
+    dist = probabilities(RecurrenceMicrostates(threshold, n; metric = metric), x, y)
     return measure(RecurrenceRate(), dist)
 end
 

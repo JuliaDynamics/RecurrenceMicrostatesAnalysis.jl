@@ -3,7 +3,7 @@ using Distributions
 using RecurrenceMicrostatesAnalysis
 
 x = StateSpaceSet(rand(1000))
-dist = distribution(x, 0.27, 4)
+dist = probabilities(RecurrenceMicrostates(0.27, 4), x)
 
 @test 0 ≤ measure(RecurrenceRate(), dist) ≤ 1
 @test 0 ≤ measure(RecurrenceRate(), x) ≤ 1

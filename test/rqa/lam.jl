@@ -4,8 +4,9 @@ using RecurrenceAnalysis
 using RecurrenceMicrostatesAnalysis
 
 @testset "invalid distribution" begin
-    dist = distribution(rand(Uniform(0, 1), 100) |> StateSpaceSet, 0.27, 2)
-    @test_throws ArgumentError measure(Laminarity(), dist)
+    rmspace = RecurrenceMicrostates(0.27, 2)
+    dist = probabilities(rmspace, rand(100))
+    @test_throws ArgumentError measure(Laminarity(), rmspace, dist)
 end
 
 ##  We use a tolerance of 10% here.
@@ -17,9 +18,12 @@ end
     @test measure(Laminarity(), x) isa Real
     @test (abs(det_l2 - measure(Laminarity(), x)) / det_l2) ≤ 0.1
 
-    dist_square = distribution(x, 0.27, 3)
-    dist_diagonal = distribution(x, Diagonal(Standard(0.27), 3))
+    rms_square = RecurrenceMicrostates(0.27, 3)
+    rms_line = RecurrenceMicrostates(0.27, RectMicrostate(1, 3))
 
-    @test (abs(det_l2 - measure(Laminarity(), dist_square)) / det_l2) ≤ 0.1
-    @test (abs(det_l2 - measure(Laminarity(), dist_diagonal)) / det_l2) ≤ 0.1
+    dist_square = probabilities(rms_square, x)
+    dist_line = probabilities(rms_line, x)
+
+    @test (abs(det_l2 - measure(Laminarity(), rms_square, dist_square)) / det_l2) ≤ 0.1
+    @test (abs(det_l2 - measure(Laminarity(), rms_line, dist_line)) / det_l2) ≤ 0.1
 end

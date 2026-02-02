@@ -63,7 +63,7 @@ end
 #.........................................................................................
 #       Using as input a time series
 #.........................................................................................
-function measure(::RecurrenceEntropy, x::StateSpaceSet; N::Integer = 3)
+function measure(::RecurrenceEntropy, x::Union{StateSpaceSet, Vector{<:Real}}; N::Integer = 3)
     return optimize(Threshold(), RecurrenceEntropy(), x, N)[2]
 end
 

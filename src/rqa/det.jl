@@ -14,7 +14,7 @@ function.
 
 #   Using a distribution
 ```julia
-measure(::Determinism, dist::Probabilities)
+measure(::Determinism, rmspace::RecurrenceMicrostates, dist::Probabilities)
 ```
 
 ##  Arguments
@@ -29,16 +29,18 @@ A `Float64` corresponding to the estimated determinism.
 ```julia
 using RecurrenceMicrostatesAnalysis, Distributions
 data = StateSpaceSet(rand(Uniform(0, 1), 1000))
-dist = distribution(data, 0.27, 3)
-det = measure(Determinism(), dist)
+rmspace = RecurrenceMicrostates(0.27, 3)
+dist = probabilities(rmspace, data)
+det = measure(Determinism(), rmspace, dist)
 ```
 
 ### Using diagonal microstates
 ```julia
 using RecurrenceMicrostatesAnalysis, Distributions
 data = StateSpaceSet(rand(Uniform(0, 1), 1000))
-dist = distribution(data, Diagonal(Standard(0.27), 3))
-det = measure(Determinism(), dist)
+rmspace = RecurrenceMicrostates(0.27, Diagonal(3))
+dist = probabilities(rmspace, data)
+det = measure(Determinism(), rmspace, dist)
 ```
 
 #   Using a time series
@@ -73,8 +75,12 @@ struct Determinism <: QuantificationMeasure end
 ##########################################################################################
 #       Using as input a RMA distribution.
 #.........................................................................................
-function measure(::Determinism, dist::Probabilities)
-    if (length(dist) == 512)
+function measure(
+        ::Determinism, 
+        rmspace::RecurrenceMicrostates, 
+        dist::Probabilities
+    )
+    if (rmspace.shape isa Rect2Microstate{3, 3, 2} && length(dist) == 512)
         rr = measure(RecurrenceRate(), dist)
         values = zeros(Int, 64)
         v_idx = 1
@@ -92,7 +98,7 @@ function measure(::Determinism, dist::Probabilities)
 
         return 1 - ((1/rr) * pl)
 
-    elseif (length(dist) == 8)
+    elseif (rmspace.shape isa DiagonalMicrostate{3, 2} && length(dist) == 8)
         rr = measure(RecurrenceRate(), dist)
         return 1 - ((1/rr) * dist[3])
     else
@@ -103,9 +109,16 @@ end
 #.........................................................................................
 #       Using as input a time series
 #.........................................................................................
-function measure(::Determinism, x::StateSpaceSet; threshold::Real = optimize(Threshold(), RecurrenceEntropy(), x, 3)[1])
-    dist = distribution(x, Diagonal(Standard(threshold), 3))
-    measure(Determinism(), dist)
+function measure(
+        op::Determinism, 
+        x::Union{StateSpaceSet, Vector{<:Real}}, 
+        y::Union{StateSpaceSet, Vector{<:Real}} = x; 
+        threshold::Real = optimize(Threshold(), RecurrenceEntropy(), x, 3)[1],
+        metric::Metric = DEFAULT_METRIC
+    )
+    rmspace = RecurrenceMicrostates(threshold, DiagonalMicrostate(3); metric = metric)
+    dist = probabilities(rmspace, x, y)
+    measure(op, rmspace, dist)
 end
 
 ##########################################################################################
