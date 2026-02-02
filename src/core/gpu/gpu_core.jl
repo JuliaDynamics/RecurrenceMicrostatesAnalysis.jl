@@ -70,7 +70,7 @@ function histogram(
     end
 
     KernelAbstractions.synchronize(backend)
-    res =  hist |> Vector
+    res::Vector{Int} =  hist |> Vector
     return res
 end
 

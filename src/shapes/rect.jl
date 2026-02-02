@@ -58,11 +58,14 @@ RectMicrostate(rows::Int, cols::Int; B = 2) = Rect2Microstate{rows, cols, B}()
 #.........................................................................................
 #   Based on spatial data: (CPU only)
 #.........................................................................................
-struct RectNMicrostate{D, B} <: RectMicrostate
+struct RectNMicrostate{D, B, N} <: RectMicrostate
     structure::NTuple{D, Int}
 end
 
-RectMicrostate(structure::NTuple{D, Int}; B = 2) where {D} = RectNMicrostate{D, B}(structure)
+function RectMicrostate(structure::NTuple{D, Int}; B = 2) where {D}
+    N = prod(structure)
+    RectNMicrostate{D, B, N}(structure)
+end
 
 ##########################################################################################
 #   Implementations: SamplingSpace
@@ -142,7 +145,7 @@ end
 
 @generated function get_power_vector(::CPUCore, ::Rect2Microstate{W, H, B}) where {W, H, B}
     N = W * H
-    expr = :(SVector{$N}( $([:(B^$i) for i in 0:(N-1)]... ) ))
+    expr = :(SVector{$N, Int}( $([:(B^$i) for i in 0:(N-1)]... ) ))
     return expr
 end
 
@@ -154,7 +157,7 @@ end
 
 @generated function get_power_vector(::GPUCore, ::Rect2Microstate{W, H, B}) where {W, H, B}
     N = W * H
-    expr = :(SVector{$N}( $([:(Int32(B^$i)) for i in 0:(N-1)]... ) ))
+    expr = :(SVector{$N, Int32}( $([:(Int32(B^$i)) for i in 0:(N-1)]... ) ))
     return expr
 end
 
@@ -164,12 +167,11 @@ end
     return :( SVector{$N, $(SVector{2, Int32})}( $(elems...) ) )
 end
 
-function get_histogram_size(shape::RectNMicrostate{D, B}) where {D, B}
+function get_histogram_size(shape::RectNMicrostate{D, B, N}) where {D, B, N}
     size = B^(prod(shape.structure))
     return size
 end
 
-function get_power_vector(::CPUCore, shape::RectNMicrostate{D, B}) where {D, B}
-    N = prod(shape.structure)
-    return SVector{N}((B^i for i in 0:(N-1))...)
+function get_power_vector(::CPUCore, shape::RectNMicrostate{D, B, N}) where {D, B, N}
+    return SVector{N, Int}((B^i for i in 0:(N-1))...)
 end

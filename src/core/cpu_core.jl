@@ -43,16 +43,17 @@ function histogram(
     rmspace::RecurrenceMicrostates{MS, RE, SM},
     x::Union{StateSpaceSet, Vector{<: Real}},
     y::Union{StateSpaceSet, Vector{<: Real}} = x;
-    threads = Threads.nthreads()
+    threads::Int = 0
 ) where {MS <: MicrostateShape, RE <: RecurrenceExpression, SM <: SamplingMode}
 
-    if (x isa Vector); x = StateSpaceSet(x); end
-    if (y isa Vector); y = StateSpaceSet(y); end
-
+    #   Threads, input and core
+    threads = threads <= 0 ? Threads.nthreads() : threads
+    x_input = x isa Vector ? x |> StateSpaceSet : x
+    y_input = y isa Vector ? y |> StateSpaceSet : y
     core = CPUCore()
 
     #   Info
-    space = SamplingSpace(rmspace.shape, x, y)
+    space = SamplingSpace(rmspace.shape, x_input, y_input)
     samples = get_num_samples(rmspace.sampling, space)
 
     #   Allocate memory
@@ -73,7 +74,7 @@ function histogram(
 
             for m in start:stop
                 i, j = get_sample(core, rmspace.sampling, space, local_rng, m)
-                idx = compute_motif(rmspace.expr, x, y, i, j, pv, offsets)
+                idx = compute_motif(rmspace.expr, x_input, y_input, i, j, pv, offsets)
                 @inbounds local_hist[idx] += 1
             end
 
@@ -81,7 +82,7 @@ function histogram(
         end
     end
 
-    res = reduce(+, fetch.(tasks))
+    res::Vector{Int} = reduce(+, fetch.(tasks))
     return res
 end
 #.........................................................................................
@@ -91,15 +92,17 @@ function histogram(
     rmspace::RecurrenceMicrostates{MS, RE, SM},
     x::AbstractArray{<: Real},
     y::AbstractArray{<: Real} = x;
-    threads = Threads.nthreads()
+    threads::Int = 0
 ) where {MS <: MicrostateShape, RE <: RecurrenceExpression, SM <: SamplingMode}
+    #   Core and threads
+    threads = threads <= 0 ? Threads.nthreads() : threads
+    core = CPUCore()
+
     #   Info
     space = SamplingSpace(rmspace.shape, x, y)
     samples = get_num_samples(rmspace.sampling, space)
     dim_x = ndims(x) - 1
     dim_y = ndims(y) - 1
-
-    core = CPUCore()
 
     #   Allocate memory
     pv = get_power_vector(core, rmspace.shape)
@@ -129,7 +132,7 @@ function histogram(
         end
     end
 
-    res =  reduce(+, fetch.(tasks))
+    res::Vector{Int} =  reduce(+, fetch.(tasks))
     return res
 end
 
