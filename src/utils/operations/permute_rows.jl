@@ -11,7 +11,7 @@ Operation that permutes the rows of a microstate \$\\mathbf{M}\$.
 To initialize a `PermuteRows` operation, a rectangular microstate shape must be
 provided via a [`Rect`](@ref) structure:
 ```julia
-PermuteRows(::Rect2Microstate{R, C, B, E})
+PermuteRows(::Rect2Microstate{R, C, B})
 ```
 
 #   Examples

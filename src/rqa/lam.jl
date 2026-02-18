@@ -14,10 +14,11 @@ function.
 
 #   Using a distribution
 ```julia
-measure(::Laminarity, dist::Probabilities)
+measure(::Laminarity, rmspace::RecurrenceMicrostates, dist::Probabilities)
 ```
 
 ##  Arguments
+- `rmspace`: A recurrence outcome space.
 - `dist`: A distribution of recurrence microstates. The distribution must be computed from
     **square** or **line** microstates of size 3.
 
@@ -29,7 +30,8 @@ A `Float64` corresponding to the estimated laminarity.
 ```julia
 using RecurrenceMicrostatesAnalysis, Distributions
 data = StateSpaceSet(rand(Uniform(0, 1), 1000))
-dist = distribution(data, 0.27, 3)
+rmspace = RecurrenceMicrostates(0.27, 3)
+dist = probabilities(rmspace, data)
 lam = measure(Laminarity(), dist)
 ```
 
@@ -37,7 +39,8 @@ lam = measure(Laminarity(), dist)
 ```julia
 using RecurrenceMicrostatesAnalysis, Distributions
 data = StateSpaceSet(rand(Uniform(0, 1), 1000))
-dist = distribution(data, Rect(Standard(0.27); rows = 1, cols = 3))
+rmspace = RecurrenceMicrostates(0.27, RectMicrostate(1, 3))
+dist = probabilities(rmspace, data)
 lam = measure(Laminarity(), dist)
 ```
 

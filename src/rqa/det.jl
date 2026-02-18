@@ -18,6 +18,7 @@ measure(::Determinism, rmspace::RecurrenceMicrostates, dist::Probabilities)
 ```
 
 ##  Arguments
+- `rmspace`: A recurrence outcome space.
 - `dist`: A distribution of recurrence microstates. The distribution must be computed from
     **square** or **diagonal** microstates of size 3.
 

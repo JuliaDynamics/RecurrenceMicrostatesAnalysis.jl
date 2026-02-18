@@ -11,7 +11,7 @@ Operation that transposes a microstate \$\\mathbf{M}\$.
 To initialize a `Transpose` operation, a rectangular microstate shape must be
 provided via a [`Rect`](@ref) structure:
 ```julia
-Transpose(::Rect2Microstate{R, C, B, E})
+Transpose(::Rect2Microstate{R, C, B})
 ```
 
 #   Examples

@@ -3,23 +3,6 @@ export histogram
 ##########################################################################################
 #   RMACore
 ##########################################################################################
-"""
-    RMACore
-
-Abstract supertype that defines the execution pipeline of the package.
-
-An instance of **RMACore** must be provided to the [`histogram`](@ref) function to determine how the
-histogram computation is performed.
-
-Concrete implementations of `RMACore` are [`CPUCore`](@ref) and [`GPUCore`](@ref), which target CPU
-and GPU execution, respectively. Implementing custom subtypes of `RMACore` is **strongly discouraged**,
-as doing so requires reimplementing several internal utilities for the package ecosystem to function
-correctly.
-
-#   Implementations
-- [`CPUCore`](@ref)
-- [`GPUCore`](@ref)
-"""
 abstract type RMACore end
 
 ##########################################################################################
@@ -34,7 +17,7 @@ from the input data `[x]` and `[y]`.
 If `[x]` and `[y]` are identical, the result corresponds to a Recurrence Plot (RP); otherwise, it
 corresponds to a Cross-Recurrence Plot (CRP).
 
-The result is returned as a `Vector{Int}` representing the histogram of recurrence
+The result is returned as a `Vector{Int}` that is the histogram of recurrence
 microstates for the given input data.
 
 ### Arguments
@@ -52,17 +35,18 @@ microstates for the given input data.
     a `Vector{Real}` as input it is accepted and converted internally to a [`StateSpaceSet`](@ref).
 
 ### Keyword Arguments
-If using a [`CPUCore`](@ref):
+If using CPU:
 - `threads`: Number of threads used to compute the histogram. By default, this is set to
   `Threads.nthreads()`, which can be specified at Julia startup using `--threads N` or via the
   `JULIA_NUM_THREADS` environment variable.
 
-If using a [`GPUCore`](@ref):
+If using GPU:
 - `groupsize`: Number of threads per GPU workgroup.
 
-### Examples using [`CPUCore`](@ref)
+### Examples using CPU
 - Time series:
 ```julia
+using RecurrenceMicrostatesAnalysis
 ssset = StateSpaceSet(rand(Float64, (1000)))
 rmspace = RecurrenceMicrostates(0.27, 3)
 dist = histogram(rmspace, ssset)
@@ -70,14 +54,15 @@ dist = histogram(rmspace, ssset)
 
 - Spatial data:
 ```julia
+using RecurrenceMicrostatesAnalysis
 spatialdata = rand(Float64, (3, 50, 50))
 rmspace = RecurrenceMicrostates(0.27, RectMicrostate((2, 1, 2, 1)))
 dist = histogram(rmspace, spatialdata)
 ```
 
-### Examples using [`GPUCore`](@ref)
+### Examples using GPU
 ```julia
-using CUDA
+using CUDA, RecurrenceMicrostatesAnalysis
 gpudata = StateSpaceSet(Float32.(data)) |> CuVector
 core = GPUCore(CUDABackend(), Rect(Standard(0.27f0; metric = GPUEuclidean()), 2), SRandom(0.05))
 dist = histogram(core, gpudata, gpudata)

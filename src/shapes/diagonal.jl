@@ -17,7 +17,7 @@ where `N` defines the length of the diagonal microstate.
 
 #   Example
 ```julia
-diagonal = DiagonalMicrostate(expr, 3)
+diagonal = DiagonalMicrostate(3)
 ```
 
 !!! info

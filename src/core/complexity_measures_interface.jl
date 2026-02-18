@@ -16,8 +16,8 @@ function ComplexityMeasures.outcome_space(rmspace::RecurrenceMicrostates, x, y =
     return eachindex(1:get_histogram_size(rmspace.shape))
 end
 
-##
-##      Needed to CRP
+#
+#      Needed to CRP
 function ComplexityMeasures.probabilities(o::RecurrenceMicrostates, x, y)
     return first(probabilities_and_outcomes(o, x, y))
 end
