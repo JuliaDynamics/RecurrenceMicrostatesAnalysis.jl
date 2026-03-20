@@ -13,7 +13,7 @@
 # ## Crash-course into RMA
 
 # Recurrence Plots (RPs) were introduced in 1987 by Eckmann et al.
-#  [Eckmann1987RP](@cite) as a method for analyzing dynamical systems through recurrence
+# [Eckmann1987RP](@cite) as a method for analyzing dynamical systems through recurrence
 # properties.
 
 # Consider a time series $\vec{x}_i \in \mathbb{R}^d$, $i \in \{1, 2, \dots, K\}$,

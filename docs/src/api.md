@@ -74,6 +74,3 @@ The following must be in the GPUCore struct:
 !!! warning
     GPU backends require inputs of type `Float32`. `Float64` inputs are not supported on GPU.
 
-
-
-# ##

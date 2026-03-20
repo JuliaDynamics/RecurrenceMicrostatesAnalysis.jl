@@ -12,6 +12,7 @@ Literate.markdown("src/tutorial.jl", "src"; credit = false)
 pages = [
     "Welcome" => "index.md",
     "Tutorial" => "tutorial.md",
+    "API" => "api.md",
     # "API" => "api.md",
     # "Tutorial" => [
     #     "Distributions" => "tutorial/distributions.md",
@@ -21,6 +22,7 @@ pages = [
     #     "GPU" => "tutorial/gpu.md",
     #     "Utils" => "tutorial/utils.md",
     # ],
+    "Examples" => "examples.md",
     # "Ecosystem Integration" => [
     #         "Machine Learning" => "examples/ml.md",
     # ],
