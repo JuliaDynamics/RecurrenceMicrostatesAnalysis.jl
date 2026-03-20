@@ -5,7 +5,10 @@
 # how to optimize our choices regarding the distribution generation,
 # and how to perform Recurrence Microstate Analysis (RMA).
 
-# But first, we'll start with a crash course!
+# !!! info "ComplexityMeasures.jl"
+#     RecurrenceMicrostatesAnalysis.jl interfaces with, and extends, ComplexityMeasures.jl.
+#     It can enhance your understanding if you have first view the tutorial of
+#     ComplexityMeasures.jl. Regardless the current tutorial is written to be self-contained.
 
 # ## Crash-course into RMA
 
