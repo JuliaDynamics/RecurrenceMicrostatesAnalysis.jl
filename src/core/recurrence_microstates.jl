@@ -7,7 +7,7 @@ export RecurrenceMicrostates
 """
     RecurrenceMicrostates
 """
-struct RecurrenceMicrostates{MS <: MicrostateShape, RE <: RecurrenceExpression, SM <: SamplingMode} <: ComplexityMeasures.CountBasedOutcomeSpace 
+struct RecurrenceMicrostates{MS <: MicrostateShape, RE <: RecurrenceExpression, SM <: SamplingMode} <: ComplexityMeasures.CountBasedOutcomeSpace
     shape::MS
     expr::RE
     sampling::SM
@@ -63,5 +63,3 @@ function RecurrenceMicrostates(ε_min::Real, ε_max::Real, shape::MicrostateShap
     expr = Corridor(ε_min, ε_max; metric = metric)
     return RecurrenceMicrostates(shape, expr, sampling)
 end
-
-##########################################################################################

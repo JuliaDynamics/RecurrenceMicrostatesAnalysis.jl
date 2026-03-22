@@ -3,7 +3,7 @@
 # In this tutorial we go through a typical usage of  **RecurrenceMicrostatesAnalysis.jl**.
 # We'll see how to calculate distributions of recurrence microstates,
 # how to optimize our choices regarding the distribution generation,
-# and how to perform Recurrence Microstate Analysis (RMA).
+# and how to perform Recurrence Microstate Analysis (**RMA**).
 
 # !!! info "ComplexityMeasures.jl"
 #     RecurrenceMicrostatesAnalysis.jl interfaces with, and extends, ComplexityMeasures.jl.
@@ -44,11 +44,12 @@
 
 # ## Probability distributions of recurrence microstates
 
-# Finding and counting microstates in data is straightforward.
-# It amounts to passing the input data to the `probabilities` function,
-# while specifying the options of the  `RecurrenceMicrostates` estimator,
+# Extracting propabilities corresponding to recurrence microstates
+# is done via the ComplexityMeasures.jl interface and it is relatively straightforward.
+# We first specify the options of [`RecurrenceMicrostates`](@ref),
 # which essentially means e.g., what sort of distance threshold defines a recurrence,
-# and what is maximum microstate size to consider.
+# and what is maximum microstate size to consider. Then we pass this to functions
+# like `probabilities`, `entropy`, etc.
 
 # Let's first generate some data of a chaotic map using **DynamicalSystems.jl**:
 
@@ -64,11 +65,8 @@ end
 
 u0 = [0.2, 0.3]
 p0 = [1.4, 0.3]
-
 henon = DeterministicIteratedMap(henon_rule, u0, p0)
-
-total_time = 10_000
-X, t = trajectory(henon, total_time)
+X, t = trajectory(henon, 10_000)
 X
 
 # Notice that `X` is already a [`StateSpaceSet`](@ref). Because  **RecurrenceMicrostatesAnalysis.jl**
@@ -84,7 +82,7 @@ rmspace = RecurrenceMicrostates(ε, N)
 
 # and finally call
 
-probs = probabilities(ospace, X)
+probs = probabilities(rmspace, X)
 
 # The [`probability`](@ref) function is the same function as in [`ComplexityMeasures`](@ref).
 # Given an outcome space, that is a way to _symbolize_ input data into discrete outcomes,
@@ -126,11 +124,11 @@ entropy(Tsallis(), rmspace, X)
 # such as laminarity that fundamentally relate with the context of recurrences.
 # For example,
 
-# These quantities are listed in XXX.
+# XXX TODO.
 
-# Note that if instead of
-
-
+# All of these quantities like laminarity are in fact _complexity measures_
+# which is why RecurrenceMicrostateAnalysis.jl fits so well within the
+# interface of ComplexityMeasures.jl.
 
 # ## Optimizing recurrence specification
 
@@ -144,6 +142,8 @@ rmspace = RecurrenceMicrostates(ε, N)
 h = entropy(Shannon(), rmspace, X)
 (h, S)
 
+# TODO: The two numbers reported above are not the same.
+# Perhaps the logarithm base is off?
 
 # ## Custom specification of recurrence microstates
 
@@ -177,5 +177,7 @@ probabilities(rmspace, X, Y)
 
 # This augmentation from one to two input data
 # works for all functions discussed in this tutorial.
+# Coincidentally, the same extension of `probabilities` to multivariate data
+# is done in [Associations.jl](https://juliadynamics.github.io/Associations.jl/stable/).
 
 # ## Spatial data
