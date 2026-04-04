@@ -1,89 +1,115 @@
-export Laminarity
+export RecurrenceLaminarity
 
 ##########################################################################################
 #   Quantification Measure: Laminarity
+#   Complexity Measure Implementation
 ##########################################################################################
 """
-    Laminarity <: QuantificationMeasure
+    RecurrenceLaminarity <: ComplexityEstimator
+    RecurrenceLaminarity(ε::Float64; kwargs...)
 
-Define the *Laminarity* (LAM) quantification measure.
+An estimator of recurrence laminarity, used with [complexity](https://juliadynamics.github.io/DynamicalSystemsDocs.jl/complexitymeasures/stable/complexity/#ComplexityMeasures.complexity).
+Laminarity is estimated for a threshold `ε`.
 
-LAM can be computed either from a distribution of recurrence microstates or directly from
-time-series data. In both cases, the computation is performed via the [`measure`](@ref)
-function.
+## Keyword arguments
+- `metric::Metric`: The metric used to compute recurrence.
+- `ratio`: The sampling ratio. The default is `0.1`.
+- `sampling`: The sampling mode. The default is [`SRandom`](@ref).
 
-#   Using a distribution
-```julia
-measure(::Laminarity, rmspace::RecurrenceMicrostates, dist::Probabilities)
+## Description
+
+Recurrence laminarity (LAM) is defined as [Webber2015Recurrence](@cite)
+```math
+LAM = \\frac{\\sum_{l=l_{min}}^{K} l H_V(l)}{\\sum_{i,j=1}^{K} r_{i,j}},
+```
+where \$H_V(l)\$ is the histogram of vertical line lengths:
+```math
+H_V(l) = \\sum_{i,j=1}^{K} (1 - r_{i, j-1})(1 - r_{i,j+l})\\prod_{k=0}^{l-1} r_{i,j+k}.
+```
+By inverting the laminarity expression, we can rewrite it as [daCruz2025RQAMeasures](@cite)
+```math
+LAM = 1 - \\frac{1}{K^2 \\sum_{i,j=1}^{K} r_{i,j}} \\sum_{l=1}^{l_{min} - 1} l H_V(l).
 ```
 
-##  Arguments
-- `rmspace`: A recurrence outcome space.
-- `dist`: A distribution of recurrence microstates. The distribution must be computed from
-    **square** or **line** microstates of size 3.
-
-##  Returns
-A `Float64` corresponding to the estimated laminarity.
-
-##  Examples
-### Using square microstates
-```julia
-using RecurrenceMicrostatesAnalysis, Distributions
-data = StateSpaceSet(rand(Uniform(0, 1), 1000))
-rmspace = RecurrenceMicrostates(0.27, 3)
-dist = probabilities(rmspace, data)
-lam = measure(Laminarity(), dist)
+An approximate value for LAM can be estimated using recurrence microstates, as introduced by
+da Cruz et al. [daCruz2025RQAMeasures](@cite). From an input dataset `x`, we estimate a
+recurrence microstate distribution \$\\vec{p}\$. This distribution must be defined over
+square microstates of size \$3 \\times 3\$. Here, we use the relation:
+```math
+\\frac{H_V(l)}{(K-l-1)^2} = \\vec{v}^{(l)} \\cdot \\mathcal{R}^{(l + 2)}\\vec{p}^{(l + 2)}.
 ```
 
-### Using line microstates:
-```julia
-using RecurrenceMicrostatesAnalysis, Distributions
-data = StateSpaceSet(rand(Uniform(0, 1), 1000))
-rmspace = RecurrenceMicrostates(0.27, RectMicrostate(1, 3))
-dist = probabilities(rmspace, data)
-lam = measure(Laminarity(), dist)
+For the commonly used case \$l_{min} = 2\$, this leads to the approximation
+```math
+LAM \\approx  1 - \\frac{\\vec{v}^{(1)}\\cdot\\mathcal{R}^{(3)}\\vec{p}^{(3)}}{\\sum_{i,j=1}^{K} r_{i,j}}.
 ```
 
-# Using a time series
-```julia
-measure(::Laminarity, [x]; kwargs...)
+The correlation term \$\\vec{v}^{(1)} \\cdot \\mathcal{R}^{(3)} \\vec{p}^{(3)}\$ can be 
+simplified by explicitly identifying the microstates selected by \$\\vec{v}^{(1)}\$. This corresponds
+to selecting only microstates of the form:
+```math
+\\begin{pmatrix}
+0 & 1 & 0 \\\\
+\\xi & \\xi & \\xi \\\\
+\\xi & \\xi & \\xi
+\\end{pmatrix},
+```
+where \$\\xi\$ denotes an unconstrained entry. There are 64 microstates with this structure among
+the 512 possible \$3 \\times 3\$ microstates. Defining the class \$C_V\$ as the set of microstates 
+with this structure, LAM can be estimated as:
+```math
+LAM \\approx 1 - \\frac{\\sum_{i\\in C_V} p_i^{(3)}}{\\sum_{i,j=1}^{K} r_{i,j}}.
 ```
 
-##  Arguments
-- `[x]`: Time-series data provided as a [`StateSpaceSet`](@ref).
-
-##  Returns
-A `Float64` corresponding to the estimated laminarity.
-
-##  Keyword Arguments
-- `threshold`: Threshold used to compute the RMA distribution. By default, this is chosen as
-    the threshold that maximizes the recurrence microstate entropy (RME).
-
-### Examples
-```julia
-using RecurrenceMicrostatesAnalysis, Distributions
-data = StateSpaceSet(rand(Uniform(0, 1), 1000))
-lam = measure(Laminarity(), data)
+The implementation used by [complexity](https://juliadynamics.github.io/DynamicalSystemsDocs.jl/complexitymeasures/stable/complexity/#ComplexityMeasures.complexity)
+is an optimized version of this process using \$1 \\times 3\$ [`RectMicrostate`](@ref) [Ferreira2025RMALib](@cite).
+Since this microstate shape is symmetric with respect to the desired information, it is not necessary to account for
+\$\\xi\$ values as in the square microstate case. Thus, laminarity can be estimated as
+```math
+LAM \\approx 1 - \\frac{p_3^{(3)}}{\\sum_{i,j=1}^{K} r_{i,j}},
 ```
+where \$p_3^{(3)}\$ is the probability of observing the microstate \$0~1~0\$.
 
-!!! note
-    When time-series data are provided directly, RecurrenceMicrostatesAnalysis.jl uses
-    line microstates by default.
+!!! note "Performance"
+    Although estimating LAM using RMA is faster than typical RQA computation,
+    the precision depends on the time series length. Therefore, for small time series,
+    i.e., \$K \\leq 1000\$, we strongly recommend using standard RQA with
+    [RecurrenceAnalysis.jl](https://juliadynamics.github.io/DynamicalSystemsDocs.jl/recurrenceanalysis/stable/quantification/#RecurrenceAnalysis.laminarity).
 """
-struct Laminarity <: QuantificationMeasure end
+struct RecurrenceLaminarity <: ComplexityEstimator 
+    ε::Float64
+    metric::Metric
+    sampling::SamplingMode
+end
 
-##########################################################################################
-#   Implementation: measure
-##########################################################################################
-#       Using as input a RMA distribution.
-#.........................................................................................
-function measure(
-        ::Laminarity, 
-        rmspace::RecurrenceMicrostates, 
-        dist::Probabilities
+function complexity(
+        c::RecurrenceLaminarity, 
+        x::Union{StateSpaceSet, Vector{<:Real}, <:AbstractGPUVector{SVector}}, 
+        y::Union{StateSpaceSet, Vector{<:Real}, <:AbstractGPUVector{SVector}} = x;
     )
-    if (rmspace.shape isa Rect2Microstate{3, 3, 2} && length(dist) == 512)
-        rr = measure(RecurrenceRate(), dist)
+
+    rmspace = RecurrenceMicrostates(c.ε, RectMicrostate(3, 1); metric = c.metric, sampling = c.sampling)
+    probs = probabilities(rmspace, x, y)
+    return measure(c, rmspace, probs)
+end
+
+# -- Constructors
+RecurrenceLaminarity(ε; metric::Metric = DEFAULT_METRIC, ratio::Float64 = 0.1, sampling::SamplingMode = SRandom(ratio)) = RecurrenceLaminarity(ε, metric, sampling)
+
+##########################################################################################
+#   Internal: measure from probabilities
+##########################################################################################
+# This is an internal function which estimates the determinism from a recurrence microstate
+# outcome space, using a given probability distribution that was computed from this
+# outcome space.
+
+# This function works for [`DiagonalMicrostate`](@ref) with length 3, 
+# or \$3 \\times 3\$ [`RectMicrostate`](@ref). Any other input will returns an error.
+##########################################################################################
+function measure(c::RecurrenceLaminarity, rmspace::RecurrenceMicrostates, probs::Probabilities)
+    rrc = RecurrenceRate(c.ε; metric = c.metric, sampling = c.sampling)
+    if (rmspace.shape isa Rect2Microstate{3, 3, 2} && length(probs) == 512)
+        rr = measure(rrc, probs)
 
         values = zeros(Int, 64)
         v_idx = 1
@@ -96,32 +122,18 @@ function measure(
 
         pl = 0.0
         for i in values
-            pl += dist[i]
+            pl += probs[i]
         end
 
         return 1 - ((1/rr) * pl)
 
-   elseif (rmspace.shape isa Rect2Microstate{1, 3} && length(dist) == 8)
-        rr = measure(RecurrenceRate(), dist)
-        return 1 - ((1/rr) * dist[3])
+   elseif (rmspace.shape isa Rect2Microstate{3, 1} && length(probs) == 8)
+        rr = measure(rrc, probs)
+        return 1 - ((1/rr) * probs[3])
     else
         msg = "Laminarity must be computed using square or line microstates with n = 3."
         throw(ArgumentError(msg))
     end
-end
-#.........................................................................................
-#       Using as input a time series
-#.........................................................................................
-function measure(
-    op::Laminarity, 
-    x::Union{StateSpaceSet, Vector{<:Real}}, 
-    y::Union{StateSpaceSet, Vector{<:Real}} = x; 
-    threshold::Real = optimize(Threshold(), RecurrenceEntropy(), x, 3)[1],
-    metric::Metric = DEFAULT_METRIC
-    )
-    rmspace = RecurrenceMicrostates(threshold, RectMicrostate(1, 3); metric = metric)
-    dist = probabilities(rmspace, x, y)
-    measure(op, rmspace, dist)
 end
 
 ##########################################################################################

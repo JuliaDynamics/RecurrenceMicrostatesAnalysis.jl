@@ -1,191 +1,318 @@
-export Disorder
+export Disorder, WindowedDisorder
 
 ##########################################################################################
-#   Quantification Measure: Disorder
+#   Quantification Measure: Determinism
+#   Complexity Measure Implementation
+##########################################################################################
+#   Here we have four disorder definitions:
+# - `Disorder`: it is the typical Disorder quantifier (https://doi.org/10.1103/1y98-x33s).
+# Computed by maximizing the `PartialDisorder`.
+#
+# - `PartialDisorder`: it is an internal definition, which computes the entropy associated
+# wit disorder for an specific threshold. It is computed using the disorder for all 
+# classes, which are computed using `ClassPartialDisorder`.
+#
+# - `ClassPartialDisorder`: it is the entropy quantity associated with disorder for an
+# specific threshold and class of microstates. We use it to compute `PartialDisorder` disorder.
+#
+# - `WindowedDisorder`: it is same that `Disorder`, but spliting data in windows with
+# a fixed length.
 ##########################################################################################
 """
-    Disorder{N} <: QuantificationMeasure
+    Disorder{N} <: ComplexityEstimator
+    Disorder(N::Int = 4; kwargs...)
 
-Define the *Disorder* quantification measure for microstates of size `N` [Flauzino2025Disorder](@cite).
+An estimator of a disorder measure, introduced by [Flauzino2025Disorder](@cite), used with [complexity](https://juliadynamics.github.io/DynamicalSystemsDocs.jl/complexitymeasures/stable/complexity/#ComplexityMeasures.complexity).
+It uses \$N \\times N\$ microstates and a specified `metric` to compute the disorder.
 
-The `Disorder` struct stores a set of `labels` that identify the microstates belonging to
-each equivalence class \$\\mathcal{M}_a\$.
+## Keyword arguments
+- `metric::Metric`: The metric used to compute recurrence.
+- `range_len::Int`: The number of threshold values used to estimate the disorder.
 
-#   Constructor
-```julia
-Disorder(N)
+## Description
+Disorder, or the disorder index via symmetry in recurrence microstates (DISREM), is based on the
+implications of the disorder condition in microstates. It quantifies disorder through the
+information entropy of classes of recurrence microstates, which are required to be equiprobable
+within the same class according to the disorder condition.
+
+Let \$\\sigma\$ be a permutation, and \$S_N\$ the set of all permutations of \$N\$ elements, with
+\$\\sigma \\in S_N\$. Also, let \$\\mathcal{L}_\\sigma\$ be the operator that permutes the rows of a
+matrix, and \$\\mathcal{T}\$ the operator that transposes a matrix. A recurrence microstate class
+is defined as [Flauzino2025Disorder](@cite):
+```math
+\\mathscr{M}_a (\\mathbf{M}) = \\bigcup_{\\sigma_i,\\sigma_j \\in S_N}  \\{ \\mathcal{L}_{\\sigma_j}\\mathcal{T}\\mathcal{L}_{\\sigma_i}\\mathbf{M},\\quad\\mathcal{T}\\mathcal{L}_{\\sigma_j}\\mathcal{T}\\mathcal{L}_{\\sigma_i}\\mathbf{M} \\}.
 ```
-Here, \$N\$ must be equal to 2, 3, 4, or 5. Computing disorder for larger values of \$N\$ is
-currently not supported, as it would require a prohibitive amount of memory with the
-current implementation.
 
-The computation of *Disorder* is performed via the [`measure`](@ref) function:
-```julia
-measure(settings::Disorder{N}, [x]; kwargs...)
+Let \$p(\\mathbf{M})\$ be the probability of the microstate \$\\mathbf{M}\$. We renormalize this probability
+with respect to its class:
+```math
+p^{(a)}(\\mathbf{M}) = \\frac{p(\\mathbf{M})}{\\sum_{\\mathbf{M}' \\in \\mathscr{M}_a} p(\\mathbf{M}')}.
 ```
 
-#   Arguments
-- `[x]`: Time-series data provided as a [`StateSpaceSet`](@ref).
-
-#   Returns
-A `Float64` corresponding to the disorder value (\$\\Xi\$).
-
-#   Keyword Arguments
-- `th`: Reference threshold used to maximize disorder. To improve computational performance,
-    this value limits the search range of thresholds. By default, it is set to the threshold
-    that maximizes disorder for a sampling rate of \$5%\$.
-- `th_min`: Minimum threshold defining the search range. By default, this is set to `0.85 * th`.
-- `th_max`: Maximum threshold defining the search range. By default, this is set to `1.25 * th`.
-- `num_tests`: Number of threshold values evaluated within the specified range. The default value is `40`.
-
-#   Examples
-```julia
-using RecurrenceMicrostatesAnalysis, Distributions
-data = StateSpaceSet(rand(Uniform(0, 1), 1000))
-disrem = measure(Disorder(4), data)
+The normalized information entropy associated with the probability distribution of microstates in the class
+\$\\mathscr{M}_a\$ is then defined as [Flauzino2025Disorder](@cite):
+```math
+\\xi_a(\\varepsilon) = \\frac{1}{m_a} \\sum_{\\mathbf{M} \\in \\mathscr{M}_a} p^{(a)}(\\mathbf{M}) \\ln p^{(a)}(\\mathbf{M}),
 ```
+where \$m_a\$ is the number of microstates in the class \$\\mathscr{M}_a\$.
+
+By summing the entropy over all classes and normalizing by its maximum amplitude \$A\$, we obtain the total entropy
+across all classes:
+```math
+\\xi(\\varepsilon) = \\frac{1}{A}\\sum_{a = 1}^{A} \\xi_a(\\varepsilon).
+```
+
+The disorder measure is then defined as the maximum value of \$\\xi(\\varepsilon)\$ [Flauzino2025Disorder](@cite):
+```math
+\\Xi = \\max_{\\varepsilon} \\xi(\\varepsilon).
+```
+
+!!! compat "Microstate size and shape"
+    Disorder is only defined for square microstates, with computations available for
+    \$N \\in \\{2, 3, 4, 5\\}\$ due to computational limitations. In particular,
+    computations for \$N = 5\$ are computationally expensive.
 """
-struct Disorder{N} <: QuantificationMeasure
+struct Disorder{N} <: ComplexityEstimator
     labels::Vector{Vector{Int}}
+    metric::Metric
+    range_len::Int
 end
-#.........................................................................................
-Disorder(N::Int = 3) = 1 < N < 6 ? Disorder{N}(compute_labels(N)) : throw(ArgumentError("Disorder not implemented for N ≤ 1 or N ≥ 6."))
+
+"""
+    WindowedDisorder{N, W} <: ComplexityEstimator
+    WindowedDisorder(W::Int, N::Int = 4; kwargs...)
+
+This estimator is equivalent to [`Disorder`](@ref), but computes it by splitting the data into windows of
+length `W`, returning a vector of measured disorder values for each window.
+
+## Keyword arguments
+- `metric::Metric`: The metric used to compute recurrence.
+- `range_len::Int`: The number of threshold values used to estimate disorder.
+- `step::Int`: The step between windows. The default is `W`.
+"""
+struct WindowedDisorder{W, N} <: ComplexityEstimator
+    labels::Vector{Vector{Int}}
+    metric::Metric
+    range_len::Int
+    step::Int
+end
+
+struct PartialDisorder{N} <: ComplexityEstimator
+    labels::Vector{Vector{Int}}
+    rmspace::RecurrenceMicrostates
+end
+
+struct ClassPartialDisorder <: ComplexityEstimator
+    labels::Vector{Int}
+    rmspace::RecurrenceMicrostates
+end
+
+function complexity(
+        c::Disorder{N}, 
+        x::Union{StateSpaceSet, Vector{<:Real}, <:AbstractGPUVector{<:SVector}}
+    ) where {N}
+
+    data = x isa Vector ? StateSpaceSet(x) : x
+    data_cpu = data isa AbstractGPUVector ? data |> Vector |> StateSpaceSet : data
+
+    #   Define the disorder range.
+    th = optimize(Threshold(), c, data_cpu)[1]
+    th_min = 0.7 * th
+    th_max = 1.3 * th
+
+    #   Prepare to compute.
+    ξ = zeros(Float64, c.range_len)
+    th_range = range(th_min, th_max, c.range_len)
+
+    #   For GPU
+    if (data isa AbstractGPUVector)
+        th_range = Float32.(th_range)
+    end
+
+    #   Compute disorder for each threshold.
+    for i ∈ eachindex(th_range)
+        rmspace = RecurrenceMicrostates(th_range[i], N; sampling = Full(), metric = c.metric)
+        partial = PartialDisorder{N}(c.labels, rmspace)
+        ξ[i] = complexity(partial, data)
+    end
+
+    return maximum(ξ)
+end
+
+function complexity(
+        c::WindowedDisorder{W, N},
+        x::Union{StateSpaceSet, Vector{<:Real}}
+    ) where {N, W}
+
+    windowed_data = [ StateSpaceSet(x[(i + 1):(i + W)]) for i ∈ 0:c.step:(size(x, 1) - W) ]
+    
+    #   We need to define the threshold range here.
+    s = ceil(Int, length(windowed_data) * 0.1)
+    opt_ths = zeros(Float64, s)
+
+    for i ∈ eachindex(s)
+        idx = rand(1:length(windowed_data))
+        opt_ths[i] = optimize(Threshold(), Disorder{N}(c.labels, c.metric, c.range_len), windowed_data[idx])[1]
+    end
+
+    μ_th = mean(opt_ths)
+    σ_th = std(opt_ths)
+
+    th_min = μ_th - 1.5 * σ_th
+    th_min = th_min <= 0 ? 1e-16 : th_min
+    th_max = μ_th + 1.5 * σ_th
+    if th_max < th_min
+        a = th_min
+        th_min = th_max
+        th_max = a
+    end
+
+    #   Prepare to compute.
+    ξ = zeros(Float64, length(windowed_data), c.range_len)
+    th_range = range(th_min, th_max, c.range_len)
+
+    #   Finally, compute disorder for each window (note that it isn't just use "complexity(disorder, x)")
+    for j ∈ eachindex(th_range)
+        rmspace = RecurrenceMicrostates(th_range[j], N; sampling = Full(), metric = c.metric)
+        partial = PartialDisorder{N}(c.labels, rmspace)
+        
+        for i ∈ eachindex(windowed_data)
+            ξ[i, j] = complexity(partial, windowed_data[i])
+        end
+    end
+
+    return [ maximum(ξ[i, :]) for i ∈ eachindex(windowed_data) ]
+end
+
+function complexity(
+        c::WindowedDisorder{W, N},
+        x::AbstractGPUVector{SVector{D, Float32}}
+    ) where {N, W, D}
+
+    #   GPU Settings
+    backend = KernelAbstractions.get_backend(x)
+
+    #   Here we have a small issue: we need to move data from GPU to CPU again, split it and
+    #   then move back to the GPU... I really don't have any idea about how to create windows
+    #   directly in GPU >.<
+    #   And we also need to compute threshold range =/
+    data = x |> Vector
+    windowed_data = [ StateSpaceSet(data[(i + 1):(i + W)]) for i ∈ 0:c.step:(size(x, 1) - W) ]
+    windowed_gpu = map(windowed_data) do w
+        w_vec = w |> Vector
+        gw = KernelAbstractions.allocate(backend, eltype(w_vec), size(w_vec))
+        copyto!(gw, w_vec)
+        gw
+    end
+
+    #   We need to define the threshold range here.
+    s = ceil(Int, length(windowed_data) * 0.1)
+    opt_ths = zeros(Float64, s)
+
+    for i ∈ eachindex(s)
+        idx = rand(1:length(windowed_data))
+        opt_ths[i] = optimize(Threshold(), Disorder{N}(c.labels, c.metric, c.range_len), windowed_data[idx])[1]
+    end
+
+    μ_th = mean(opt_ths)
+    σ_th = std(opt_ths)
+
+    th_min = μ_th - σ_th
+    th_min = th_min <= 0 ? 1e-16 : th_min
+    th_max = μ_th + σ_th
+    if th_max < th_min
+        a = th_min
+        th_min = th_max
+        th_max = a
+    end
+
+    #   Prepare to compute.
+    ξ = zeros(Float64, length(windowed_gpu), c.range_len)
+    th_range = Float32.(range(th_min, th_max, c.range_len))
+
+    #   Finally, compute disorder for each window (note that it isn't just use "complexity(disorder, x)")
+    for j ∈ eachindex(th_range)
+        rmspace = RecurrenceMicrostates(th_range[j], N; sampling = Full(), metric = c.metric)
+        partial = PartialDisorder{N}(c.labels, rmspace)
+        
+        for i ∈ eachindex(windowed_gpu)
+            ξ[i, j] = complexity(partial, windowed_gpu[i])
+        end
+    end
+
+    return [ maximum(ξ[i, :]) for i ∈ eachindex(windowed_data) ]
+end
+
+function complexity(
+        c::PartialDisorder{N}, 
+        x::Union{StateSpaceSet{D, T, V}, <:AbstractGPUVector{SVector{D, Float32}}}
+    ) where {N, D, T, V}
+
+    A = _norm_factor(Val(N), Val(D))
+    probs = probabilities(c.rmspace, x)
+    ξ = 0.0
+    for i ∈ 2:(length(c.labels) - 1)
+        cpartial = ClassPartialDisorder(c.labels[i], c.rmspace)
+        ξ += measure(cpartial, probs)
+    end
+
+    return ξ / A
+end
+
+function complexity(
+        c::ClassPartialDisorder, 
+        x::Union{StateSpaceSet, <:AbstractGPUVector{<:SVector}}
+    )
+    probs = probabilities(c.rmspace, x)
+    return measure(c, probs)
+end
+
+# -- Constructors
+Disorder(N::Int = 4; metric::Metric = DEFAULT_METRIC, range_len::Int =  40) = Disorder{N}(compute_labels(N), metric, range_len)
+WindowedDisorder(W::Int, N::Int = 4; metric::Metric = DEFAULT_METRIC, range_len::Int = 40, step::Int = W) = WindowedDisorder{W,N}(compute_labels(N), metric, range_len, step)
+PartialDisorder(rexpr::RecurrenceExpression, N::Int = 4) = PartialDisorder{N}(compute_labels(N), RecurrenceMicrostates(rexpr, N; sampling = Full()))
+ClassPartialDisorder(rexpr::RecurrenceExpression, c::Int, N::Int = 4) = ClassPartialDisorder(compute_labels(N)[c], RecurrenceMicrostates(rexpr, N; sampling = Full()))
 
 ##########################################################################################
-#   Implementation: measure
+#   Internal: measure from probabilities
 ##########################################################################################
-function measure(settings::Disorder{N}, class::Int, probs::Probabilities) where {N}
+# This is an internal function which estimates the determinism from a recurrence microstate
+# outcome space, using a given probability distribution that was computed from this
+# outcome space.
+
+# This function works for [`DiagonalMicrostate`](@ref) with length 3, 
+# or \$3 \\times 3\$ [`RectMicrostate`](@ref). Any other input will returns an error.
+##########################################################################################
+function measure(c::ClassPartialDisorder, probs::Probabilities)
+
     norm_factor = 0.0
-    labels = settings.labels[class]
-    @inbounds @simd for i in labels
+    @inbounds @simd for i ∈ c.labels
         norm_factor += probs[i]
     end
-    
-    if (norm_factor == 0.0)
+
+    if (norm_factor <= 0.0)
         return 0.0
     end
 
-    s = 0.0
-    @inbounds @simd for i in labels
+    ξ = 0.0
+    @inbounds @simd for i ∈ c.labels
         p = probs[i] / norm_factor
-        s += p * log(p + eps())
+        ξ += p * log(p + eps())
     end
 
-    s *= -1
-    s /= log(length(labels))
-
-    return s
-end
-#.........................................................................................
-function measure(settings::Disorder{N}, probs::Probabilities, norm_param::Int) where {N}
-    total_entropy = 0.0
-    for c in 2:length(settings.labels) - 1
-        total_entropy += measure(settings, c, probs)
-    end
-
-    return total_entropy / norm_param
-end
-#.........................................................................................
-function measure(
-        settings::Disorder{N}, 
-        x::Union{StateSpaceSet, Vector{<:Real}}, 
-        y::Union{StateSpaceSet, Vector{<:Real}} = x; 
-        th::Float64 = optimize(Threshold(), Disorder(N), x)[1], 
-        th_min::Float64 = 0.85 * th, 
-        th_max::Float64 = 1.25 * th, 
-        num_tests::Int = 40,
-        metric::Metric = DEFAULT_METRIC
-    ) where {N}
-    A = get_disorder_norm_factor(settings, x)
-    Ay = get_disorder_norm_factor(settings, y)
-    A = Ay > A ? Ay : A
-
-    values = zeros(typeof(th), num_tests)
-    th_range = range(th_min, th_max, num_tests)
-
-    for i in eachindex(th_range)
-        rmspace = RecurrenceMicrostates(th_range[i], N; sampling = Full(), metric = metric)
-        probs = probabilities(rmspace, x, y)
-        values[i] = measure(settings, probs, A)
-    end
-
-    return maximum(values)
-end
-#.........................................................................................
-function measure(
-        settings::Disorder{N}, 
-        dataset::Vector{<:AbstractGPUVector{SVector{D, Float32}}}, 
-        th_min::Float32, 
-        th_max::Float32; 
-        num_tests::Int = 40, 
-        metric::GPUMetric = GPUEuclidean()
-    ) where {N, D}
-    A = _norm_factor(Val(N), Val(D))
-    values = zeros(Float32, num_tests, length(dataset))
-    th_range = Float32.(range(th_min, th_max, num_tests))
-    backend = get_backend(dataset[1])
-
-    for i ∈ eachindex(th_range)
-        rmspace = RecurrenceMicrostates(th_range[i], N; sampling = Full(), metric = metric, core = GPUCore(backend))
-        for j in eachindex(dataset)
-            probs = probabilities(rmspace, dataset[j])
-            values[i, j] = measure(settings, probs, A)
-        end
-    end
-
-    results = zeros(Float32, length(dataset))
-
-    for i ∈ eachindex(dataset)
-        results[i] = maximum(values[:, i])
-    end
-
-    return results
-end
-#.........................................................................................
-function measure(
-        settings::Disorder{N}, 
-        dataset::Vector{StateSpaceSet}, 
-        th_min::Float64, 
-        th_max::Float64; 
-        num_tests::Int = 40, 
-        metric::Metric = DEFAULT_METRIC
-    ) where {N}
-    A = get_disorder_norm_factor(settings, dataset[1])
-    values = zeros(Float64, num_tests, length(dataset))
-    th_range = range(th_min, th_max, num_tests)
-
-    for i ∈ eachindex(th_range)
-        rmspace = RecurrenceMicrostates(th_range[i], N; sampling = Full(), metric = metric)
-        for j in eachindex(dataset)
-            probs = probabilities(rmspace, dataset[j])
-            values[i, j] = measure(settings, probs, A)
-        end
-    end
-
-    results = zeros(Float32, length(dataset))
-
-    for i ∈ eachindex(dataset)
-        results[i] = maximum(values[:, i])
-    end
-
-    return results
+    ξ *= -1 / log(length(c.labels))
+    return ξ
 end
 
 ##########################################################################################
-#   Utils
+#   Internal: Aux. functions
 ##########################################################################################
-get_disorder_norm_factor(::Disorder{N}, ::StateSpaceSet{D, T, V}) where {N, D, T, V} = _norm_factor(Val(N), Val(D))
-#.........................................................................................
 _norm_factor(::Val{2}, ::Val{D}) where D = 4
 _norm_factor(::Val{3}, ::Val{D}) where D = D > 1 ? 24 : 23
 _norm_factor(::Val{4}, ::Val{D}) where D = D > 1 ? 190 : 145
 _norm_factor(::Val{5}, ::Val{D}) where D = D > 1 ? throw(ArgumentError("Disorder not implemented using N = 5 for data with more than one dimension.")) : 1173
 
-##########################################################################################
-#   Compute labels
-##########################################################################################
-function compute_labels(N::Int)
-    S = collect(permutations(1:N))
+function compute_labels(N::Int; S = collect(permutations(1:N)))
     shape = RectMicrostate(N)
 
     row_permutation = PermuteRows(shape)

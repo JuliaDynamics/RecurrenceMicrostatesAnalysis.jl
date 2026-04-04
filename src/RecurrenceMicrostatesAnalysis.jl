@@ -17,6 +17,7 @@ using KernelAbstractions
 using Random
 using Reexport
 using StaticArrays
+using Statistics
 
 @reexport using Adapt
 @reexport using ComplexityMeasures
@@ -37,7 +38,6 @@ include("core/recurrence_microstates.jl")
 include("core/cpu_core.jl")
 include("core/gpu/gpu_core.jl")
 
-include("core/measures.jl")
 include("core/optimize.jl")
 include("core/operation.jl")
 
