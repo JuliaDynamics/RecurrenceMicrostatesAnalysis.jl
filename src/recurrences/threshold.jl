@@ -1,44 +1,48 @@
-export Standard
+export ThresholdRecurrence
 
 ##########################################################################################
 #   RecurrenceExpression + Constructors
 ##########################################################################################
 """
-    Standard <: RecurrenceExpression
+    ThresholdRecurrence <: RecurrenceExpression
 
 Recurrence expression defined by the standard threshold criterion:
 ```math
-R(\\vec{x}, \\vec{y}) = \\Theta(\\varepsilon - |\\vec{x} - \\vec{y}|),
+r_{(i,j)} = \\Theta(\\varepsilon - |\\vec{x}_i - \\vec{y}_j|),
 ```
 where \$\\Theta(\\cdot)\$ denotes the Heaviside function and \$\\varepsilon\$ is the distance
 threshold defining the maximum separation for two states to be considered recurrent.
 
-The `Standard` struct stores the threshold parameter `ε`, as well as the distance `metric`
-used to evaluate \$|\\vec{x} - \\vec{y}|\$. The metric must be defined using the [Distances.jl](https://github.com/JuliaStats/Distances.jl)
-package.
+The `ThresholdRecurrence` struct stores the threshold parameter `ε`, as well as the distance
+`metric` used to evaluate \$\\|\\vec{x} - \\vec{y}\\|\$. The metric must be defined using the
+**Distances.jl** package.
 
-#   Constructor
+If the data for \$\\vec{x}\$ and \$\\vec{y}\$ are the same, the result is a recurrence plot;
+otherwise, it is a cross-recurrence plot.
+
+## Constructor
 ```julia
-Standard(ε::Real; metric::Metric = Euclidean())
+ThresholdRecurrence(ε::Real; metric::Metric = Euclidean())
 ```
 
-#   Examples
+## Examples
 ```julia
-Standard(0.27)
-Standard(0.27; metric = Cityblock())
+ThresholdRecurrence(0.27)
+ThresholdRecurrence(0.27; metric = Cityblock())
+ThresholdRecurrence(0.27; metric = GPUEuclidean())
 ```
 
 The recurrence evaluation is performed via the [`recurrence`](@ref) function.
 For GPU execution, the corresponding implementation is provided by `gpu_recurrence`.
 """
-struct Standard{T <: Real, M <: Metric} <: RecurrenceExpression{T, M}
+struct ThresholdRecurrence{T <: Real, M <: Metric} <: RecurrenceExpression{T, M}
     ε::T
     metric::M
 end
 #.........................................................................................
-function Standard(ε::Real; metric::Metric = DEFAULT_METRIC)
-    @assert ε >= 0 throw(ArgumentError("threshold must be greater than zero."))
-    return Standard(ε, metric)
+function ThresholdRecurrence(ε::Real; metric::Metric = DEFAULT_METRIC)
+    @assert ε >= 0 throw(ArgumentError("Threshold must be greater than zero."))
+    return ThresholdRecurrence(ε, metric)
 end
 
 ##########################################################################################
@@ -47,7 +51,7 @@ end
 #   Based on time series: (CPU)
 #.........................................................................................
 @inline function recurrence(
-    expr::Standard,
+    expr::ThresholdRecurrence,
     x::StateSpaceSet,
     y::StateSpaceSet,
     i::Int,
@@ -59,7 +63,7 @@ end
 #.........................................................................................
 #   Based on time series: (GPU)
 #.........................................................................................
-@inline function gpu_recurrence(expr::Standard, x, y, i, j, n)
+@inline function gpu_recurrence(expr::ThresholdRecurrence, x, y, i, j, n)
     distance = gpu_evaluate(expr.metric, x, y, i, j, n)
     return UInt8(distance ≤ expr.ε)
 end
@@ -67,7 +71,7 @@ end
 #   Based on spatial data: (CPU only)
 #.........................................................................................
 @inline function recurrence(
-    expr::Standard,
+    expr::ThresholdRecurrence,
     x::AbstractArray{<:Real},
     y::AbstractArray{<:Real},
     i::NTuple{N, Int}, 

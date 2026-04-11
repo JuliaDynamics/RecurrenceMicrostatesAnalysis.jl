@@ -16,9 +16,9 @@ All subtypes of `MicrostateShape` must include a field `expr`, which defines the
 [`RecurrenceExpression`](@ref) used to compute recurrences.
 
 # Implementations
-- [`Diagonal`](@ref)
-- [`Rect`](@ref)
-- [`Triangle`](@ref)
+- [`DiagonalMicrostate`](@ref)
+- [`RectMicrostate`](@ref)
+- [`TriangleMicrostate`](@ref)
 """
 abstract type MicrostateShape end
 

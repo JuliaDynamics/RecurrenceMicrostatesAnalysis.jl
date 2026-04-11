@@ -88,7 +88,7 @@ function complexity(
         y::Union{StateSpaceSet, Vector{<:Real}, <:AbstractGPUVector{SVector}} = x;
     )
 
-    rmspace = RecurrenceMicrostates(c.ε, RectMicrostate(3, 1); metric = c.metric, sampling = c.sampling)
+    rmspace = RecurrenceMicrostates(c.ε, RectMicrostate(1, 3); metric = c.metric, sampling = c.sampling)
     probs = probabilities(rmspace, x, y)
     return measure(c, rmspace, probs)
 end
@@ -127,7 +127,7 @@ function measure(c::RecurrenceLaminarity, rmspace::RecurrenceMicrostates, probs:
 
         return 1 - ((1/rr) * pl)
 
-   elseif (rmspace.shape isa Rect2Microstate{3, 1} && length(probs) == 8)
+   elseif (rmspace.shape isa Rect2Microstate{1, 3} && length(probs) == 8)
         rr = measure(rrc, probs)
         return 1 - ((1/rr) * probs[3])
     else

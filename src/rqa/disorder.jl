@@ -375,3 +375,18 @@ function compute_labels(N::Int; S = collect(permutations(1:N)))
 end
 
 ##########################################################################################
+
+# TODO: I'm not sure about how to fix this problem following the same model
+# used to ComplexityMeasures... It is printing all labels from the vector, 
+# probably must it print only the vector length? Something like:
+# "labels = 26 elements of type Vector{Int}" ??
+
+function Base.show(io::IO, ::MIME"text/plain", x::Disorder)
+    print(io, "TODO: Disorder")
+end
+
+function Base.show(io::IO, ::MIME"text/plain", x::WindowedDisorder)
+    print(io, "TODO: WindowedDisorder")
+end
+
+##########################################################################################

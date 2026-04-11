@@ -13,19 +13,8 @@ pages = [
     "Welcome" => "index.md",
     "Tutorial" => "tutorial.md",
     "API" => "api.md",
-    # "API" => "api.md",
-    # "Tutorial" => [
-    #     "Distributions" => "tutorial/distributions.md",
-    #     "Quantifiers" => "tutorial/quantifiers.md",
-    #     "Recurrence Functions" => "tutorial/recurrences.md",
-    #     "Shapes and Sampling" => "tutorial/shapes_and_sampling.md",
-    #     "GPU" => "tutorial/gpu.md",
-    #     "Utils" => "tutorial/utils.md",
-    # ],
+    "GPU" => "gpu.md",
     "Examples" => "examples.md",
-    # "Ecosystem Integration" => [
-    #         "Machine Learning" => "examples/ml.md",
-    # ],
     "Developers docs" => "dev.md",
     "References" => "refs.md",
 ]

@@ -9,7 +9,7 @@ export PermuteRows
 Operation that permutes the rows of a microstate \$\\mathbf{M}\$.
 
 To initialize a `PermuteRows` operation, a rectangular microstate shape must be
-provided via a [`Rect`](@ref) structure:
+provided via a [`RectMicrostate`](@ref) structure:
 ```julia
 PermuteRows(::Rect2Microstate{R, C, B})
 ```

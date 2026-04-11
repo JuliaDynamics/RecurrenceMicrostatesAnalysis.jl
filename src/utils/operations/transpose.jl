@@ -9,7 +9,7 @@ export Transpose
 Operation that transposes a microstate \$\\mathbf{M}\$.
 
 To initialize a `Transpose` operation, a rectangular microstate shape must be
-provided via a [`Rect`](@ref) structure:
+provided via a [`RectMicrostate`](@ref) structure:
 ```julia
 Transpose(::Rect2Microstate{R, C, B})
 ```
@@ -25,7 +25,7 @@ operate(::Transpose, I::Int)
 ```
 #   Arguments
 - `op`: A `Transpose` operation.
-- `I`: DEcima identifier of the microstate (1-based).
+- `I`: Decima identifier of the microstate (1-based).
 
 #   Returns
 The resulting microstate decimal identifier (1-based).

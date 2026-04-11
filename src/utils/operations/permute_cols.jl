@@ -9,7 +9,7 @@ export PermuteColumns
 Operation that permutes the columns of a microstate \$\\mathbf{M}\$.
 
 To initialize a `PermuteColumns` operation, a rectangular microstate shape must be
-provided via a [`Rect`](@ref) structure:
+provided via a [`RectMicrostate`](@ref) structure:
 ```julia
 PermuteColumns(::Rect2Microstate{R, C, B}; S::Vector{Vector{Int}} = collect(permutations(1:C))
 ```
