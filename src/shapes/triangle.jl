@@ -4,9 +4,7 @@ export TriangleMicrostate
 #   MicrostateShape: Triangle + Constructors and sub-types
 ##########################################################################################
 """
-    TriangleMicrostate{N, B} <: MicrostateShape
-
-TriangleMicrostate{N, B} <: MicrostateShape
+    TriangleMicrostate <: MicrostateShape
 
 Define a triangular microstate shape, originally introduced by Hirata in 2021
 [Hirata2021Triangle](@cite).
@@ -21,14 +19,6 @@ where `N` defines the size of the triangular microstate.
 ```julia
 N = 3
 triangle = TriangleMicrostate(N)
-```
-The corresponding microstate structure is given by:
-```math
-\\begin{pmatrix}
-R_{i,j} & R_{i,j + 1} & R_{i,j + 2} \\\\
- & R_{i + 1,j + 1} & R_{i + 1,j + 2} \\\\
- & & R_{i + 2,j + 2} \\\\
-\\end{pmatrix}
 ```
 
 !!! compat

@@ -20,7 +20,7 @@ sampling modes, recurrence functions, or complexity estimators.
 
 ### Input data for RecurrenceMicrostatesAnalysis.jl
 **RecurrenceMicrostatesAnalysis.jl** accepts three types of input, each associated with a different backend:
-- [`StateSpaceSet`] or `Vector{<:Real}`: used for multivariate time series, datasets, or state-space representations.
+- [`StateSpaceSet`](@ref) or `Vector{<:Real}`: used for multivariate time series, datasets, or state-space representations.
 - `AbstractArray{<:Real}`: used for spatial data, enabling RMA to be applied within the generalized framework of Spatial Recurrence Plots (SRP) [Marwan2007Spatial](@cite). We give some examples about its use in [Spatial data](@ref).
 - `AbstractGPUVector`: used for time series analysis with the GPU backend. We provide some explanations about it in [GPU](@ref).
 

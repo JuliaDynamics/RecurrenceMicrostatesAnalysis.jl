@@ -206,7 +206,7 @@ function complexity(
     end
 
     #   We need to define the threshold range here.
-    s = ceil(Int, length(windowed_data) * 0.1)
+    s = ceil(Int, length(windowed_data) * 0.1) + 2
     opt_ths = zeros(Float64, s)
 
     for i ∈ eachindex(s)

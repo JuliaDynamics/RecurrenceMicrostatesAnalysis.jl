@@ -8,6 +8,7 @@ using StateSpaceSets
 # Convert tutorial file to markdown
 import Literate
 Literate.markdown("src/tutorial.jl", "src"; credit = false)
+Literate.markdown("src/examples.jl", "src"; credit = false)
 
 pages = [
     "Welcome" => "index.md",

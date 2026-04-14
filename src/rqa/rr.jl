@@ -21,7 +21,7 @@ via the `N` parameter. The recurrence rate is estimated for a threshold `ε`.
 
 Recurrence rate (RR) is defined as [Webber2015Recurrence](@cite)
 ```math
-RR = \\frac{1}{K^2}\\sum_{i,j=1}^{K} R_{i,j}.
+RR = \\frac{1}{K^2}\\sum_{i,j=1}^{K} r_{(i,j)}.
 ```
 
 When estimating it using RMA, the recurrence rate is defined as the expected value
@@ -38,15 +38,15 @@ where \$RR_i^{(N)}\$ denotes the recurrence rate of the \$i\$-th microstate.
     [RecurrenceAnalysis.jl](https://juliadynamics.github.io/DynamicalSystemsDocs.jl/recurrenceanalysis/stable/quantification/#RecurrenceAnalysis.recurrencerate).
 """
 struct RecurrenceRate{N} <: ComplexityEstimator
-    ε::Float64
+    ε::Real
     metric::Metric
     sampling::SamplingMode
 end
 
 function complexity(
         c::RecurrenceRate{N},
-        x::Union{StateSpaceSet, Vector{<:Real}, <:AbstractGPUVector{SVector}}, 
-        y::Union{StateSpaceSet, Vector{<:Real}, <:AbstractGPUVector{SVector}} = x;
+        x::Union{StateSpaceSet, Vector{<:Real}, <:AbstractGPUVector{<:SVector}}, 
+        y::Union{StateSpaceSet, Vector{<:Real}, <:AbstractGPUVector{<:SVector}} = x;
     ) where {N}
     
     probs = probabilities(RecurrenceMicrostates(c.ε, N; metric = c.metric, sampling = c.sampling), x, y)
@@ -54,7 +54,7 @@ function complexity(
 end
 
 # -- Constructors
-RecurrenceRate(ε::Float64, N::Int = 1; metric::Metric = DEFAULT_METRIC, ratio::Float64 = 0.1, sampling::SamplingMode = SRandom(ratio)) = RecurrenceRate{N}(ε, metric, sampling)
+RecurrenceRate(ε::Real, N::Int = 1; metric::Metric = DEFAULT_METRIC, ratio::Float64 = 0.1, sampling::SamplingMode = SRandom(ratio)) = RecurrenceRate{N}(ε, metric, sampling)
 
 ##########################################################################################
 #   Internal: measure from probabilities
