@@ -19,7 +19,6 @@ using Reexport
 using StaticArrays
 using Statistics
 
-@reexport using Adapt
 @reexport using ComplexityMeasures
 @reexport using StateSpaceSets
 
