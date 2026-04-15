@@ -1,2 +1,177 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Examples · RecurrenceMicrostatesAnalysis.jl</title><meta name="title" content="Examples · RecurrenceMicrostatesAnalysis.jl"/><meta property="og:title" content="Examples · RecurrenceMicrostatesAnalysis.jl"/><meta property="twitter:title" content="Examples · RecurrenceMicrostatesAnalysis.jl"/><meta name="description" content="Documentation for RecurrenceMicrostatesAnalysis.jl."/><meta property="og:description" content="Documentation for RecurrenceMicrostatesAnalysis.jl."/><meta property="twitter:description" content="Documentation for RecurrenceMicrostatesAnalysis.jl."/><script data-outdated-warner src="../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../search_index.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script><link href="https://fonts.googleapis.com/css?family=Montserrat|Source+Code+Pro&amp;display=swap" rel="stylesheet" type="text/css"/></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../">RecurrenceMicrostatesAnalysis.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../">Welcome</a></li><li><a class="tocitem" href="../tutorial/">Tutorial</a></li><li><a class="tocitem" href="../api/">API</a></li><li><a class="tocitem" href="../gpu/">GPU</a></li><li class="is-active"><a class="tocitem" href>Examples</a></li><li><a class="tocitem" href="../dev/">Developers docs</a></li><li><a class="tocitem" href="../refs/">References</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Examples</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Examples</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/JuliaDynamics/RecurrenceMicrostatesAnalysis.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/JuliaDynamics/RecurrenceMicrostatesAnalysis.jl/blob/main/docs/src/examples.md" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Examples"><a class="docs-heading-anchor" href="#Examples">Examples</a><a id="Examples-1"></a><a class="docs-heading-anchor-permalink" href="#Examples" title="Permalink"></a></h1></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../gpu/">« GPU</a><a class="docs-footer-nextpage" href="../dev/">Developers docs »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.17.0 on <span class="colophon-date" title="Saturday 11 April 2026 02:49">Saturday 11 April 2026</span>. Using Julia version 1.12.6.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Examples · RecurrenceMicrostatesAnalysis.jl</title><meta name="title" content="Examples · RecurrenceMicrostatesAnalysis.jl"/><meta property="og:title" content="Examples · RecurrenceMicrostatesAnalysis.jl"/><meta property="twitter:title" content="Examples · RecurrenceMicrostatesAnalysis.jl"/><meta name="description" content="Documentation for RecurrenceMicrostatesAnalysis.jl."/><meta property="og:description" content="Documentation for RecurrenceMicrostatesAnalysis.jl."/><meta property="twitter:description" content="Documentation for RecurrenceMicrostatesAnalysis.jl."/><script data-outdated-warner src="../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../search_index.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script><link href="https://fonts.googleapis.com/css?family=Montserrat|Source+Code+Pro&amp;display=swap" rel="stylesheet" type="text/css"/></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../">RecurrenceMicrostatesAnalysis.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../">Welcome</a></li><li><a class="tocitem" href="../tutorial/">Tutorial</a></li><li><a class="tocitem" href="../api/">API</a></li><li><a class="tocitem" href="../gpu/">GPU</a></li><li class="is-active"><a class="tocitem" href>Examples</a><ul class="internal"><li><a class="tocitem" href="#Classifying-data-with-a-multi-layer-perceptron-and-RMA"><span>Classifying data with a multi-layer perceptron and RMA</span></a></li></ul></li><li><a class="tocitem" href="../dev/">Developers docs</a></li><li><a class="tocitem" href="../refs/">References</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Examples</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Examples</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/JuliaDynamics/RecurrenceMicrostatesAnalysis.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/JuliaDynamics/RecurrenceMicrostatesAnalysis.jl/blob/main/docs/src/examples.jl" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Examples"><a class="docs-heading-anchor" href="#Examples">Examples</a><a id="Examples-1"></a><a class="docs-heading-anchor-permalink" href="#Examples" title="Permalink"></a></h1><p>In this section, we provide some examples where it is possible to apply RMA to analyze data.</p><h2 id="Classifying-data-with-a-multi-layer-perceptron-and-RMA"><a class="docs-heading-anchor" href="#Classifying-data-with-a-multi-layer-perceptron-and-RMA">Classifying data with a multi-layer perceptron and RMA</a><a id="Classifying-data-with-a-multi-layer-perceptron-and-RMA-1"></a><a class="docs-heading-anchor-permalink" href="#Classifying-data-with-a-multi-layer-perceptron-and-RMA" title="Permalink"></a></h2><p>In this example, we demonstrate how to use a multi-layer perceptron with RMA to classify time series based on a parameter used to generate them. It is based on (<a href="../refs/#Spezzatto2024ML">Spezzatto <em>et al.</em>, 2024</a>), and we will use the package <strong>Flux.jl</strong> to perform the machine learning tasks.</p><h3 id="Generating-data"><a class="docs-heading-anchor" href="#Generating-data">Generating data</a><a id="Generating-data-1"></a><a class="docs-heading-anchor-permalink" href="#Generating-data" title="Permalink"></a></h3><p>Let&#39;s begin by generating a dataset. Here, we will use the Lorenz system. First, we can prepare some utilities to help generate our data:</p><pre><code class="language-julia hljs">using DynamicalSystemsBase, PredefinedDynamicalSystems
+
+ρ_cls = [26.0, 27.0, 28.0, 29.0, 30.0]
+num_samples_to_test = 50
+num_samples_to_train = 200
+
+train_timeseries = Vector{StateSpaceSet}(undef, length(ρ_cls) * num_samples_to_train)
+test_timeseries = Vector{StateSpaceSet}(undef, length(ρ_cls) * num_samples_to_test)
+
+train_labels = Vector{Float64}(undef, length(ρ_cls) * num_samples_to_train)
+test_labels = Vector{Float64}(undef, length(ρ_cls) * num_samples_to_test)
+
+function data_traj(ρ; u0 = rand(3), t = 250.0, Ttr = 1200.0, Δt = 0.2)
+    lorenz = PredefinedDynamicalSystems.lorenz(u0; ρ)
+    x, _ = trajectory(lorenz, t; Ttr, Δt)
+    return x
+end
+
+function generate_data!(labels, data, classes, num_elements_per_class)
+    c = 1
+    for i ∈ eachindex(labels)
+        labels[i] = classes[c]
+        data[i] = data_traj(classes[c])
+
+        if (i % num_elements_per_class == 0)
+            c += 1
+        end
+    end
+end</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">generate_data! (generic function with 1 method)</code></pre><p>Then, we can generate a training dataset:</p><pre><code class="language-julia hljs">generate_data!(train_labels, train_timeseries, ρ_cls, num_samples_to_train)
+train_timeseries</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">1000-element Vector{StateSpaceSet}:
+ 3-dimensional StateSpaceSet{Float64} with 1251 points
+ 3-dimensional StateSpaceSet{Float64} with 1251 points
+ 3-dimensional StateSpaceSet{Float64} with 1251 points
+ 3-dimensional StateSpaceSet{Float64} with 1251 points
+ 3-dimensional StateSpaceSet{Float64} with 1251 points
+ 3-dimensional StateSpaceSet{Float64} with 1251 points
+ 3-dimensional StateSpaceSet{Float64} with 1251 points
+ 3-dimensional StateSpaceSet{Float64} with 1251 points
+ 3-dimensional StateSpaceSet{Float64} with 1251 points
+ 3-dimensional StateSpaceSet{Float64} with 1251 points
+ ⋮
+ 3-dimensional StateSpaceSet{Float64} with 1251 points
+ 3-dimensional StateSpaceSet{Float64} with 1251 points
+ 3-dimensional StateSpaceSet{Float64} with 1251 points
+ 3-dimensional StateSpaceSet{Float64} with 1251 points
+ 3-dimensional StateSpaceSet{Float64} with 1251 points
+ 3-dimensional StateSpaceSet{Float64} with 1251 points
+ 3-dimensional StateSpaceSet{Float64} with 1251 points
+ 3-dimensional StateSpaceSet{Float64} with 1251 points
+ 3-dimensional StateSpaceSet{Float64} with 1251 points</code></pre><p>And a test dataset:</p><pre><code class="language-julia hljs">generate_data!(test_labels, test_timeseries, ρ_cls, num_samples_to_test)
+test_timeseries</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">250-element Vector{StateSpaceSet}:
+ 3-dimensional StateSpaceSet{Float64} with 1251 points
+ 3-dimensional StateSpaceSet{Float64} with 1251 points
+ 3-dimensional StateSpaceSet{Float64} with 1251 points
+ 3-dimensional StateSpaceSet{Float64} with 1251 points
+ 3-dimensional StateSpaceSet{Float64} with 1251 points
+ 3-dimensional StateSpaceSet{Float64} with 1251 points
+ 3-dimensional StateSpaceSet{Float64} with 1251 points
+ 3-dimensional StateSpaceSet{Float64} with 1251 points
+ 3-dimensional StateSpaceSet{Float64} with 1251 points
+ 3-dimensional StateSpaceSet{Float64} with 1251 points
+ ⋮
+ 3-dimensional StateSpaceSet{Float64} with 1251 points
+ 3-dimensional StateSpaceSet{Float64} with 1251 points
+ 3-dimensional StateSpaceSet{Float64} with 1251 points
+ 3-dimensional StateSpaceSet{Float64} with 1251 points
+ 3-dimensional StateSpaceSet{Float64} with 1251 points
+ 3-dimensional StateSpaceSet{Float64} with 1251 points
+ 3-dimensional StateSpaceSet{Float64} with 1251 points
+ 3-dimensional StateSpaceSet{Float64} with 1251 points
+ 3-dimensional StateSpaceSet{Float64} with 1251 points</code></pre><h3 id="Preparing-the-input-features"><a class="docs-heading-anchor" href="#Preparing-the-input-features">Preparing the input features</a><a id="Preparing-the-input-features-1"></a><a class="docs-heading-anchor-permalink" href="#Preparing-the-input-features" title="Permalink"></a></h3><p>Our feature is the recurrence microstate distribution. Therefore, for each time series we must compute the probabilities and store them as a feature vector:</p><pre><code class="language-julia hljs">using RecurrenceMicrostatesAnalysis
+
+N = 3
+train_dataset = Matrix{Float64}(undef, 2^(N * N) + 2, length(train_labels))
+test_dataset = Matrix{Float64}(undef, 2^(N * N) + 2, length(test_labels))
+
+function get_probs!(dataset, timeseries, N)
+    for i ∈ eachindex(timeseries)
+        th, s = optimize(Threshold(), Shannon(), N, timeseries[i])
+        rmspace = RecurrenceMicrostates(th, N)
+        dist = probabilities(rmspace, timeseries[i])
+        dataset[1, i] = th
+        dataset[2, i] = s
+        dataset[3:end, i] = dist[1:end]
+    end
+end</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">get_probs! (generic function with 1 method)</code></pre><p>Note that we are also using the recurrence threshold and the recurrence entropy as features. This follows (<a href="../refs/#Spezzatto2024ML">Spezzatto <em>et al.</em>, 2024</a>), but it is not strictly necessary. If your input has a stable threshold range that maximizes the recurrence entropy, it is possible to use a mean threshold to compute all probability distributions and use only these distributions as features for the machine learning model.</p><p>Computing our feature vectors:</p><ul><li>Train</li></ul><pre><code class="language-julia hljs">get_probs!(train_dataset, train_timeseries, N)
+train_dataset</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">514×1000 Matrix{Float64}:
+ 16.6148       16.7092       16.4714       …  18.0005       17.6753
+  7.42605       7.45953       7.47139          7.61828       7.5922
+  0.0023333     0.00134614    0.00156408       0.00375636    0.00780759
+  0.0170382     0.0180382     0.0178587        0.0160895     0.0167947
+  0.00238458    0.0022692     0.00252561       0.00505122    0.00524352
+  0.0123332     0.0131537     0.0128845    …   0.011487      0.0130511
+  0.00824348    0.00961526    0.00817938       0.00878194    0.00992295
+  0.00651274    0.00649992    0.00733324       0.00807682    0.00821784
+  0.00641017    0.0073717     0.00675632       0.0066794     0.0081281
+  0.00232048    0.00270509    0.00246151       0.0014487     0.00143588
+  ⋮                                        ⋱                
+  0.00287176    0.00294868    0.00298714   …   0.00299996    0.00287176
+  0.0101794     0.00920501    0.00752554       0.00935885    0.00829477
+  0.00906399    0.00999987    0.00966654       0.00578198    0.00502558
+  6.41017e-5    8.97424e-5    0.000179485      0.00038461    0.000192305
+  0.00706401    0.00714093    0.00673068       0.00514096    0.00426918
+  0.000474353   0.000705119   0.000615377  …   0.000564095   0.000448712
+  0.00267945    0.00287176    0.00305124       0.00253843    0.00249997
+  0.00178203    0.00187177    0.00187177       0.00197433    0.00182049
+  0.036538      0.0269612     0.0251151        0.0523455     0.0519352</code></pre><ul><li>Test</li></ul><pre><code class="language-julia hljs">get_probs!(test_dataset, test_timeseries, N)
+test_dataset</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">514×250 Matrix{Float64}:
+ 16.2161       16.8167       16.7406       …  17.6435       18.1387
+  7.43266       7.44094       7.45447          7.60049       7.59785
+  0.00499994    0.00135896    0.000948706      0.00221792    0.00451276
+  0.0200126     0.0156152     0.0177818        0.0163331     0.0138332
+  0.00328201    0.00169229    0.00206408       0.00385892    0.00362816
+  0.0129614     0.0113588     0.0120127    …   0.012846      0.0117947
+  0.0108332     0.00692299    0.0082563        0.00824348    0.00651274
+  0.00602556    0.00679478    0.00696145       0.00746144    0.00805118
+  0.00746144    0.00594864    0.00625633       0.00735888    0.00630761
+  0.00293586    0.00196151    0.00219228       0.00124357    0.00156408
+  ⋮                                        ⋱                
+  0.00380764    0.00269227    0.0028974    …   0.00201279    0.00243587
+  0.00816656    0.00966654    0.00871784       0.0079999     0.00973064
+  0.00814092    0.00984603    0.00973064       0.00476917    0.00560249
+  0.000397431   7.69221e-5    0.000192305      0.000192305   0.000243587
+  0.00616659    0.00820502    0.00703837       0.00444866    0.00525634
+  0.000923065   0.000461533   0.000423071  …   0.000256407   0.000474353
+  0.00473071    0.00274355    0.00292304       0.0023333     0.00271791
+  0.00247433    0.00149998    0.00149998       0.00129486    0.00208972
+  0.0495122     0.0298073     0.025192         0.0305252     0.0472173</code></pre><h3 id="Defining-the-neural-network-model"><a class="docs-heading-anchor" href="#Defining-the-neural-network-model">Defining the neural network model</a><a id="Defining-the-neural-network-model-1"></a><a class="docs-heading-anchor-permalink" href="#Defining-the-neural-network-model" title="Permalink"></a></h3><p>Here, we use <strong>Flux.jl</strong> to define our model. As mentioned before, we are using a multi-layer perceptron. However, it is also possible to use other approaches, e.g., random forests (<a href="../refs/#Silveira2025ML">Silveira <em>et al.</em>, 2025</a>).</p><pre><code class="language-julia hljs">using Flux
+
+model = Chain(
+    Dense(2^(N * N) + 2 =&gt; 512, identity),
+    Dense(512 =&gt; 256, selu),
+    Dense(256 =&gt; 64, selu),
+    Dense(64 =&gt; length(ρ_cls)),
+    softmax
+)
+
+model = f64(model)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Chain(
+  Dense(514 =&gt; 512),                    <span class="sgr90"># 263_680 parameters</span>
+  Dense(512 =&gt; 256, selu),              <span class="sgr90"># 131_328 parameters</span>
+  Dense(256 =&gt; 64, selu),               <span class="sgr90"># 16_448 parameters</span>
+  Dense(64 =&gt; 5),                       <span class="sgr90"># 325 parameters</span>
+  NNlib.softmax,
+) <span class="sgr90">                  # Total: 8 arrays, </span>411_781 parameters, 3.142 MiB.</code></pre><h3 id="Training-the-MLP"><a class="docs-heading-anchor" href="#Training-the-MLP">Training the MLP</a><a id="Training-the-MLP-1"></a><a class="docs-heading-anchor-permalink" href="#Training-the-MLP" title="Permalink"></a></h3><p>Now it is just standard machine learning procedure...</p><pre><code class="language-julia hljs">train_labels = Flux.onehotbatch(train_labels, ρ_cls)
+test_labels = Flux.onehotbatch(test_labels, ρ_cls)
+
+loader = Flux.DataLoader((train_dataset, train_labels), batchsize = 32, shuffle = true)
+opt = Flux.setup(Flux.Adam(0.005), model)
+
+for epc ∈ 1:50
+    for (x, y) ∈ loader
+        _, grads = Flux.withgradient(model) do m
+            y_hat = m(x)
+            Flux.crossentropy(y_hat, y)
+        end
+
+        Flux.update!(opt, model, grads[1])
+    end
+end</code></pre><h3 id="Model-evaluation"><a class="docs-heading-anchor" href="#Model-evaluation">Model evaluation</a><a id="Model-evaluation-1"></a><a class="docs-heading-anchor-permalink" href="#Model-evaluation" title="Permalink"></a></h3><p>Finally, let&#39;s check our accuracy 🙂</p><pre><code class="language-julia hljs">using LinearAlgebra
+
+function get_quantifiers(predict, trusty, classes)
+    conf = zeros(Int, length(classes), length(classes))
+    sz = size(predict, 2)
+
+    for i in 1:sz
+        mx_prd = findmax(predict[:, i])
+        mx_trt = findmax(trusty[:, i])
+
+        conf[mx_prd[2], mx_trt[2]] += 1
+    end
+
+    return tr(conf) / (sum(conf) + eps())
+end
+
+accuracy = get_quantifiers(model(test_dataset), test_labels, ρ_cls)
+accuracy * 100</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">100.0</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../gpu/">« GPU</a><a class="docs-footer-nextpage" href="../dev/">Developers docs »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.17.0 on <span class="colophon-date" title="Wednesday 15 April 2026 01:54">Wednesday 15 April 2026</span>. Using Julia version 1.12.6.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

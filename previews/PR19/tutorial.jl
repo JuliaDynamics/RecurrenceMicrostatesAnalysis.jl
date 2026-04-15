@@ -20,7 +20,7 @@
 # where $K$ is the length of the time series and $d$ is the dimension of the phase space.
 # The recurrence plot is defined by the recurrence matrix
 # ```math
-# r_{(i,j)} = \Theta(\varepsilon - \|\vec x_i - \vec x_j\|),
+# R_{i,j} = \Theta(\varepsilon - \|\vec x_i - \vec x_j\|),
 # ```
 # where $\Theta(\cdot)$ denotes the Heaviside step function and $\varepsilon$ is the recurrence
 # threshold.
@@ -179,10 +179,9 @@ disorder = Disorder()
 complexity(disorder, X)
 
 # Note that disorder is free of parameters (except for the microstate length and
-# the number of thresholds used, or its range). This is because the quantifier is
-# defined as the maximum total entropy of recurrence microstate classes, considering
-# a large range of thresholds. Moreover, this quantifier can only be estimated
-# through recurrence microstates.
+# the number of thresholds used). This is because the quantifier is
+# defined using the maximum total entropy of recurrence microstate classes, considering
+# a large range of thresholds.
 
 # It is also possible to estimate disorder while splitting the data into windows.
 # We prepared a special complexity estimator for this, aiming to facilitate
@@ -192,7 +191,7 @@ window_len = 1000
 win_disorder = WindowedDisorder(window_len; step = 100)
 
 # Here, we are using windows of length 1000 points, moved in steps of 100 points.
-# Finally, we compute the quantifier:
+# Finally, we compute the quantifier for each window:
 
 wd = complexity(win_disorder, X)
 
@@ -200,7 +199,107 @@ wd = complexity(win_disorder, X)
 using CairoMakie
 lines(wd)
 
+# !!! compat "Disorder specifications"
+#     Disorder is only available for the standard outcome space extracted
+#     from an RP using square microstates. Therefore, it is not compatible
+#     with different microstate shapes or input variations such as CRP
+#     and SRP, which will be introduced later.
+
+# !!! info "Performance"
+#     Disorder uses several recurrence microstate distributions computed
+#     using a full sampling mode. It is a heavy quantifier that can have
+#     a high computational cost. For large time series, we recommend
+#     computing this quantifier using [GPU](@ref).
+
 # ## Optimization of free parameters
+
+# It is known that recurrence analysis has some free parameters. The most
+# important of them is the recurrence threshold, $\varepsilon$, used to
+# define which elements from a sequence are recurrent and which are not.
+# In practice, these free parameters are not a major issue and allow
+# different analyses of the same system. Of course, **RecurrenceMicrostateAnalysis.jl**
+# considers this and allows you to use any value as your threshold.
+
+# Nevertheless, RMA has two situations where it is necessary to set
+# a specific recurrence threshold: when computing disorder and when using
+# RMA distributions as input for machine learning.
+
+# In both of these situations, it is important to use a threshold that
+# maximizes a certain quantity. Disorder is defined as the maximum total
+# entropy per class; therefore, the recurrence threshold is not truly a free
+# parameter in this case, since there is an optimal threshold that results
+# in the maximum observable disorder. Moreover, when working with RMA and
+# machine learning (see [Classifying data with a multi-layer perceptron and RMA](@ref)),
+# in most cases there is a correlation between the accuracy and the distribution
+# that maximizes the recurrence entropy [Spezzatto2024ML](@cite). Thus, it is a good 
+# idea to use this as a basis for defining an optimal value for the recurrence threshold.
+
+# With this in mind, we provide a function to optimize some [`Parameter`](@ref)
+# based on a given quantity. Currently, the only available parameter is
+# [`Threshold`](@ref), which can be optimized using the function [`optimize`](@ref)
+# by maximizing recurrence entropy or disorder.
+
+# Using recurrence entropy as an example:
+ε, S = optimize(Threshold(), Shannon(), N, X)
+rmspace = RecurrenceMicrostates(ε, N)
+h = entropy(Shannon(), rmspace, X)
+(h, S)
+
+# Or for disorder:
+ε, ξ = optimize(Threshold(), disorder, X)
+Ξ = complexity(disorder, X)
+
+(Ξ, ξ)
+
+# Note that there is a difference between `Ξ` and `ξ`. The `optimize` function uses
+# a sampling ratio of $10\%$, which can result in a considerably different value.
+# Internally, this optimization structure is used to define an optimal threshold range,
+# from which we extract the disorder using the sampling mode [`Full`](@ref).
+# If you want to compute the "disorder" for a specific threshold, it is possible using
+# the internal struct `PartialDisorder`:
+
+partial = RecurrenceMicrostatesAnalysis.PartialDisorder(ThresholdRecurrence(ε), N)
+complexity(partial, X)
+
+# ## Custom specification of recurrence microstates
+
+# When we write `rmspace = RecurrenceMicrostates(ε, N)`,
+# we are in fact accepting a default definition for both what counts as a recurrence
+# and which recurrence microstates to examine.
+# We can alter either by choosing the recurrence expression, the specific
+# microstate(s) we wish to analyze, or the sampling method used to extract these
+# microstates from the input data. For example:
+
+expr = CorridorRecurrence(0.05, 0.27)
+shape = TriangleMicrostate(3)
+sampling = Full()
+rmspace = RecurrenceMicrostates(expr, shape; sampling)
+probabilities(rmspace, X)
+
+# **RecurrenceMicrostateAnalysis.jl** supports several configurations for the recurrence outcome space
+# while leveraging the same backend (see [`RecurrenceMicrostates`](@ref)).
+# If you want to contribute with new recurrence expressions, microstate shapes, or sampling modes,
+# read the section [RecurrenceMicrostatesAnalysis.jl for devs](@ref) and open an 
+# [issue](https://github.com/JuliaDynamics/RecurrenceMicrostatesAnalysis.jl/issues)
+# if you encounter any difficulties 🙂
+
+# ## Cross recurrence plots
+
+# For cross-recurrences, nearly nothing changes for you, nor for the source code
+# of the code base! Simply call `function(..., rmspace, X, Y)`, adding an additional
+# final argument `Y` corresponding to the second trajectory from which cross recurrences are estimated.
+
+# For example, here are the cross recurrence microstate distribution for
+# the original Henon map trajectory and one at slightly different parameters
+
+set_parameter!(henon, 1, 1.35)
+Y, t = trajectory(henon, 10_000)
+probabilities(rmspace, X, Y)
+
+# This augmentation from one to two input data
+# works for most functions discussed in this tutorial.
+# Coincidentally, the same extension of `probabilities` to multivariate data
+# is done in [Associations.jl](https://juliadynamics.github.io/Associations.jl/stable/).
 
 # ## Spatial data
 
@@ -260,4 +359,5 @@ entropy(Shannon(), probs)
 # Note that if you are using a grayscale image, you need to use an
 # `Array` with size `(1, H, W)`. The first dimension stores the
 # features of the data, which are used to compute the recurrences,
-# i.e., $\vec{x}_{\vec{i}}$.
+# i.e., $\vec{x}_{\vec{i}}$. The same principle must be applied 
+# to other types of spatial data.
