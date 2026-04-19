@@ -186,8 +186,8 @@ end
 
 function complexity(
         c::WindowedDisorder{W, N},
-        x::AbstractGPUVector{SVector{D, Float32}}
-    ) where {N, W, D}
+        x::AbstractGPUVector{SVector{D, T}}
+    ) where {N, W, D, T}
 
     #   GPU Settings
     backend = KernelAbstractions.get_backend(x)
@@ -245,7 +245,7 @@ end
 
 function complexity(
         c::PartialDisorder{N}, 
-        x::Union{StateSpaceSet{D, T, V}, <:AbstractGPUVector{SVector{D, Float32}}}
+        x::Union{StateSpaceSet{D, T, V}, <:AbstractGPUVector{SVector{D, T}}}
     ) where {N, D, T, V}
 
     A = _norm_factor(Val(N), Val(D))
