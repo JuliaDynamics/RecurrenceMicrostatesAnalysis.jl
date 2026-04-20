@@ -313,6 +313,8 @@ _norm_factor(::Val{4}, ::Val{D}) where D = D > 1 ? 190 : 145
 _norm_factor(::Val{5}, ::Val{D}) where D = D > 1 ? throw(ArgumentError("Disorder not implemented using N = 5 for data with more than one dimension.")) : 1173
 
 function compute_labels(N::Int; S = collect(permutations(1:N)))
+    @assert 1 < N < 6 "Disorder labels computation is only available for 2 ≤ N ≤ 5."
+
     shape = RectMicrostate(N)
 
     row_permutation = PermuteRows(shape)
