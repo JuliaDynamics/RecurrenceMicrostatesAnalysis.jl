@@ -3,7 +3,7 @@
 # In this section, we provide some examples where it is possible
 # to apply RMA to analyze data.
 
-# ## Classifying data with a multi-layer perceptron and RMA
+# ## [Classifying data with a multi-layer perceptron and RMA](@id example_ml)
 
 # In this example, we demonstrate how to use a multi-layer perceptron with
 # RMA to classify time series based on a parameter used to generate them.
@@ -12,7 +12,16 @@
 
 # ### Generating data
 
-# Let's begin by generating a dataset. Here, we will use the Lorenz system.
+# To exemplify this, we use the Lorenz system and define 5 classes,
+# where each of them uses a different $\rho$ value to generate the
+# time series. Our goal here is to classify the time series based on which $\rho$
+# value generated it. Thus, our classes are: `ρ_cls = [26.0, 27.0, 28.0, 29.0, 30.0]`.
+
+# Each time series receives a different initial condition, which makes them different
+# from each other. We also define a training set of 200 time series for each class,
+# totaling 1,000 time series in the training set. Furthermore, we define an additional
+# 50 time series for each class as our test set, for a total of 250 time series.
+
 # First, we can prepare some utilities to help generate our data:
 
 using DynamicalSystemsBase, PredefinedDynamicalSystems

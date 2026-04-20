@@ -1,4 +1,4 @@
-# # Tutorial for RecurrenceMicrostatesAnalysis.jl
+# # [Tutorial for RecurrenceMicrostatesAnalysis.jl](@id tutorial)
 
 # In this tutorial we go through a typical usage of  **RecurrenceMicrostatesAnalysis.jl**.
 # We'll see how to calculate distributions of recurrence microstates,
@@ -12,20 +12,16 @@
 
 # ## Crash-course into RMA
 
-# Recurrence Plots (RPs) were introduced in 1987 by Eckmann et al.
-# [Eckmann1987RP](@cite) as a method for analyzing dynamical systems through recurrence
-# properties.
-
 # Consider a time series $\vec{x}_i \in \mathbb{R}^d$, $i \in \{1, 2, \dots, K\}$,
 # where $K$ is the length of the time series and $d$ is the dimension of the phase space.
-# The recurrence plot is defined by the recurrence matrix
+# The recurrence matrix
 # ```math
 # R_{i,j} = \Theta(\varepsilon - \|\vec x_i - \vec x_j\|),
 # ```
 # where $\Theta(\cdot)$ denotes the Heaviside step function and $\varepsilon$ is the recurrence
 # threshold.
 
-# The following figure shows examples of recurrence plots for different systems:
+# The following figure shows examples of recurrence matrices for different systems:
 # (a) white noise;
 # (b) a superposition of harmonic oscillators;
 # (c) a logistic map with a linear trend;
@@ -71,11 +67,11 @@ X
 
 # Notice that `X` is already a [`StateSpaceSet`](@ref). Because  **RecurrenceMicrostatesAnalysis.jl**
 # is part of **DynamicalSystems.jl**, this data type is the preferred input type.
-# Other types are also possible as we described in [Input data for RecurrenceMicrostatesAnalysis.jl](@ref).
+# Other types are also possible as we described in the [API](@ref).
 
 # Now, we specify the recurrence microstate configuration
 
-using RecurrenceMicrostatesAnalysis, Distances
+using RecurrenceMicrostatesAnalysis
 
 ε = 0.25
 N = 2
@@ -229,7 +225,7 @@ lines(wd)
 # entropy per class; therefore, the recurrence threshold is not truly a free
 # parameter in this case, since there is an optimal threshold that results
 # in the maximum observable disorder. Moreover, when working with RMA and
-# machine learning (see [Classifying data with a multi-layer perceptron and RMA](@ref)),
+# machine learning (see [this example](@ref example_ml)),
 # in most cases there is a correlation between the accuracy and the distribution
 # that maximizes the recurrence entropy [Spezzatto2024ML](@cite). Thus, it is a good 
 # idea to use this as a basis for defining an optimal value for the recurrence threshold.
@@ -279,7 +275,7 @@ probabilities(rmspace, X)
 # **RecurrenceMicrostateAnalysis.jl** supports several configurations for the recurrence outcome space
 # while leveraging the same backend (see [`RecurrenceMicrostates`](@ref)).
 # If you want to contribute with new recurrence expressions, microstate shapes, or sampling modes,
-# read the section [RecurrenceMicrostatesAnalysis.jl for devs](@ref) and open an 
+# read the section [for devs](@ref devs) and open an 
 # [issue](https://github.com/JuliaDynamics/RecurrenceMicrostatesAnalysis.jl/issues)
 # if you encounter any difficulties 🙂
 
@@ -361,3 +357,269 @@ entropy(Shannon(), probs)
 # features of the data, which are used to compute the recurrences,
 # i.e., $\vec{x}_{\vec{i}}$. The same principle must be applied 
 # to other types of spatial data.
+
+# ##   GPU
+
+# Computation of recurrence microstate distributions via **RecurrenceMicrostatesAnalysis.jl**
+# is compatible with different GPU devices due to an abstract kernel written using
+# **KernelAbstractions.jl**.
+
+# The use of the GPU backend is very similar to the CPU backend; however, the input type
+# must be an `AbstractGPUVector{<:SVector}`, instead of a [`StateSpaceSet`](@ref) or a `Vector{<:Real}`.
+
+# !!! compat "Spatial data"
+#     The current GPU backend is not compatible with spatial data. It only works with
+#     time series.
+
+# ### Computing recurrence microstate distributions
+
+# The first step to compute a recurrence microstate distribution using a GPU is to
+# import the package associated with your device, such as **CUDA.jl** or **Metal.jl**.
+# Next, you need to move your [`StateSpaceSet`](@ref) to the GPU. For example:
+
+# ```julia
+# using CUDA
+# 
+# X_gpu = Float32.(X[:, 1]) |> StateSpaceSet |> CuVector
+# ```
+
+# !!! compat "Float type"
+#     GPUs usually only accept `Float32`.
+
+# This GPU vector `X_gpu` can be used as input for the `probabilities` function:
+
+# ```julia
+# ε = 0.27f0
+# N = 3
+# rmspace = RecurrenceMicrostates(ε, N; metric = GPUEuclidean())
+# probs = probabilities(rmspace, X_gpu)
+# ```
+
+# ```julia
+# Probabilities{Float64,1} over 512 outcomes
+#    1  0.1298675475359977
+#    2  0.017550106511280954
+#    3  0.028929580130109996
+#    4  0.0016157228214197196
+#    5  0.039249842118455266
+#    6  0.014588514785254093
+#    ⋮  
+#  507  0.0001702340127557486
+#  508  0.0006545307752488948
+#  509  0.00010442086328848504
+#  510  0.00043848760982444294
+#  511  0.0
+#  512  0.0031636320936923195
+# ```
+
+# Note that the recurrence microstate outcome space has two specifications:
+
+# 1. The `threshold` must have the same type as the input. If you have an `AbstractGPUVector{<:SVector{D, T}}` as input,
+#    where `T` is the data type (e.g., `Float32` or `Float64`), your `threshold` must also be of type `T`.
+
+# 2. The `metric` must be a [`GPUMetric`](@ref). This is required because **Distances.jl** is not fully compatible with GPUs.
+
+# !!! compat "Sampling ratio"
+#     When using a random sampling mode (e.g., [`SRandom`](@ref)), the samples are extracted
+#     on the CPU, and only the microstates are computed on the GPU. Therefore, the sampling ratio
+#     can be `Float64`, even if the GPU is not compatible with this data type.
+
+# ### Estimating RQA and disorder
+
+# Just as the distribution computation keeps the same structure when using a GPU instead of a CPU,
+# the estimation of RQA or the computation of disorder or recurrence entropy is similar.
+
+# - Entropy
+# ```julia
+# entropy(Shannon(), rmspace, X_gpu)
+# ```
+
+# - Recurrence rate
+# ```julia
+# complexity(RecurrenceRate(ε; metric = GPUEuclidean()), X_gpu)
+# ```
+
+# - Determinism
+# ```julia
+# complexity(RecurrenceDeterminism(ε; metric = GPUEuclidean()), X_gpu)
+# ```
+
+# - Laminarity
+# ```julia
+# complexity(RecurrenceLaminarity(ε; metric = GPUEuclidean()), X_gpu)
+# ```
+
+# - Disorder
+# ```julia
+# complexity(Disorder(N; metric = GPUEuclidean()), X_gpu)
+# ```
+
+# - Windowed disorder
+# ```julia
+# W = 100
+# complexity(WindowedDisorder(W, N; metric = GPUEuclidean()), X_gpu)
+# ```
+
+# !!! warning "Time-series length"
+#     Note that if you are using `WindowedDisorder` for a long time series, but splitting
+#     it into small windows (e.g, `W = 1000`), the GPU can be less effienct than the CPU.
+#     It happens because only the probability computation is performed in the GPU.
+
+# ### Performance
+
+# Working with RMA on a GPU is faster than using a CPU. However, it is
+# important to note that GPUs require initialization time; therefore, they perform
+# better for long time series 🙂
+
+# Let's test it using **BenchmarkTools.jl**!
+using BenchmarkTools
+
+# !!! info "Hardware"
+#     The tests performed in this section was done using an Apple MacBook M1
+#     with 8GM RAM.
+
+# First, we can compute some probability distributions on the CPU. To make it
+# expensive, we use microstates $5\times 5$ and take all microstates
+# available in the RP. Then, for a time series of length 1,000 points,
+# we have ~1,000,000 microstates, and since these microstates have 25
+# recurrences, we need to compute approximately 25 million recurrences.
+# For a time series with 5,000 points we have ~5 times this value 😉
+# ```julia
+# X_test = X[1:1000, 1] |> StateSpaceSet
+# rmspace = RecurrenceMicrostates(0.27, 5; sampling = Full())
+# @benchmark probabilities(rmspace, X_test)
+# ```
+# ```julia
+# BenchmarkTools.Trial: 4 samples with 1 evaluation per sample.
+#  Range (min … max):  1.359 s …    1.671 s  ┊ GC (min … max): 17.24% … 30.81%
+#  Time  (median):     1.585 s               ┊ GC (median):    27.97%
+#  Time  (mean ± σ):   1.550 s ± 147.209 ms  ┊ GC (mean ± σ):  26.38% ±  6.30%
+
+#   █                          █                           █ █  
+#   █▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█▁█ ▁
+#   1.36 s         Histogram: frequency by time         1.67 s <
+
+#  Memory estimate: 4.00 GiB, allocs estimate: 109.
+# ```
+
+# ```julia
+# X_test = X[1:5000, 1] |> StateSpaceSet
+# @benchmark probabilities(rmspace, X_test)
+# ```
+# ```julia
+# BenchmarkTools.Trial: 3 samples with 1 evaluation per sample.
+#  Range (min … max):  1.757 s …   1.909 s  ┊ GC (min … max): 23.06% … 28.67%
+#  Time  (median):     1.804 s              ┊ GC (median):    23.96%
+#  Time  (mean ± σ):   1.823 s ± 77.884 ms  ┊ GC (mean ± σ):  25.31% ±  3.01%
+
+#   █                █                                      █  
+#   █▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█ ▁
+#   1.76 s         Histogram: frequency by time        1.91 s <
+
+#  Memory estimate: 4.00 GiB, allocs estimate: 109.
+# ```
+
+# Now, let's perform the same example on the GPU:
+# ```julia
+# using Metal
+# X_gpu = Float32.(X[1:1000, 1]) |> StateSpaceSet |> MtlVector
+# rmspace = RecurrenceMicrostates(0.27f0, 5; sampling = Full(), metric = GPUEuclidean())
+# @benchmark probabilities(rmspace, X_gpu)
+# ```
+# ```julia
+# BenchmarkTools.Trial: 41 samples with 1 evaluation per sample.
+#  Range (min … max):   52.483 ms … 212.468 ms  ┊ GC (min … max):  0.00% … 57.84%
+#  Time  (median):     120.866 ms               ┊ GC (median):     3.71%
+#  Time  (mean ± σ):   121.944 ms ±  43.234 ms  ┊ GC (mean ± σ):  24.97% ± 24.62%
+
+#   ▃         ▃█            ▃ ▃    ▃▃█  ▃▃                      ▃  
+#   █▇▇▇▁▁▁▁▁▇██▁▇▇▁▁▁▇▇▁▇▁▁█▇█▇▁▁▇███▁▁██▁▇▁▁▇▁▁▁▁▁▁▇▁▁▁▁▁▁▇▇▁▁█ ▁
+#   52.5 ms          Histogram: frequency by time          212 ms <
+
+#  Memory estimate: 640.02 MiB, allocs estimate: 474.
+# ```
+
+# ```julia
+# X_gpu = Float32.(X[1:5000, 1]) |> StateSpaceSet |> MtlVector
+# @benchmark probabilities(rmspace, X_gpu)
+# ```
+# ```julia
+# BenchmarkTools.Trial: 25 samples with 1 evaluation per sample.
+#  Range (min … max):  135.172 ms … 260.022 ms  ┊ GC (min … max):  0.95% … 44.50%
+#  Time  (median):     204.136 ms               ┊ GC (median):    17.25%
+#  Time  (mean ± σ):   204.717 ms ±  29.069 ms  ┊ GC (mean ± σ):  22.71% ± 20.08%
+
+#   ▁     ▁          ▁  █▁       █▁▁█▁▁  ▁▁ ▁  █▁▁▁▁         ▁  ▁  
+#   █▁▁▁▁▁█▁▁▁▁▁▁▁▁▁▁█▁▁██▁▁▁▁▁▁▁██████▁▁██▁█▁▁█████▁▁▁▁▁▁▁▁▁█▁▁█ ▁
+#   135 ms           Histogram: frequency by time          260 ms <
+
+#  Memory estimate: 640.02 MiB, allocs estimate: 474.
+# ```
+
+# The results show a considerable difference in computational time
+# between the two cases. The CPU requires around 10 times more time
+# to compute the same task as the GPU 🙂
+
+# Let's also run a test using the disorder computation:
+# ```julia
+# X_test = X[1:1000, 1] |> StateSpaceSet
+# @benchmark complexity(Disorder(4), X_test)
+# ```
+# ```julia
+# BenchmarkTools.Trial: 20 samples with 1 evaluation per sample.
+#  Range (min … max):  203.483 ms … 327.038 ms  ┊ GC (min … max):  2.04% … 26.77%
+#  Time  (median):     291.676 ms               ┊ GC (median):    29.13%
+#  Time  (mean ± σ):   264.279 ms ±  43.102 ms  ┊ GC (mean ± σ):  19.37% ± 13.55%
+
+#   ▃                                            █▃                
+#   █▁▁▇▁▁▇▇▇▇▁▇▁▁▁▁▁▁▁▁▁▁▁▇▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▇▇██▁▁▇▇▇▁▁▁▁▁▁▁▁▇ ▁
+#   203 ms           Histogram: frequency by time          327 ms <
+
+#  Memory estimate: 541.90 MiB, allocs estimate: 600351.
+# ```
+
+# ```julia
+# X_gpu = Float32.(X[1:1000, 1]) |> StateSpaceSet |> MtlVector
+# @benchmark complexity(Disorder(4; metric = GPUEuclidean()), X_gpu)
+# ```
+# ```julia
+# BenchmarkTools.Trial: 16 samples with 1 evaluation per sample.
+#  Range (min … max):  240.116 ms … 390.540 ms  ┊ GC (min … max): 0.68% … 21.21%
+#  Time  (median):     324.074 ms               ┊ GC (median):    2.73%
+#  Time  (mean ± σ):   324.189 ms ±  44.783 ms  ┊ GC (mean ± σ):  9.93% ±  9.99%
+
+#   ▁        ▁     ▁ ▁        ▁  ▁▁  ▁█▁             ▁  ▁ ▁     █  
+#   █▁▁▁▁▁▁▁▁█▁▁▁▁▁█▁█▁▁▁▁▁▁▁▁█▁▁██▁▁███▁▁▁▁▁▁▁▁▁▁▁▁▁█▁▁█▁█▁▁▁▁▁█ ▁
+#   240 ms           Histogram: frequency by time          391 ms <
+
+#  Memory estimate: 268.43 MiB, allocs estimate: 614832.
+# ```
+
+# Note that in this situation, the CPU is slightly faster than the GPU due to
+# several internal initializations that are not offset by the computation time.
+
+# Now, let's try the same test using a larger time series:
+# ```julia
+# X_test = X[1:9000, 1] |> StateSpaceSet
+# @benchmark complexity(Disorder(4), X_test)
+# ```
+# ```julia
+# BenchmarkTools.Trial: 1 sample with 1 evaluation per sample.
+#  Single result which took 13.837 s (1.41% GC) to evaluate,
+#  with a memory estimate of 534.26 MiB, over 600348 allocations.
+# ```
+
+# ```julia
+# X_gpu = Float32.(X[1:9000, 1]) |> StateSpaceSet |> MtlVector
+# @benchmark complexity(Disorder(4; metric = GPUEuclidean()), X_gpu)
+# ```
+# ```julia
+# BenchmarkTools.Trial: 1 sample with 1 evaluation per sample.
+#  Single result which took 7.427 s (0.14% GC) to evaluate,
+#  with a memory estimate of 264.65 MiB, over 614902 allocations.
+# ```
+
+# And now, computation is faster on the GPU than on the CPU. Therefore, it is important
+# to note that the GPU is not a magic solution: for long time series when computing
+# recurrence microstate probabilities, the GPU will be faster; however, for smaller cases,
+# it may be better to use the CPU.
