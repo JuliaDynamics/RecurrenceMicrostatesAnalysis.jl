@@ -8,34 +8,12 @@
 - See the **CHANGELOG.md** (at the GitHub repo) for more!
 
 ##  Getting started
-Start by reviewing [Input data for RecurrenceMicrostatesAnalysis.jl](@ref) and
-[Output data from RecurrenceMicrostatesAnalysis.jl](@ref). Then, you can explore the
-[Tutorial for RecurrenceMicrostatesAnalysis.jl](@ref) for a basic introduction to using the package.
+Start by reviewing about [input](@ref input_data) and [output](@ref output_data) used by 
+**RecurrenceMicrostatesAnalysis.jl**. Next, you can explore the
+[tutorial](@ref tutorial) for a basic introduction to using the package.
 You can also consult individual functions in the [API](@ref), and find applied examples in the
 dedicated [Examples](@ref) section.
 
-We also provide a section [RecurrenceMicrostatesAnalysis.jl for devs](@ref) for those interested
+We also provide a section [RecurrenceMicrostatesAnalysis.jl for devs](@ref devs) for those interested
 in developing new methods for **RecurrenceMicrostatesAnalysis.jl**, such as new microstate shapes,
 sampling modes, recurrence functions, or complexity estimators.
-
-### Input data for RecurrenceMicrostatesAnalysis.jl
-**RecurrenceMicrostatesAnalysis.jl** accepts three types of input, each associated with a different backend:
-- [`StateSpaceSet`](@ref) or `Vector{<:Real}`: used for multivariate time series, datasets, or state-space representations.
-- `AbstractArray{<:Real}`: used for spatial data, enabling RMA to be applied within the generalized framework of Spatial Recurrence Plots (SRP) [Marwan2007Spatial](@cite). We give some examples about its use in [Spatial data](@ref).
-- `AbstractGPUVector`: used for time series analysis with the GPU backend. We provide some explanations about it in [GPU](@ref).
-
-!!! todo "Spatial Recurrence Microstates Analysis"
-    RMA with SRP is an open research field. We include this functionality in the package for exploratory purposes, but the method is not yet mature enough for production use. Nevertheless, feel free to experiment with it in your research. 😃
-
-```@docs
-StateSpaceSet
-```
-
-### Output data from RecurrenceMicrostatesAnalysis.jl
-When computing the RMA distribution, **RecurrenceMicrostatesAnalysis.jl** returns a [`Probabilities`](@ref).
-This type is provided by **ComplexityMeasures.jl**, allowing this package to interoperate naturally with its tools and workflows.
-
-```@docs
-Probabilities
-Counts
-```

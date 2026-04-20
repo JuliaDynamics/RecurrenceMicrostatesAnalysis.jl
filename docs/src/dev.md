@@ -1,4 +1,4 @@
-#   RecurrenceMicrostatesAnalysis.jl for devs
+#   [RecurrenceMicrostatesAnalysis.jl for devs](@id devs)
 
 !!! tip
     All pull requests that introduce new functionality must be thoroughly tested and documented.
@@ -62,7 +62,8 @@ r_{(i,j)} = \Theta(\|\vec{x}_i - \vec{x}_j\| - \varepsilon).
 
 First, we define our struct:
 ```@example dev
-using RecurrenceMicrostatesAnalysis, Distances
+using RecurrenceMicrostatesAnalysis
+using Distances: Euclidean, Metric, evaluate
 
 struct MyRecurrenceExpr{T <: Real, M <: Metric} <: RecurrenceExpression{T, M}
     ε::T

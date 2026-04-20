@@ -14,7 +14,6 @@ pages = [
     "Welcome" => "index.md",
     "Tutorial" => "tutorial.md",
     "API" => "api.md",
-    "GPU" => "gpu.md",
     "Examples" => "examples.md",
     "Developers docs" => "dev.md",
     "References" => "refs.md",
