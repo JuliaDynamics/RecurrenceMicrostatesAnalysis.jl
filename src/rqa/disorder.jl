@@ -245,8 +245,8 @@ end
 
 function complexity(
         c::PartialDisorder{N}, 
-        x::Union{StateSpaceSet{D, T, V}, <:AbstractGPUVector{SVector{D, T}}}
-    ) where {N, D, T, V}
+        x::Union{StateSpaceSet{D}, <:AbstractGPUVector{SVector{D}}}
+    ) where {N, D}
 
     A = _norm_factor(Val(N), Val(D))
     probs = probabilities(c.rmspace, x)
@@ -376,7 +376,7 @@ end
 
 ##########################################################################################
 
-ComplexityMeasures.relevant_fieldnames(x::Disorder) = [:metric, :threshold_range]
-ComplexityMeasures.relevant_fieldnames(x::WindowedDisorder) = [:metric, :threshold_range, :win_step]
+ComplexityMeasures.relevant_fieldnames(::Disorder) = [:metric, :threshold_range]
+ComplexityMeasures.relevant_fieldnames(::WindowedDisorder) = [:metric, :threshold_range, :win_step]
 
 ##########################################################################################

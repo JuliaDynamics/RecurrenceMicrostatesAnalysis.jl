@@ -38,10 +38,10 @@ DiagonalMicrostate(N::Int; B::Int = 2) = DiagonalMicrostate{N, B}()
 #   Based on time series: (CPU & GPU)
 #.........................................................................................
 SamplingSpace(
-    ::DiagonalMicrostate{N, B}, 
-    x::Union{StateSpaceSet, AbstractGPUVector{SVector{D, Float32}}}, 
-    y::Union{StateSpaceSet, AbstractGPUVector{SVector{D, Float32}}}
-) where {N, B, D} = SSRect2(length(x) - N + 1, length(y) - N + 1)
+    ::DiagonalMicrostate{N}, 
+    x::Union{StateSpaceSet, AbstractGPUVector{<: SVector}}, 
+    y::Union{StateSpaceSet, AbstractGPUVector{<: SVector}}
+) where {N} = SSRect2(length(x) - N + 1, length(y) - N + 1)
 
 function SamplingSpace(
     ::DiagonalMicrostate{N, B}, 

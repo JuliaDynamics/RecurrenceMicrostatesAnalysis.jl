@@ -34,10 +34,10 @@ TriangleMicrostate(N::Int; B::Int = 2) = TriangleMicrostate{N, B}()
 #   Based on time series: (CPU & GPU)
 #.........................................................................................
 SamplingSpace(
-    ::TriangleMicrostate{N, B}, 
-    x::Union{StateSpaceSet, AbstractGPUVector{SVector{D, Float32}}}, 
-    y::Union{StateSpaceSet, AbstractGPUVector{SVector{D, Float32}}}
-) where {N, B, D} = SSRect2(length(x) - N + 1, length(y) - N + 1)
+    ::TriangleMicrostate{N}, 
+    x::Union{StateSpaceSet, AbstractGPUVector{<: SVector}}, 
+    y::Union{StateSpaceSet, AbstractGPUVector{<: SVector}}
+) where {N} = SSRect2(length(x) - N + 1, length(y) - N + 1)
 
 ##########################################################################################
 #   Implementations: utils — histogram size, power vector, and offsets

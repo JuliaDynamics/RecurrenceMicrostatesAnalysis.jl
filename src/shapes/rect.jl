@@ -73,10 +73,10 @@ end
 #   Based on time series: (CPU & GPU)
 #.........................................................................................
 SamplingSpace(
-    ::Rect2Microstate{W, H, B}, 
-    x::Union{StateSpaceSet, AbstractGPUVector{SVector{N, Float32}}}, 
-    y::Union{StateSpaceSet, AbstractGPUVector{SVector{N, Float32}}}
-) where {W, H, B, N} = SSRect2(length(x) - W + 1, length(y) - H + 1)
+    ::Rect2Microstate{W, H}, 
+    x::Union{StateSpaceSet, AbstractGPUVector{<: SVector}}, 
+    y::Union{StateSpaceSet, AbstractGPUVector{<: SVector}}
+) where {W, H} = SSRect2(length(x) - W + 1, length(y) - H + 1)
 #.........................................................................................
 #   Based on spatial data: (CPU only)
 #.........................................................................................
