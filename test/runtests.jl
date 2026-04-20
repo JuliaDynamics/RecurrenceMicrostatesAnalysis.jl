@@ -17,4 +17,6 @@ end
     testfile("shapes.jl")
     testfile("rqa.jl")
     testfile("utils.jl")
+
+    testfile("distributions.jl")
 end
