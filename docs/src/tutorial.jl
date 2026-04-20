@@ -35,6 +35,10 @@
 
 # ![Image of the 16 squared microstates to N = 2](assets/microstates.png)
 
+# In this tutorial, we will not focus on recurrence plots themselves. If you are interested
+# in learning more about them, see the [RecurrenceAnalysis.jl](https://juliadynamics.github.io/DynamicalSystemsDocs.jl/recurrenceanalysis/stable/)
+# documentation or visit [recurrence-plot.tk](http://www.recurrence-plot.tk).
+
 # Recurrence Microstates Analysis (RMA) uses the probability distribution of these microstates
 # as a source of information for characterizing dynamical systems.
 
