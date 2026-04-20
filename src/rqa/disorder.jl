@@ -88,7 +88,7 @@ length `W`, returning a vector of measured disorder values for each window.
 ## Keyword arguments
 - `metric::Metric`: The metric used to compute recurrence.
 - `threshold_range::Int`: The number of threshold values used to estimate disorder.
-- `win_step::Int`: The win_step between windows. The default is `W`.
+- `step::Int`: The step between windows. The default is `W`.
 """
 struct WindowedDisorder{W, N} <: ComplexityEstimator
     labels::Vector{Vector{Int}}
@@ -269,7 +269,7 @@ end
 
 # -- Constructors
 Disorder(N::Int = 4; metric::Metric = DEFAULT_METRIC, threshold_range::Int =  40) = Disorder{N}(compute_labels(N), metric, threshold_range)
-WindowedDisorder(W::Int, N::Int = 4; metric::Metric = DEFAULT_METRIC, threshold_range::Int = 40, win_step::Int = W) = WindowedDisorder{W,N}(compute_labels(N), metric, threshold_range, win_step)
+WindowedDisorder(W::Int, N::Int = 4; metric::Metric = DEFAULT_METRIC, threshold_range::Int = 40, step::Int = W) = WindowedDisorder{W,N}(compute_labels(N), metric, threshold_range, step)
 PartialDisorder(rexpr::RecurrenceExpression, N::Int = 4) = PartialDisorder{N}(compute_labels(N), RecurrenceMicrostates(rexpr, N; sampling = Full()))
 ClassPartialDisorder(rexpr::RecurrenceExpression, c::Int, N::Int = 4) = ClassPartialDisorder(compute_labels(N)[c], RecurrenceMicrostates(rexpr, N; sampling = Full()))
 
