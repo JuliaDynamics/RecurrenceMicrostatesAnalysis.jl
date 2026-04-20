@@ -51,7 +51,7 @@ the CPU structure uses a [`recurrence`](@ref) function, while the GPU structure 
 4. Add a docstring describing the mathematical definition and relevant references.
 5. Add the recurrence expression to `docs/src/api.md`.
 6. Add the expression to the [`RecurrenceExpression`](@ref) docstring.
-7. Add tests to `test/distributions.jl` under the test set `recurrence expressions`.
+7. Add tests to `test/distributions.jl` and `test/recurrences.jl`.
 
 ### Example
 
@@ -113,7 +113,7 @@ probabilities(rmspace, X)
 5. Add a docstring to your sampling mode describing its behavior and initialization.
 6. Add your sampling mode to `docs/src/api.md`.
 7. Add the expression to the [`SamplingMode`](@ref) docstring.
-8. Add tests to `test/distributions.jl` under the test set `sampling modes`.
+8. Add tests to `test/distributions.jl` and `test/sampling.jl`.
 
 ## Adding a new Microstate Shape
 
@@ -133,7 +133,7 @@ probabilities(rmspace, X)
 7. Add a docstring to your microstate shape describing its behavior and initialization.
 8. Add your microstate shape to `docs/src/api.md`.
 9. Add the expression to the [`MicrostateShape`](@ref) docstring.
-10. Add tests to `test/distributions.jl` under the test set `microstate shapes`.
+10. Add tests to `test/distributions.jl` and `test/shapes.jl`.
 
 ### Example
 
@@ -217,6 +217,8 @@ features is very similar.
 
 To add new quantity estimators, refer to the [ComplexityMeasures.jl Dev Docs](https://juliadynamics.github.io/DynamicalSystemsDocs.jl/complexitymeasures/stable/devdocs/).
 
+Tests for new quantifiers implemented on **RecurrenceMicrostatesAnalysis.jl** need to be add to `test/rqa.jl`.
+
 ## Adding a new GPU metric
 
 Due to the incompatibility of **Distances.jl** with GPUs, it may be necessary to redefine some metrics
@@ -231,3 +233,4 @@ to use them with the **RecurrenceMicrostatesAnalysis.jl** GPU backend.
 3. Add a docstring to your metric describing it.
 4. Add your metric to `docs/src/api.md`.
 5. Add the expression to the [`GPUMetric`](@ref) docstring.
+6. Add tests to `test/utils.jl`.
