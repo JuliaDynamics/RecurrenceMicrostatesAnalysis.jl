@@ -86,47 +86,47 @@ function get_probs!(dataset, timeseries, N)
     end
 end</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">get_probs! (generic function with 1 method)</code></pre><p>Note that we are also using the recurrence threshold and the recurrence entropy as features. This follows (<a href="../refs/#Spezzatto2024ML">Spezzatto <em>et al.</em>, 2024</a>), but it is not strictly necessary. If your input has a stable threshold range that maximizes the recurrence entropy, it is possible to use a mean threshold to compute all probability distributions and use only these distributions as features for the machine learning model.</p><p>Computing our feature vectors:</p><ul><li>Train</li></ul><pre><code class="language-julia hljs">get_probs!(train_dataset, train_timeseries, N)
 train_dataset</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">514×1000 Matrix{Float64}:
- 16.5427       16.7722       16.6277       …  18.1573       18.0825
-  7.45731       7.46144       7.46311          7.60694       7.64989
-  0.00217946    0.00224356    0.00178203       0.00339739    0.00074358
-  0.017269      0.0177049     0.0180254        0.0142562     0.0132306
-  0.00251279    0.00211536    0.00275637       0.00391021    0.00297432
-  0.0123332     0.0124742     0.0123588    …   0.0127562     0.0115896
-  0.00788451    0.00791015    0.00839733       0.00785887    0.00635889
-  0.00805118    0.00644864    0.00664094       0.00810246    0.00707683
-  0.0071794     0.00699991    0.0072435        0.00706401    0.00580762
-  0.00205126    0.00258971    0.00211536       0.00142306    0.00103845
+ 17.0231       16.3586       16.8036       …  18.1231       17.5235
+  7.43871       7.41237       7.45942          7.57424       7.48546
+  0.000564095   0.00194869    0.00160254       0.00626915    0.0121152
+  0.0139229     0.0180126     0.0177049        0.0147306     0.0203715
+  0.00123075    0.00206408    0.00176921       0.00473071    0.00715375
+  0.0118204     0.0135255     0.012846     …   0.0117306     0.0127947
+  0.00580762    0.00874348    0.00789733       0.00832041    0.0133075
+  0.00710247    0.00734606    0.00688453       0.00803836    0.00720504
+  0.00534609    0.0071794     0.00660248       0.00697427    0.00792298
+  0.00162818    0.00246151    0.002141         0.0015128     0.00288458
   ⋮                                        ⋱                
-  0.00282048    0.00292304    0.00298714   …   0.00321791    0.00261535
-  0.00847425    0.00947424    0.00844861       0.0102306     0.00775631
-  0.00902553    0.00915373    0.0095127        0.00593582    0.00607685
-  0.000205126   7.69221e-5    7.69221e-5       0.000307688   0.000397431
-  0.00679478    0.00733324    0.00778195       0.00487173    0.00479481
-  0.000692299   0.000525634   0.000499994  …   0.000846143   0.000705119
-  0.00274355    0.00292304    0.00274355       0.00273073    0.00257689
-  0.00169229    0.00215382    0.00232048       0.00210254    0.00191023
-  0.0334996     0.0344611     0.0318586        0.0517301     0.0373585</code></pre><ul><li>Test</li></ul><pre><code class="language-julia hljs">get_probs!(test_dataset, test_timeseries, N)
+  0.0029615     0.00199997    0.00293586   …   0.00330765    0.00323073
+  0.0102947     0.00884604    0.00988449       0.0107947     0.0102435
+  0.0101537     0.00903835    0.0101281        0.00515378    0.0044743
+  0.000115383   0.000128203   0.000128203      0.000333329   0.000294868
+  0.00801272    0.0071794     0.00683325       0.00561531    0.00464097
+  0.000538455   0.000435892   0.000692299  …   0.000487173   0.000461533
+  0.0030256     0.00180767    0.00284612       0.00329483    0.00325637
+  0.0014487     0.000666658   0.00161536       0.00211536    0.0022692
+  0.0209613     0.0155511     0.0297945        0.0659222     0.0781528</code></pre><ul><li>Test</li></ul><pre><code class="language-julia hljs">get_probs!(test_dataset, test_timeseries, N)
 test_dataset</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">514×250 Matrix{Float64}:
- 16.5491       16.0054       16.1616       …  18.2069       18.0283
-  7.44396       7.37163       7.41255          7.64195       7.6095
-  0.000846143   0.00232048    0.00747426       0.000871784   0.00430764
-  0.0188075     0.0189741     0.0211664        0.0119101     0.0143973
-  0.00180767    0.00253843    0.00421789       0.00267945    0.00333329
-  0.0129998     0.0134614     0.0133716    …   0.0113204     0.0120639
-  0.00803836    0.00980757    0.0125127        0.00532044    0.00732042
-  0.00587172    0.0066794     0.00649992       0.00729478    0.00787169
-  0.00742298    0.00707683    0.00925629       0.00610249    0.00742298
-  0.00205126    0.00255125    0.00293586       0.000923065   0.00148716
+ 16.8255       16.4393       16.6991       …  18.1149       18.4312
+  7.46117       7.42639       7.46262          7.61277       7.58863
+  0.000474353   0.00505122    0.00182049       0.00369226    0.00342303
+  0.0152306     0.0183972     0.0180639        0.0137306     0.0131665
+  0.00173075    0.00269227    0.002141         0.00326919    0.0035897
+  0.0118075     0.0127306     0.0134485    …   0.0115511     0.0108332
+  0.00699991    0.00966654    0.00865374       0.0066794     0.0067435
+  0.00658966    0.00596146    0.00621787       0.00791015    0.00792298
+  0.00624351    0.00679478    0.00699991       0.0066794     0.00646146
+  0.00206408    0.00255125    0.00271791       0.00193587    0.00179485
   ⋮                                        ⋱                
-  0.00266663    0.00121793    0.00357688   …   0.00279484    0.00265381
-  0.0079358     0.00652556    0.00789733       0.00853835    0.00989731
-  0.0095127     0.00870502    0.00762811       0.00614095    0.00587172
-  3.8461e-5     6.41017e-5    8.97424e-5       0.000320509   0.000346149
-  0.00626915    0.00533326    0.00678196       0.00420507    0.00469225
-  0.000410251   0.000397431   0.000679478  …   0.000756401   0.000756401
-  0.0022692     0.00114101    0.00332047       0.00258971    0.00244869
-  0.00121793    0.000756401   0.00196151       0.00182049    0.00197433
-  0.0161152     0.0106665     0.0535378        0.038038      0.0505635</code></pre><h3 id="Defining-the-neural-network-model"><a class="docs-heading-anchor" href="#Defining-the-neural-network-model">Defining the neural network model</a><a id="Defining-the-neural-network-model-1"></a><a class="docs-heading-anchor-permalink" href="#Defining-the-neural-network-model" title="Permalink"></a></h3><p>Here, we use <strong>Flux.jl</strong> to define our model. As mentioned before, we are using a multi-layer perceptron. However, it is also possible to use other approaches, e.g., random forests (<a href="../refs/#Silveira2025ML">Silveira <em>et al.</em>, 2025</a>).</p><pre><code class="language-julia hljs">using Flux
+  0.0028333     0.00315381    0.0030897    …   0.00271791    0.00282048
+  0.00833323    0.00851271    0.00960244       0.00874348    0.0113204
+  0.00971782    0.00905117    0.00991013       0.00530762    0.00566659
+  3.8461e-5     0.000153844   0.000128203      0.000243587   0.000128203
+  0.0071794     0.00703837    0.00733324       0.00485891    0.00567941
+  0.000641017   0.000794862   0.000538455  …   0.00037179    0.000423071
+  0.0029615     0.00287176    0.00294868       0.00320509    0.00299996
+  0.0014487     0.00194869    0.00174357       0.00199997    0.00219228
+  0.0203331     0.0455763     0.0310637        0.0487301     0.0545378</code></pre><h3 id="Defining-the-neural-network-model"><a class="docs-heading-anchor" href="#Defining-the-neural-network-model">Defining the neural network model</a><a id="Defining-the-neural-network-model-1"></a><a class="docs-heading-anchor-permalink" href="#Defining-the-neural-network-model" title="Permalink"></a></h3><p>Here, we use <strong>Flux.jl</strong> to define our model. As mentioned before, we are using a multi-layer perceptron. However, it is also possible to use other approaches, e.g., random forests (<a href="../refs/#Silveira2025ML">Silveira <em>et al.</em>, 2025</a>).</p><pre><code class="language-julia hljs">using Flux
 
 model = Chain(
     Dense(2^(N * N) + 2 =&gt; 512, identity),
@@ -174,4 +174,4 @@ function get_quantifiers(predict, trusty, classes)
 end
 
 accuracy = get_quantifiers(model(test_dataset), test_labels, ρ_cls)
-accuracy * 100</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">100.0</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../api/">« API</a><a class="docs-footer-nextpage" href="../dev/">Developers docs »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.17.0 on <span class="colophon-date" title="Monday 20 April 2026 19:16">Monday 20 April 2026</span>. Using Julia version 1.12.6.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+accuracy * 100</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">20.0</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../api/">« API</a><a class="docs-footer-nextpage" href="../dev/">Developers docs »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.17.0 on <span class="colophon-date" title="Monday 20 April 2026 21:07">Monday 20 April 2026</span>. Using Julia version 1.12.6.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

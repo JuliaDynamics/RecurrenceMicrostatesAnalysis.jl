@@ -29,7 +29,7 @@
 
 # ![Image of four RPs with their timeseries](assets/rps.png)
 
-# A recurrence microstate is a local structure extracted from an RP. For a given microstate
+# A recurrence microstate is a local structure extracted from a recurrence matrix. For a given microstate
 # shape and size, the set of possible microstates is finite. For example, square microstates
 # with size $N = 2$ yield $16$ distinct configurations.
 
