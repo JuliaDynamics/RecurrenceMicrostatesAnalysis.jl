@@ -4,6 +4,7 @@
 [![Publication](https://img.shields.io/badge/publication-Chaos-blue.svg)](https://doi.org/10.1063/5.0293708)
 [![CI](https://github.com/JuliaDynamics/RecurrenceMicrostatesAnalysis.jl/workflows/CI/badge.svg)](https://github.com/JuliaDynamics/RecurrenceMicrostatesAnalysis.jl/actions)
 [![codecov](https://codecov.io/gh/JuliaDynamics/RecurrenceMicrostatesAnalysis.jl/graph/badge.svg?token=NR3S4JOE4R)](https://codecov.io/gh/JuliaDynamics/RecurrenceMicrostatesAnalysis.jl)
+[![Aqua QA](https://juliatesting.github.io/Aqua.jl/dev/assets/badge.svg)](https://github.com/JuliaTesting/Aqua.jl)
 [![Package Downloads](https://img.shields.io/badge/dynamic/json?url=http%3A%2F%2Fjuliapkgstats.com%2Fapi%2Fv1%2Ftotal_downloads%2FRecurrenceMicrostatesAnalysis&query=total_requests&label=Downloads)](http://juliapkgstats.com/pkg/RecurrenceMicrostatesAnalysis)
 
 **RecurrenceMicrostatesAnalysis.jl** is a simple and fast Julia-based package for recurrence microstates analysis.
