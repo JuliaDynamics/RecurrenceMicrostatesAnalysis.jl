@@ -22,6 +22,9 @@ using RecurrenceMicrostatesAnalysis
 
     @test (abs(det_l2 - RecurrenceMicrostatesAnalysis.measure(RecurrenceDeterminism(0.27), rms_square, dist_square)) / det_l2) ≤ 0.1
     @test (abs(det_l2 - RecurrenceMicrostatesAnalysis.measure(RecurrenceDeterminism(0.27), rms_diagonal, dist_diagonal)) / det_l2) ≤ 0.1
+
+    errrms = RecurrenceMicrostates(0.27, 4)
+    @test_throws ArgumentError RecurrenceMicrostatesAnalysis.measure(RecurrenceDeterminism(0.27), errrms, probabilities(errrms, x))
 end
 
 @testset "Laminarity" begin
@@ -43,6 +46,9 @@ end
 
     @test (abs(lam_l2 - RecurrenceMicrostatesAnalysis.measure(RecurrenceLaminarity(0.27), rms_square, dist_square)) / lam_l2) ≤ 0.1
     @test (abs(lam_l2 - RecurrenceMicrostatesAnalysis.measure(RecurrenceLaminarity(0.27), rms_line, dist_line)) / lam_l2) ≤ 0.1
+
+    errrms = RecurrenceMicrostates(0.27, 4)
+    @test_throws ArgumentError RecurrenceMicrostatesAnalysis.measure(RecurrenceLaminarity(0.27), errrms, probabilities(errrms, x))
 end
 
 @testset "Recurrence rate" begin
@@ -80,4 +86,9 @@ end
 @testset "Windowed disorder" begin
     x = rand(Uniform(0, 1), 250)
     @test complexity(WindowedDisorder(20, 2), x) isa Vector{<:Real}
+end
+
+@testset "Disorder internal" begin
+    RecurrenceMicrostatesAnalysis.PartialDisorder(ThresholdRecurrence(0.27), 2)
+    RecurrenceMicrostatesAnalysis.ClassPartialDisorder(ThresholdRecurrence(0.27), 1, 2)
 end
