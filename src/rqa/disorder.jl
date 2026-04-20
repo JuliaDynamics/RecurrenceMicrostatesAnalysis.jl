@@ -27,7 +27,7 @@ It uses \$N \\times N\$ microstates and a specified `metric` to compute the diso
 
 ## Keyword arguments
 - `metric::Metric`: The metric used to compute recurrence.
-- `range_len::Int`: The number of threshold values used to estimate the disorder.
+- `threshold_range::Int`: The number of threshold values used to estimate the disorder.
 
 ## Description
 Disorder, or the disorder index via symmetry in recurrence microstates (DISREM), is based on the
@@ -75,7 +75,7 @@ The disorder measure is then defined as the maximum value of \$\\xi(\\varepsilon
 struct Disorder{N} <: ComplexityEstimator
     labels::Vector{Vector{Int}}
     metric::Metric
-    range_len::Int
+    threshold_range::Int
 end
 
 """
@@ -87,14 +87,14 @@ length `W`, returning a vector of measured disorder values for each window.
 
 ## Keyword arguments
 - `metric::Metric`: The metric used to compute recurrence.
-- `range_len::Int`: The number of threshold values used to estimate disorder.
-- `step::Int`: The step between windows. The default is `W`.
+- `threshold_range::Int`: The number of threshold values used to estimate disorder.
+- `win_step::Int`: The win_step between windows. The default is `W`.
 """
 struct WindowedDisorder{W, N} <: ComplexityEstimator
     labels::Vector{Vector{Int}}
     metric::Metric
-    range_len::Int
-    step::Int
+    threshold_range::Int
+    win_step::Int
 end
 
 struct PartialDisorder{N} <: ComplexityEstimator
@@ -121,8 +121,8 @@ function complexity(
     th_max = 1.3 * th
 
     #   Prepare to compute.
-    ξ = zeros(Float64, c.range_len)
-    th_range = range(th_min, th_max, c.range_len)
+    ξ = zeros(Float64, c.threshold_range)
+    th_range = range(th_min, th_max, c.threshold_range)
 
     #   For GPU
     if (data isa AbstractGPUVector)
@@ -144,7 +144,7 @@ function complexity(
         x::Union{StateSpaceSet, Vector{<:Real}}
     ) where {N, W}
 
-    windowed_data = [ StateSpaceSet(x[(i + 1):(i + W)]) for i ∈ 0:c.step:(size(x, 1) - W) ]
+    windowed_data = [ StateSpaceSet(x[(i + 1):(i + W)]) for i ∈ 0:c.win_step:(size(x, 1) - W) ]
     
     #   We need to define the threshold range here.
     s = ceil(Int, length(windowed_data) * 0.1)
@@ -152,7 +152,7 @@ function complexity(
 
     for i ∈ eachindex(s)
         idx = rand(1:length(windowed_data))
-        opt_ths[i] = optimize(Threshold(), Disorder{N}(c.labels, c.metric, c.range_len), windowed_data[idx])[1]
+        opt_ths[i] = optimize(Threshold(), Disorder{N}(c.labels, c.metric, c.threshold_range), windowed_data[idx])[1]
     end
 
     μ_th = mean(opt_ths)
@@ -168,8 +168,8 @@ function complexity(
     end
 
     #   Prepare to compute.
-    ξ = zeros(Float64, length(windowed_data), c.range_len)
-    th_range = range(th_min, th_max, c.range_len)
+    ξ = zeros(Float64, length(windowed_data), c.threshold_range)
+    th_range = range(th_min, th_max, c.threshold_range)
 
     #   Finally, compute disorder for each window (note that it isn't just use "complexity(disorder, x)")
     for j ∈ eachindex(th_range)
@@ -197,7 +197,7 @@ function complexity(
     #   directly in GPU >.<
     #   And we also need to compute threshold range =/
     data = x |> Vector
-    windowed_data = [ StateSpaceSet(data[(i + 1):(i + W)]) for i ∈ 0:c.step:(size(x, 1) - W) ]
+    windowed_data = [ StateSpaceSet(data[(i + 1):(i + W)]) for i ∈ 0:c.win_step:(size(x, 1) - W) ]
     windowed_gpu = map(windowed_data) do w
         w_vec = w |> Vector
         gw = KernelAbstractions.allocate(backend, eltype(w_vec), size(w_vec))
@@ -211,7 +211,7 @@ function complexity(
 
     for i ∈ eachindex(s)
         idx = rand(1:length(windowed_data))
-        opt_ths[i] = optimize(Threshold(), Disorder{N}(c.labels, c.metric, c.range_len), windowed_data[idx])[1]
+        opt_ths[i] = optimize(Threshold(), Disorder{N}(c.labels, c.metric, c.threshold_range), windowed_data[idx])[1]
     end
 
     μ_th = mean(opt_ths)
@@ -227,8 +227,8 @@ function complexity(
     end
 
     #   Prepare to compute.
-    ξ = zeros(Float64, length(windowed_gpu), c.range_len)
-    th_range = Float32.(range(th_min, th_max, c.range_len))
+    ξ = zeros(Float64, length(windowed_gpu), c.threshold_range)
+    th_range = Float32.(range(th_min, th_max, c.threshold_range))
 
     #   Finally, compute disorder for each window (note that it isn't just use "complexity(disorder, x)")
     for j ∈ eachindex(th_range)
@@ -268,8 +268,8 @@ function complexity(
 end
 
 # -- Constructors
-Disorder(N::Int = 4; metric::Metric = DEFAULT_METRIC, range_len::Int =  40) = Disorder{N}(compute_labels(N), metric, range_len)
-WindowedDisorder(W::Int, N::Int = 4; metric::Metric = DEFAULT_METRIC, range_len::Int = 40, step::Int = W) = WindowedDisorder{W,N}(compute_labels(N), metric, range_len, step)
+Disorder(N::Int = 4; metric::Metric = DEFAULT_METRIC, threshold_range::Int =  40) = Disorder{N}(compute_labels(N), metric, threshold_range)
+WindowedDisorder(W::Int, N::Int = 4; metric::Metric = DEFAULT_METRIC, threshold_range::Int = 40, win_step::Int = W) = WindowedDisorder{W,N}(compute_labels(N), metric, threshold_range, win_step)
 PartialDisorder(rexpr::RecurrenceExpression, N::Int = 4) = PartialDisorder{N}(compute_labels(N), RecurrenceMicrostates(rexpr, N; sampling = Full()))
 ClassPartialDisorder(rexpr::RecurrenceExpression, c::Int, N::Int = 4) = ClassPartialDisorder(compute_labels(N)[c], RecurrenceMicrostates(rexpr, N; sampling = Full()))
 
@@ -376,17 +376,7 @@ end
 
 ##########################################################################################
 
-# TODO: I'm not sure about how to fix this problem following the same model
-# used to ComplexityMeasures... It is printing all labels from the vector, 
-# probably must it print only the vector length? Something like:
-# "labels = 26 elements of type Vector{Int}" ??
-
-function Base.show(io::IO, ::MIME"text/plain", x::Disorder)
-    print(io, "TODO: Disorder")
-end
-
-function Base.show(io::IO, ::MIME"text/plain", x::WindowedDisorder)
-    print(io, "TODO: WindowedDisorder")
-end
+ComplexityMeasures.relevant_fieldnames(x::Disorder) = [:metric, :threshold_range]
+ComplexityMeasures.relevant_fieldnames(x::WindowedDisorder) = [:metric, :threshold_range, :win_step]
 
 ##########################################################################################
