@@ -245,7 +245,7 @@ end
 
 function complexity(
         c::PartialDisorder{N}, 
-        x::Union{StateSpaceSet{D}, <:AbstractGPUVector{SVector{D}}}
+        x::Union{<: StateSpaceSet{D}, <:AbstractGPUVector{<: SVector{D}}}
     ) where {N, D}
 
     A = _norm_factor(Val(N), Val(D))
