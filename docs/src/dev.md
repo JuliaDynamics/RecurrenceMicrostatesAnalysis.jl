@@ -93,7 +93,7 @@ rmspace = RecurrenceMicrostates(MyRecurrenceExpr(0.27), 3)
 ```
 
 ```@example dev
-X = randn(1000) |> StateSpaceSet
+X = randn(1000)
 probabilities(rmspace, X)
 ```
 
