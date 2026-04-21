@@ -384,7 +384,7 @@ entropy(Shannon(), probs)
 # ```julia
 # using CUDA
 # X_float32 = [Float32.(x) for x ∈ X]
-# X_gpu = X_float32 |> CuVector
+# X_gpu = CuVector(X_float32)
 # ```
 
 # !!! compat "Float type"
@@ -526,7 +526,7 @@ using BenchmarkTools
 # Now, let's perform the same example on the GPU:
 # ```julia
 # using Metal
-# X_gpu = X_float32[1:1000] |> MtlVector
+# X_gpu = MtlVector(X_float32[1:1000])
 # rmspace = RecurrenceMicrostates(0.27f0, 5; sampling = Full(), metric = GPUEuclidean())
 # @benchmark probabilities(rmspace, X_gpu)
 # ```
@@ -544,7 +544,7 @@ using BenchmarkTools
 # ```
 
 # ```julia
-# X_gpu = X_float32[1:5000] |> MtlVector
+# X_gpu = MtlVector(X_float32[1:5000])
 # @benchmark probabilities(rmspace, X_gpu)
 # ```
 # ```julia
@@ -583,7 +583,7 @@ using BenchmarkTools
 # ```
 
 # ```julia
-# X_gpu = X_float32[1:1000] |> MtlVector
+# X_gpu = MtlVector(X_float32[1:1000])
 # @benchmark complexity(Disorder(4; metric = GPUEuclidean()), X_gpu)
 # ```
 # ```julia
@@ -614,7 +614,7 @@ using BenchmarkTools
 # ```
 
 # ```julia
-# X_gpu = X_float32[1:9000] |> MtlVector
+# X_gpu = MtlVector(X_float32[1:9000])
 # @benchmark complexity(Disorder(4; metric = GPUEuclidean()), X_gpu)
 # ```
 # ```julia
