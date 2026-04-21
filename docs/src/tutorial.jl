@@ -383,8 +383,8 @@ entropy(Shannon(), probs)
 
 # ```julia
 # using CUDA
-# 
-# X_gpu = Float32.(X[:, 1]) |> StateSpaceSet |> CuVector
+# X_float32 = [Float32.(x) for x ∈ X]
+# X_gpu = X_float32 |> CuVector
 # ```
 
 # !!! compat "Float type"
@@ -489,36 +489,36 @@ using BenchmarkTools
 # recurrences, we need to compute approximately 25 million recurrences.
 # For a time series with 5,000 points we have ~5 times this value 😉
 # ```julia
-# X_test = X[1:1000, 1] |> StateSpaceSet
+# X_test = X[1:1000]
 # rmspace = RecurrenceMicrostates(0.27, 5; sampling = Full())
 # @benchmark probabilities(rmspace, X_test)
 # ```
 # ```julia
 # BenchmarkTools.Trial: 4 samples with 1 evaluation per sample.
-#  Range (min … max):  1.359 s …    1.671 s  ┊ GC (min … max): 17.24% … 30.81%
-#  Time  (median):     1.585 s               ┊ GC (median):    27.97%
-#  Time  (mean ± σ):   1.550 s ± 147.209 ms  ┊ GC (mean ± σ):  26.38% ±  6.30%
+#  Range (min … max):  1.565 s …   1.717 s  ┊ GC (min … max): 30.86% … 26.69%
+#  Time  (median):     1.600 s              ┊ GC (median):    26.32%
+#  Time  (mean ± σ):   1.620 s ± 70.701 ms  ┊ GC (mean ± σ):  25.31% ±  4.59%
 
-#   █                          █                           █ █  
-#   █▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█▁█ ▁
-#   1.36 s         Histogram: frequency by time         1.67 s <
+#   █ █                    █                                █  
+#   █▁█▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█ ▁
+#   1.56 s         Histogram: frequency by time        1.72 s <
 
 #  Memory estimate: 4.00 GiB, allocs estimate: 109.
 # ```
 
 # ```julia
-# X_test = X[1:5000, 1] |> StateSpaceSet
+# X_test = X[1:5000]
 # @benchmark probabilities(rmspace, X_test)
 # ```
 # ```julia
 # BenchmarkTools.Trial: 3 samples with 1 evaluation per sample.
-#  Range (min … max):  1.757 s …   1.909 s  ┊ GC (min … max): 23.06% … 28.67%
-#  Time  (median):     1.804 s              ┊ GC (median):    23.96%
-#  Time  (mean ± σ):   1.823 s ± 77.884 ms  ┊ GC (mean ± σ):  25.31% ±  3.01%
+#  Range (min … max):  1.855 s …   1.955 s  ┊ GC (min … max): 23.40% … 28.08%
+#  Time  (median):     1.931 s              ┊ GC (median):    28.42%
+#  Time  (mean ± σ):   1.913 s ± 52.274 ms  ┊ GC (mean ± σ):  26.94% ±  3.07%
 
-#   █                █                                      █  
-#   █▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█ ▁
-#   1.76 s         Histogram: frequency by time        1.91 s <
+#   █                                          █            █  
+#   █▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█▁▁▁▁▁▁▁▁▁▁▁▁█ ▁
+#   1.85 s         Histogram: frequency by time        1.95 s <
 
 #  Memory estimate: 4.00 GiB, allocs estimate: 109.
 # ```
@@ -526,77 +526,77 @@ using BenchmarkTools
 # Now, let's perform the same example on the GPU:
 # ```julia
 # using Metal
-# X_gpu = Float32.(X[1:1000, 1]) |> StateSpaceSet |> MtlVector
+# X_gpu = X_float32[1:1000] |> MtlVector
 # rmspace = RecurrenceMicrostates(0.27f0, 5; sampling = Full(), metric = GPUEuclidean())
 # @benchmark probabilities(rmspace, X_gpu)
 # ```
 # ```julia
-# BenchmarkTools.Trial: 41 samples with 1 evaluation per sample.
-#  Range (min … max):   52.483 ms … 212.468 ms  ┊ GC (min … max):  0.00% … 57.84%
-#  Time  (median):     120.866 ms               ┊ GC (median):     3.71%
-#  Time  (mean ± σ):   121.944 ms ±  43.234 ms  ┊ GC (mean ± σ):  24.97% ± 24.62%
+# BenchmarkTools.Trial: 26 samples with 1 evaluation per sample.
+#  Range (min … max):   87.969 ms … 316.239 ms  ┊ GC (min … max): 15.21% … 58.26%
+#  Time  (median):     194.991 ms               ┊ GC (median):    19.28%
+#  Time  (mean ± σ):   194.819 ms ±  49.483 ms  ┊ GC (mean ± σ):  31.77% ± 23.86%
 
-#   ▃         ▃█            ▃ ▃    ▃▃█  ▃▃                      ▃  
-#   █▇▇▇▁▁▁▁▁▇██▁▇▇▁▁▁▇▇▁▇▁▁█▇█▇▁▁▇███▁▁██▁▇▁▁▇▁▁▁▁▁▁▇▁▁▁▁▁▁▇▇▁▁█ ▁
-#   52.5 ms          Histogram: frequency by time          212 ms <
+#   ▁           ▁ ▁▁▁▁ █▁ ▁   █▁ █▁▁ ▁█   █    ▁  ▁    ▁        ▁  
+#   █▁▁▁▁▁▁▁▁▁▁▁█▁████▁██▁█▁▁▁██▁███▁██▁▁▁█▁▁▁▁█▁▁█▁▁▁▁█▁▁▁▁▁▁▁▁█ ▁
+#   88 ms            Histogram: frequency by time          316 ms <
 
 #  Memory estimate: 640.02 MiB, allocs estimate: 474.
 # ```
 
 # ```julia
-# X_gpu = Float32.(X[1:5000, 1]) |> StateSpaceSet |> MtlVector
+# X_gpu = X_float32[1:5000] |> MtlVector
 # @benchmark probabilities(rmspace, X_gpu)
 # ```
 # ```julia
-# BenchmarkTools.Trial: 25 samples with 1 evaluation per sample.
-#  Range (min … max):  135.172 ms … 260.022 ms  ┊ GC (min … max):  0.95% … 44.50%
-#  Time  (median):     204.136 ms               ┊ GC (median):    17.25%
-#  Time  (mean ± σ):   204.717 ms ±  29.069 ms  ┊ GC (mean ± σ):  22.71% ± 20.08%
+# BenchmarkTools.Trial: 16 samples with 1 evaluation per sample.
+#  Range (min … max):  259.752 ms … 386.680 ms  ┊ GC (min … max):  2.63% … 25.25%
+#  Time  (median):     324.494 ms               ┊ GC (median):    22.84%
+#  Time  (mean ± σ):   325.391 ms ±  35.346 ms  ┊ GC (mean ± σ):  21.35% ± 14.70%
 
-#   ▁     ▁          ▁  █▁       █▁▁█▁▁  ▁▁ ▁  █▁▁▁▁         ▁  ▁  
-#   █▁▁▁▁▁█▁▁▁▁▁▁▁▁▁▁█▁▁██▁▁▁▁▁▁▁██████▁▁██▁█▁▁█████▁▁▁▁▁▁▁▁▁█▁▁█ ▁
-#   135 ms           Histogram: frequency by time          260 ms <
+#   █         █  █        ███  █  ███ █ █   █               █ █ █  
+#   █▁▁▁▁▁▁▁▁▁█▁▁█▁▁▁▁▁▁▁▁███▁▁█▁▁███▁█▁█▁▁▁█▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█▁█▁█ ▁
+#   260 ms           Histogram: frequency by time          387 ms <
 
-#  Memory estimate: 640.02 MiB, allocs estimate: 474.
+#  Memory estimate: 640.02 MiB, allocs estimate: 476.
 # ```
 
 # The results show a considerable difference in computational time
-# between the two cases. The CPU requires around 10 times more time
+# between the two cases. The CPU requires approximately 5–10 times more time
 # to compute the same task as the GPU 🙂
 
 # Let's also run a test using the disorder computation:
 # ```julia
-# X_test = X[1:1000, 1] |> StateSpaceSet
+# X_test = X[1:1000]
 # @benchmark complexity(Disorder(4), X_test)
 # ```
 # ```julia
-# BenchmarkTools.Trial: 20 samples with 1 evaluation per sample.
-#  Range (min … max):  203.483 ms … 327.038 ms  ┊ GC (min … max):  2.04% … 26.77%
-#  Time  (median):     291.676 ms               ┊ GC (median):    29.13%
-#  Time  (mean ± σ):   264.279 ms ±  43.102 ms  ┊ GC (mean ± σ):  19.37% ± 13.55%
+# BenchmarkTools.Trial: 19 samples with 1 evaluation per sample.
+#  Range (min … max):  238.750 ms … 318.955 ms  ┊ GC (min … max):  2.86% … 28.01%
+#  Time  (median):     259.462 ms               ┊ GC (median):     6.82%
+#  Time  (mean ± σ):   274.213 ms ±  34.593 ms  ┊ GC (mean ± σ):  16.25% ± 11.64%
 
-#   ▃                                            █▃                
-#   █▁▁▇▁▁▇▇▇▇▁▇▁▁▁▁▁▁▁▁▁▁▁▇▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▇▇██▁▁▇▇▇▁▁▁▁▁▁▁▁▇ ▁
-#   203 ms           Histogram: frequency by time          327 ms <
+#   █                                                              
+#   █▅█▅▁▁▁▁▁▁▁▁▁▁▁▅▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▅▁▅███▁▁▁▁▁▅ ▁
+#   239 ms           Histogram: frequency by time          319 ms <
 
 #  Memory estimate: 541.90 MiB, allocs estimate: 600351.
 # ```
 
 # ```julia
-# X_gpu = Float32.(X[1:1000, 1]) |> StateSpaceSet |> MtlVector
+# X_gpu = X_float32[1:1000] |> MtlVector
 # @benchmark complexity(Disorder(4; metric = GPUEuclidean()), X_gpu)
 # ```
 # ```julia
 # BenchmarkTools.Trial: 16 samples with 1 evaluation per sample.
-#  Range (min … max):  240.116 ms … 390.540 ms  ┊ GC (min … max): 0.68% … 21.21%
-#  Time  (median):     324.074 ms               ┊ GC (median):    2.73%
-#  Time  (mean ± σ):   324.189 ms ±  44.783 ms  ┊ GC (mean ± σ):  9.93% ±  9.99%
+#  Range (min … max):  240.301 ms … 459.589 ms  ┊ GC (min … max): 1.18% …  1.99%
+#  Time  (median):     319.407 ms               ┊ GC (median):    1.60%
+#  Time  (mean ± σ):   322.378 ms ±  73.731 ms  ┊ GC (mean ± σ):  8.72% ± 10.56%
 
-#   ▁        ▁     ▁ ▁        ▁  ▁▁  ▁█▁             ▁  ▁ ▁     █  
-#   █▁▁▁▁▁▁▁▁█▁▁▁▁▁█▁█▁▁▁▁▁▁▁▁█▁▁██▁▁███▁▁▁▁▁▁▁▁▁▁▁▁▁█▁▁█▁█▁▁▁▁▁█ ▁
-#   240 ms           Histogram: frequency by time          391 ms <
+#   █▁  ▁▁▁▁             ▁▁▁     ▁         ▁ ▁   ▁        ▁     ▁  
+#   ██▁▁████▁▁▁▁▁▁▁▁▁▁▁▁▁███▁▁▁▁▁█▁▁▁▁▁▁▁▁▁█▁█▁▁▁█▁▁▁▁▁▁▁▁█▁▁▁▁▁█ ▁
+#   240 ms           Histogram: frequency by time          460 ms <
 
-#  Memory estimate: 268.43 MiB, allocs estimate: 614832.
+#  Memory estimate: 268.43 MiB, allocs estimate: 614742.
 # ```
 
 # Note that in this situation, the CPU is slightly faster than the GPU due to
@@ -604,23 +604,23 @@ using BenchmarkTools
 
 # Now, let's try the same test using a larger time series:
 # ```julia
-# X_test = X[1:9000, 1] |> StateSpaceSet
+# X_test = X[1:9000]
 # @benchmark complexity(Disorder(4), X_test)
 # ```
 # ```julia
 # BenchmarkTools.Trial: 1 sample with 1 evaluation per sample.
-#  Single result which took 13.837 s (1.41% GC) to evaluate,
+#  Single result which took 15.382 s (0.69% GC) to evaluate,
 #  with a memory estimate of 534.26 MiB, over 600348 allocations.
 # ```
 
 # ```julia
-# X_gpu = Float32.(X[1:9000, 1]) |> StateSpaceSet |> MtlVector
+# X_gpu = X_float32[1:9000] |> MtlVector
 # @benchmark complexity(Disorder(4; metric = GPUEuclidean()), X_gpu)
 # ```
 # ```julia
 # BenchmarkTools.Trial: 1 sample with 1 evaluation per sample.
-#  Single result which took 7.427 s (0.14% GC) to evaluate,
-#  with a memory estimate of 264.65 MiB, over 614902 allocations.
+#  Single result which took 9.918 s (0.22% GC) to evaluate,
+#  with a memory estimate of 264.68 MiB, over 614802 allocations.
 # ```
 
 # And now, computation is faster on the GPU than on the CPU. Therefore, it is important
