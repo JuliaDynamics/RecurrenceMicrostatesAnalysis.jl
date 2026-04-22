@@ -1,3 +1,4 @@
 ignore:
+  - "src/core/abstract_core.jl"
   - "src/core/gpu/**"
   - "src/utils/gpu_metrics/**"

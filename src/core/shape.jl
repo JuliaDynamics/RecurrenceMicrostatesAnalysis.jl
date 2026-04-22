@@ -16,9 +16,9 @@ All subtypes of `MicrostateShape` must include a field `expr`, which defines the
 [`RecurrenceExpression`](@ref) used to compute recurrences.
 
 # Implementations
-- [`Diagonal`](@ref)
-- [`Rect`](@ref)
-- [`Triangle`](@ref)
+- [`DiagonalMicrostate`](@ref)
+- [`RectMicrostate`](@ref)
+- [`TriangleMicrostate`](@ref)
 """
 abstract type MicrostateShape end
 
@@ -29,8 +29,9 @@ abstract type MicrostateShape end
 #.........................................................................................
 function compute_motif(
     shape::MicrostateShape,
-    x::AbstractArray{<: Real},
-    y::AbstractArray{<: Real},
+    ::RecurrenceExpression,
+    ::AbstractArray{<: Real},
+    ::AbstractArray{<: Real},
     ::Vector{Int},
     ::Vector{Int},
     ::SVector{N, Int}

@@ -6,9 +6,9 @@ export Parameter, optimize
 """
     Parameter
 
-Abstract supertype for free parameters that can be optimized using RMA.
+Abstract supertype for free parameters that can be optimized using **Recurrence Microstates Analysis**.
 
-# Implementations
+## Implementations
 - [`Threshold`](@ref)
 """
 abstract type Parameter end
@@ -17,17 +17,17 @@ abstract type Parameter end
 #   Implementation: optimize
 ##########################################################################################
 """
-    optimize(param::Parameter, qm::QuantificationMeasure, args...)
+    optimize(param::Parameter, args...)
 
-Optimize a free [`Parameter`](@ref) using the specified [`QuantificationMeasure`](@ref).
+Optimize a free [`Parameter`](@ref) using a specific complexity measure.
 
-!!! warning
+!!! warning "Performance"
     The `optimize` function may compute multiple distributions and can be computationally expensive.
     Avoid calling it inside performance-critical loops.
 """
-function optimize(param::Parameter, qm::QuantificationMeasure)
+function optimize(param::Parameter)
     T = typeof(param)
-    msg = "`optimize` not implemented without arguments for $T using the quantification measure $(typeof(qm))."
+    msg = "`optimize` not implemented without arguments for $T."
     throw(ArgumentError(msg))
 end
 

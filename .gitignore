@@ -10,3 +10,5 @@ Manifest.toml
 test/*.png
 test/*.bson
 *style.jl
+tutorial.md
+examples.md

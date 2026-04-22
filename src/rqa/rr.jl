@@ -2,81 +2,79 @@ export RecurrenceRate
 
 ##########################################################################################
 #   Quantification Measure: RecurrenceRate
+#   Complexity Measure Implementation
 ##########################################################################################
 """
-    RecurrenceRate <: QuantificationMeasure
+    RecurrenceRate <: ComplexityEstimator
+    RecurrenceRate(ε::Float64, N::Int = 1; kwargs...)
 
-Define the *Recurrence Rate* (RR) quantification measure.
+An estimator of the recurrence rate, used with [complexity](https://juliadynamics.github.io/DynamicalSystemsDocs.jl/complexitymeasures/stable/complexity/#ComplexityMeasures.complexity).
+It uses a \$1 \\times 1\$ microstate by default, but you can set a different size
+via the `N` parameter. The recurrence rate is estimated for a threshold `ε`.
 
-RR can be computed either from a distribution of recurrence microstates or directly from
-time-series data. In both cases, the computation is performed via the [`measure`](@ref)
-function.
+## Keyword arguments
+- `metric::Metric`: The metric used to compute recurrence.
+- `ratio`: The sampling ratio. The default is `0.1`.
+- `sampling`: The sampling mode. The default is [`SRandom`](@ref).
 
-#   Using a distribution
-```julia
-measure(::RecurrenceRate, dist::Probabilities)
+## Description
+
+Recurrence rate (RR) is defined as [Webber2015Recurrence](@cite)
+```math
+RR = \\frac{1}{K^2}\\sum_{i,j=1}^{K} r_{(i,j)}.
 ```
 
-##  Arguments
-- `dist`: A distribution of recurrence microstates.
-
-##  Returns
-A `Float64` corresponding to the estimated recurrence rate.
-
-##  Examples
-```julia
-using RecurrenceMicrostatesAnalysis, Distributions
-data = StateSpaceSet(rand(Uniform(0, 1), 1000))
-dist = distribution(data, 0.27, 3)
-rr = measure(RecurrenceRate(), dist)
+When estimating it using RMA, the recurrence rate is defined as the expected value
+over the microstate distribution:
+```math
+RR \\approx \\sum_{i=1}^{2^\\sigma} p_i^{(N)}RR_i^{(N)},
 ```
+where \$RR_i^{(N)}\$ denotes the recurrence rate of the \$i\$-th microstate.
 
-#   Using a time series
-```julia
-measure(::RecurrenceRate, [x]; kwargs...)
-```
-##  Arguments
-- `[x]`: Time-series data provided as a [`StateSpaceSet`](@ref).
-
-##  Returns
-A `Float64` corresponding to the estimated recurrence rate.
-
-##  Keyword Arguments
-- `N`: Integer defining the microstate size. The default value is `3`.
-- `threshold`: Threshold used to compute the RMA distribution. By default, this is chosen as
-    the threshold that maximizes the recurrence microstate entropy (RME).
-
-##  Examples
-```julia
-using RecurrenceMicrostatesAnalysis, Distributions
-data = StateSpaceSet(rand(Uniform(0, 1), 1000))
-rme = measure(RecurrenceRate(), data; N = 4)
-```
+!!! note "Performance"
+    Although estimating RR using RMA is faster than typical RQA computation,
+    the precision depends on the time series length. Therefore, for small time series,
+    i.e., \$K \\leq 1000\$, we strongly recommend using standard RQA with
+    [RecurrenceAnalysis.jl](https://juliadynamics.github.io/DynamicalSystemsDocs.jl/recurrenceanalysis/stable/quantification/#RecurrenceAnalysis.recurrencerate).
 """
-struct RecurrenceRate <: QuantificationMeasure end
+struct RecurrenceRate{N} <: ComplexityEstimator
+    ε::Real
+    metric::Metric
+    sampling::SamplingMode
+end
+
+function complexity(
+        c::RecurrenceRate{N},
+        x::Union{StateSpaceSet, Vector{<:Real}, <:AbstractGPUVector{<:SVector}}, 
+        y::Union{StateSpaceSet, Vector{<:Real}, <:AbstractGPUVector{<:SVector}} = x;
+    ) where {N}
+    
+    probs = probabilities(RecurrenceMicrostates(c.ε, N; metric = c.metric, sampling = c.sampling), x, y)
+    return measure(c, probs)
+end
+
+# -- Constructors
+RecurrenceRate(ε::Real, N::Int = 1; metric::Metric = DEFAULT_METRIC, ratio::Float64 = 0.1, sampling::SamplingMode = SRandom(ratio)) = RecurrenceRate{N}(ε, metric, sampling)
 
 ##########################################################################################
-#   Implementation: measure
+#   Internal: measure from probabilities
 ##########################################################################################
-#       Using as input a RMA distribution.
-#.........................................................................................
-function measure(::RecurrenceRate, dist::Probabilities)
+# This is an internal function which estimates the recurrence rate from a recurrence microstate
+# outcome space, using a given probability distribution that was computed from this
+# outcome space.
+
+# This function works for any recurrence microstates probabilities.
+##########################################################################################
+function measure(::RecurrenceRate, probs::Probabilities)
     result = 0.0
-    hv = Int(log2(length(dist)))
+    hv = Int(log2(length(probs)))
 
-    for i in eachindex(dist)
+    for i in eachindex(probs)
         rr = count_ones(i - 1) / hv
-        result += rr * dist[i]
+        result += rr * probs[i]
     end
 
     return result
-end
-#.........................................................................................
-#       Using as input a time series
-#.........................................................................................
-function measure(::RecurrenceRate, x::StateSpaceSet; n::Integer = 3, threshold::Real = optimize(Threshold(), RecurrenceEntropy(), x, n)[1])
-    dist = distribution(x, threshold, n)
-    return measure(RecurrenceRate(), dist)
 end
 
 ##########################################################################################

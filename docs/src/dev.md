@@ -1,291 +1,236 @@
-#   RecurrenceMicrostatesAnalysis.jl for Devs
+#   [RecurrenceMicrostatesAnalysis.jl for devs](@id devs)
+
 !!! tip
-    All pull requests that introduce new functionality must be thoroughly tested and documented. Tests are required only for methods that you extend. We recommend reading the [Good Scientific Code Workshop](https://github.com/JuliaDynamics/GoodScientificCodeWorkshop).
+    All pull requests that introduce new functionality must be thoroughly tested and documented.
+    Tests are required only for the methods you extend. Always remember to add docstrings to
+    your implementations, as well as tests to validate them.
 
-    Always remember to add docstrings to your implementations, as well as tests to validate them.
+    We recommend reading the
+    [Good Scientific Code Workshop](https://github.com/JuliaDynamics/GoodScientificCodeWorkshop)
 
-##  RecurrenceMicrostatesAnalysis.jl backend
-**RecurrenceMicrostatesAnalysis.jl** supports multiple backends, depending on the usage context. Each backend is implemented based on an [`RMACore`](@ref), which defines how the package computes a [`histogram`](@ref).
+## Backend of RecurrenceMicrostatesAnalysis.jl
 
-There are two main backend implementations:
+**RecurrenceMicrostatesAnalysis.jl** has multiple backends, depending on the usage context.
+Each backend is implemented based on an internal struct `RMACore` or on the input data type.
 
-- [`CPUCore`](@ref): defines how distributions are computed on the CPU. The default implementation is [`StandardCPUCore`](@ref).
-- [`GPUCore`](@ref): defines how distributions are computed on the GPU. The default implementation is [`StandardGPUCore`](@ref).
+There are three backend implementations:
 
-```@docs
-RMACore
-CPUCore
-GPUCore
-StandardCPUCore
-StandardGPUCore
-```
-!!! info
-    Backend implementations are located in `src/core/cpu_core.jl` and `src/core/gpu/gpu_core.jl`. If you plan to implement a new backend, we recommend opening an [issue](https://github.com/DynamicsUFPR/RecurrenceMicrostatesAnalysis.jl/issues) on GitHub beforehand to discuss the design.
+- For sequential data using the CPU: it internally uses a `CPUCore <: RMACore`, which defines that
+    the process must run on the CPU, and the input data is a [`StateSpaceSet`](@ref) (or a `Vector{<:Real}`).
 
-### Implementing an RMACore
-Although it is possible to implement a custom [`RMACore`](@ref) directly, we **do not recommend** doing so. Instead, we strongly suggest implementing either a [`CPUCore`](@ref) or a [`GPUCore`](@ref).
+- For spatial data using the CPU: it internally uses a `CPUCore <: RMACore`, which defines that
+    the process must run on the CPU, and the input data is an `Array`.
 
-This approach allows you to reuse utility functions such as `get_offsets` and `get_power_vector`, which expect an [`RMACore`](@ref) as input. Since these functions have different implementations for [`CPUCore`](@ref) and [`GPUCore`](@ref), writing a custom `RMACore` would require reimplementing them.
+- For sequential data using the GPU: it internally uses a `GPUCore <: RMACore`, which defines that
+    the process must run on the GPU, and the input data is an `AbstractGPUVector{<:SVector}`.
 
-To avoid this, define a new struct that subtypes [`CPUCore`](@ref) or [`GPUCore`](@ref). In this case, the only required method to implement is [`histogram`](@ref). For example:
-```@example mycore
-using Random
-using ComplexityMeasures
-import RecurrenceMicrostatesAnalysis as rma
-struct MyCore{M<:rma.MicrostateShape, S<:rma.SamplingMode} <: rma.CPUCore{M, S}
-    shape::M
-    sampling::S
-end
-```
+Note that there is a significant difference between the input data types, in such a way that
+`RMACore` is just an auxiliary struct used to differentiate the hardware backend internally.
 
-```@example mycore
-function histogram(
-    core::MyCore,
-    x::rma.StateSpaceSet,
-    y::rma.StateSpaceSet
-)
-    
-    # Construct the sampling space and determine the number of samples
-    space = rma.SamplingSpace(core.shape, x, y)
-    samples = rma.get_num_samples(core.sampling, space)
+!!! info "Backend"
+    The package backends are located at `src/core/cpu_core.jl` (CPU) and `src/core/gpu/gpu_core.jl` (GPU).
 
-    # Precompute power vector and offsets
-    pv = rma.get_power_vector(core, core.shape)
-    offsets = rma.get_offsets(core, core.shape)
+You do not need to fully understand how the backend operates to define something new in the package.
+However, it is important to understand how the backend requires internal functions based on
+`RMACore` or the input data type. For example, when implementing a [`RecurrenceExpression`](@ref),
+the CPU structure uses a [`recurrence`](@ref) function, while the GPU structure uses a
+`gpu_recurrence` function.
 
-    # Allocate histogram
-    hist = zeros(Int, rma.get_histogram_size(core.shape))
+## Adding a new Recurrence Expression
 
-    # Task-local RNG (ignored for Full sampling)
-    local_rng = TaskLocalRNG()
-
-    # Histogram computation
-    for m in 1:samples
-        #   Get the sample.
-        i, j = rma.get_sample(core, core.sampling, space, local_rng, m)
-        #   Compute the microstate index.
-        idx = rma.compute_motif(core.shape.expr, x, y, i, j, pv, offsets)
-        @inbounds hist[idx] += 1
-    end
-
-    return Counts(hist, eachindex(hist))
-end
-```
-
-!!! info
-    To ensure compatibility with the internal API, custom backends must support the keyword argument `threads` (for [`CPUCore`](@ref)) or `groupsize` (for [`GPUCore`](@ref)), as required by the [`distribution`](@ref) overloads.
-
-```@example mycore
-data = rma.StateSpaceSet(rand(1000))
-histogram(MyCore(rma.Rect(rma.Standard(0.27), 2), rma.SRandom(0.05)), data, data)
-```
-
-!!! warning
-    CPU and GPU backends differ significantly in their execution models. In the GPU backend, random samples must be generated before histogram computation. The histogram itself is computed inside the `gpu_histogram!` kernel.
-
-    See the [`StandardGPUCore`](@ref) implementation in `src/core/gpu_core.jl` for details.
-
-!!! danger
-    **RecurrenceMicrostatesAnalysis.jl** provides multiple backends that are only partially compatible.
-
-    - CPU backends do not necessarily support spatial data.
-    - Spatial analyses require dedicated implementations.
-    - The GPU backend is fully incompatible with spatial data.
-
-    Please consider these limitations carefully when extending or using backend functionality.
-
-##  Adding a New Recurrence Function
 ### Steps
-1. Define the mathematical expression of your recurrence function. It must return a binary value: `0` for non-recurrence and `1` for recurrence.
-2. Define a new type `YourType <: `[`RecurrenceExpression`](@ref). Constant parameters (e.g., thresholds and metric) should be fields of this type.
-3. Implement the appropriate [`recurrence`](@ref) dispatch:
-   - Time series:  
-     `recurrence(expr::YourType, x::StateSpaceSet, y::StateSpaceSet, i::Int, j::Int)`
-   - Spatial data:  
-     `recurrence(expr::YourType, x::AbstractArray{<:Real}, y::AbstractArray{<:Real}, i::NTuple{N,Int}, j::NTuple{M,Int})`
+
+1. Define the mathematical expression of your recurrence expression. It must return a binary value:
+    `UInt(0)` for non-recurrence and `UInt(1)` for recurrence.
+2. Define a new type `YourType <: RecurrenceExpression`. Constant parameters (e.g., recurrence threshold and metric)
+    should be fields of this type.
+3. Implement the appropriate `recurrence` dispatch:
+    - Sequential data: `recurrence(expr::YourType, x::StateSpaceSet, y::StateSpaceSet, i::Int, j::Int)`
+    - Spatial data: `recurrence(expr::YourType, x::AbstractArray{<:Real}, y::AbstractArray{<:Real}, i::NTuple{N,Int}, j::NTuple{M,Int})`
+    - GPU: `gpu_recurrence(expr::YourType, x, y, i, j, n)`
 4. Add a docstring describing the mathematical definition and relevant references.
-5. Add the recurrence expression to `docs/src/tutorial/recurrences.md`.
+5. Add the recurrence expression to `docs/src/api.md`.
 6. Add the expression to the [`RecurrenceExpression`](@ref) docstring.
-7. Add tests to `test/distributions.jl` under the test set `recurrence expressions (with CPUCore)`.
-
-!!! warning
-    A recurrence function must always return `UInt(0)` or `UInt(1)`.
-
-!!! todo
-    To support GPU execution, also implement `gpu_recurrence(expr::YourType, x, y, i, j, n)`. See [`Standard`](@ref) for reference.
-
-## Adding a New Sampling Mode
-
-### Steps
-1. Define how the sampling mode operates: which microstates are sampled, from which regions, and in what quantity. The [`SamplingSpace`](@ref) must be taken into account when designing the sampling logic.
-2. Define a new struct that is a subtype of [`SamplingMode`](@ref). The struct may be empty (e.g. [`Full`](@ref)) or contain parameters such as a sampling rate (e.g. [`SRandom`](@ref)).
-3. Implement the dispatch `get_num_samples(mode::YourType, space::SamplingSpace)` which determines the number of samples to be drawn given the sampling mode and the sampling space. Two sampling space types exist: `SSRect2` (time series) and `SSRectN` (spatial data).
-4. Implement the dispatch `get_sample(core::RMACore, mode::YourType, space::SamplingSpace)` which returns the positions to be sampled. Separate implementations may be required for each [`RMACore`](@ref) and each [`SamplingSpace`](@ref). Full coverage is encouraged but not mandatory, provided that the supported cases are clearly documented in the docstring.
-5. Add a docstring to your sampling mode describing its behavior and initialization. Follow the style of the existing sampling modes listed in [Implemented sampling modes](@ref).
-6. Add your sampling mode to the list in `docs/src/tutorial/shapes_and_sampling.md`.
-7. Add your type to the list in the [`SamplingMode`](@ref) docstring.
-8. Add tests in `test/distributions.jl` under the test set `sampling mode (CPU backend)`.
-
-!!! warning
-    The `get_sample` logic differs between CPU and GPU backends. On the CPU, random samples are generated during histogram computation. On the GPU, samples must be generated beforehand, outside the kernel, and the kernel operates only on precomputed values.
-    
-##  Adding a new Microstate Shape
-Defining a Microstate Shape is one of the most challenging tasks in this package (except for backend development, which is described by an [`RMACore`](@ref)).
-
-A microstate shape acts as an intermediate structure between the sampling process and the recurrence function. Given an initial RP position $(i, j)$, it determines which additional recurrences must be evaluated and computes them using the recurrence expression. The resulting microstate is then converted into a decimal representation, which is used as an index in the histogram.
-
-### Design considerations
-
-Before implementing a microstate shape, it is essential to define its structure and reading order. For example, square microstates are typically read row-wise, while triangular microstates may be read column-wise. Each position in the microstate structure must be associated with a power of two in order to convert the binary microstate into a decimal index.
-```math
-\begin{pmatrix}
-2^0 & 2^1 & 2^2 \\
-2^3 & 2^4 & 2^5 \\
-2^6 & 2^7 & 2^8
-\end{pmatrix}
-```
-
-### Implementation steps
-Define a new struct that is a subtype of [`MicrostateShape`](@ref). The struct must include a field `expr`, which stores the [`RecurrenceExpression`](@ref) used to compute recurrences at runtime.
-
-Unlike [`RecurrenceExpression`](@ref) and [`SamplingMode`](@ref), a [`MicrostateShape`](@ref) does not require the implementation of `recurrence` or `get_sample` methods. Microstate computation is handled by the unified `compute_motif` function for the [`CPUCore`](@ref), and by `gpu_compute_motif` for the [`GPUCore`](@ref).
-
-The only exception is spatial data, for which a custom `compute_motif` implementation is required. For example:
-```julia
-@inline function compute_motif(
-    shape::RectN,
-    x::AbstractArray{<: Real},
-    y::AbstractArray{<: Real},
-    idx::Vector{Int},
-    itr::Vector{Int},
-    power_vector::SVector{N, Int}
-) where {N}
-    
-    index = 0
-    dim = ndims(x) - 1
-    copy!(itr, idx)
-
-    @inbounds @fastmath for p in power_vector
-
-        i = ntuple(k -> itr[k], dim)
-        j = ntuple(k -> itr[dim + k], length(shape.structure) - dim)
-
-        index += recurrence(shape.expr, x, y, i, j) * p
-
-        itr[1] += 1
-        for k in 1:length(shape.structure) - 1
-            if (itr[k] > idx[k] + (shape.structure[k] - 1))
-                itr[k] = idx[k]
-                itr[k + 1] += 1
-            else
-                break
-            end
-        end
-    end
-
-    return index + 1
-end
-```
-
-Although time-series microstate shapes do not require a custom `compute_motif` implementation, three utility functions must be defined to describe the properties of the shape:
-
-1. `get_histogram_size(shape::YourType)`  
-   Returns the length of the histogram, given by $2^\sigma$, where $\sigma$ is the number of recurrences in the microstate structure.
-
-2. `get_power_vector(core::RMACore, shape::YourType)`  
-   Returns the vector of powers of two used to convert the microstate into its decimal representation. This function differs between CPU and GPU backends due to integer size (`Int` on CPU, `Int32` on GPU).
-
-3. `get_offsets(core::RMACore, shape::YourType)`  
-   Returns the offsets relative to the initial position $(i, j)$ that define the remaining recurrence positions of the microstate. This function must be consistent with `get_power_vector` and also differs between CPU and GPU backends.
-
-!!! tip
-    For improved performance, we strongly recommend using `@generated` functions when implementing these utilities (except for spatial data).
-
-Additionally, a [`SamplingSpace`](@ref) must be defined for the new microstate shape. For time-series data, this is typically `SSRect2`, while spatial data require `SSRectN`.
-
-The sampling space must be initialized using the following constructor:
-```julia
-SamplingSpace(
-    ::MicrostateShape, 
-    x::Union{StateSpaceSet, AbstractGPUVector{SVector{N, Float32}}}, 
-    y::Union{StateSpaceSet, AbstractGPUVector{SVector{N, Float32}}}
-)
-```
-
-After implementation, the following steps are required:
-
-1. Add a docstring to your [`MicrostateShape`](@ref), explaining its behavior and initialization.
-2. Add the definition to the section [Implemented microstates shapes](@ref) in `docs/src/tutorial/shapes_and_sampling.md`.
-3. Add the type to the list in the [`MicrostateShape`](@ref) docstring.
-4. Add tests to `test/distributions.jl` under the test set `motif shapes (with CPUCore)`.
+7. Add tests to `test/distributions.jl` and `test/recurrences.jl`.
 
 ### Example
-First, we define the shape struct.
-```@example line
+
+Let's define a "recurrence" expression as:
+```math
+r_{(i,j)} = \Theta(\|\vec{x}_i - \vec{x}_j\| - \varepsilon).
+```
+
+First, we define our struct:
+```@example dev
 using RecurrenceMicrostatesAnalysis
-struct Line{N, B, E <: RecurrenceExpression} <: MicrostateShape
-    expr::E
+using Distances: Euclidean, Metric, evaluate
+
+struct MyRecurrenceExpr{T <: Real, M <: Metric} <: RecurrenceExpression{T, M}
+    ε::T
+    metric::M
 end
 
-Line(expr::E, N; B = 2) where {E} = Line{N, B, E}(expr)
+MyRecurrenceExpr(ε) = MyRecurrenceExpr(ε, Euclidean())
 ```
 
-Next, we implements the three utils functions.
-```@example line
-@generated function get_histogram_size(::Line{N, B, E}) where {N, B, E}
-    size = B^(N)
-    return :( $size )
-end
-```
-```@example line
-@generated function get_power_vector(::CPUCore, ::Line{N, B, E}) where {N, B, E}
-    expr = :(SVector{$N}( $([:(B^$i) for i in 0:(N-1)]... ) ))
-    return expr
-end
-```
-```@example line
-@generated function get_offsets(::CPUCore, ::Line{N, B, E}) where {N, B, E}
-    elems = [ :(SVector{2, Int}(0, $h)) for h in 0:(N - 1)]
-    return :( SVector{$N, $(SVector{2, Int})}( $(elems...) ) )
+Next, we define the recurrence function:
+```@example dev
+@inline function RecurrenceMicrostatesAnalysis.recurrence(
+    expr::MyRecurrenceExpr,
+    x::StateSpaceSet,
+    y::StateSpaceSet,
+    i::Int,
+    j::Int,
+)
+    distance = @inbounds evaluate(expr.metric, x.data[i], y.data[j])
+    return UInt8(distance ≥ expr.ε)
 end
 ```
 
-Finally, we define our sampling space: (can be only for time series)
-```@example line
-using GPUArraysCore, StaticArrays
-SamplingSpace(
-    ::Line{N, B, E}, 
-    x::Union{StateSpaceSet, AbstractGPUVector{SVector{D, Float32}}}, 
-    y::Union{StateSpaceSet, AbstractGPUVector{SVector{D, Float32}}}
-) where {N, B, E<:RecurrenceExpression, D} = RecurrenceMicrostatesAnalysis.SSRect2(length(x), length(y) - N + 1)
+And that's it:
+```@example dev
+rmspace = RecurrenceMicrostates(MyRecurrenceExpr(0.27), 3)
 ```
 
-And done, the shape can be used 😃. Remember to document it!
+```@example dev
+X = randn(1000)
+probabilities(rmspace, X)
+```
 
-!!! warning
-    The backend needs to have access to the util functions, them it is important to do the implementation inside the package module.
-
-## Adding a New Quantifier
-### Steps
-1. Define a new quantifier type that is a subtype of [`QuantificationMeasure`](@ref).
-2. Implement the corresponding [`measure`](@ref) dispatch used to compute the quantifier.
-3. Add a docstring to the quantifier type, following the style of existing quantifiers.
-4. Document the quantifier in `docs/src/tutorial/quantifiers.md`, including its definition, mathematical formulation, references, and examples when possible.
-5. Add the quantifier to the list in the [`QuantificationMeasure`](@ref) docstring.
-6. Add tests for the quantifier in `test/rqa.jl`.
-
-
-## Adding a New GPU Metric
-Since the [Distances.jl](https://github.com/JuliaStats/Distances.jl) package is not compatible with GPU execution, metric evaluations must be implemented manually to enable GPU support.
+## Adding a new Sampling Mode
 
 ### Steps
+
+1. Define how the sampling mode operates: which microstates are sampled, from which regions, and in what quantity.
+    The [`SamplingSpace`](@ref) must be taken into account when designing the sampling logic.
+2. Define a new struct that is a subtype of [`SamplingMode`](@ref). The struct may be empty (e.g., [`Full`](@ref)) or
+    contain parameters such as a sampling ratio (e.g., [`SRandom`](@ref)).
+3. Implement the dispatch `get_num_samples(mode::YourType, ::SamplingSpace)`, which determines the number of samples
+    to be drawn given the sampling mode and the sampling space.
+4. Implement the dispatch `get_sample(::RMACore, ::YourType, space::SamplingSpace, rng, m)`, which returns the starting
+    pair $(i, j)$ to construct the microstate. Here, `RMACore` defines whether it is running on the CPU or GPU, `rng` is
+    a random number generator, and `m` is a counter of microstates.
+5. Add a docstring to your sampling mode describing its behavior and initialization.
+6. Add your sampling mode to `docs/src/api.md`.
+7. Add the expression to the [`SamplingMode`](@ref) docstring.
+8. Add tests to `test/distributions.jl` and `test/sampling.jl`.
+
+## Adding a new Microstate Shape
+
+### Steps
+
+1. Define your microstate design. It essentially determines the microstate structure and reading order. For example,
+    square microstates are read row-wise, while triangular microstates may be read column-wise. Each position in
+    the microstate structure must be associated with a power of two in order to convert the binary microstate into
+    a decimal index.
+2. Define a new struct that is a subtype of [`MicrostateShape`](@ref).
+3. Implement the dispatch `get_histogram_size(::MyShape)`, which returns the histogram length.
+4. Implement the dispatch `get_power_vector(::RMACore, ::MyShape)`, which returns the power vector used to
+    read the microstate as an integer.
+5. Implement the dispatch `get_offsets(::RMACore, ::MyShape)`, which returns which positions are accessed from $(i, j)$
+    to construct the microstate.
+6. Define how your shape reacts to a [`SamplingSpace`](@ref) by implementing `SamplingSpace(::MyType, x, y)`.
+7. Add a docstring to your microstate shape describing its behavior and initialization.
+8. Add your microstate shape to `docs/src/api.md`.
+9. Add the expression to the [`MicrostateShape`](@ref) docstring.
+10. Add tests to `test/distributions.jl` and `test/shapes.jl`.
+
+### Example
+
+As an example, let's try to construct the struct to obtain the microstate:
+```math
+\begin{matrix}
+r_{(i,j)} & & r_{(i, j+2)} \\
+ & r_{(i+1, j+1)} & \\ 
+ r_{(i+2,j)} & & r_{(i+2, j+2)}
+\end{matrix}
+```
+
+For simplicity, we are not going to generalize it for arbitrary sizes 😅. First, let's define our struct:
+```@example dev
+struct MyMicrostateShape <: MicrostateShape end
+```
+
+Next, we need to define the histogram size, which will be returned by `get_histogram_size`. It is $2^\sigma$,
+where $\sigma$ is the number of recurrences contained within the microstate shape. For a square microstate we
+have $\sigma = N^2$, and for a triangular microstate $\sigma = N(N - 1)\div 2$. In our example, it is simple since
+our shape is fixed: $\sigma = 5$, so:
+```@example dev
+RecurrenceMicrostatesAnalysis.get_histogram_size(::MyMicrostateShape) = 2^5
+```
+
+The next step is to define our power vector. It determines how we read our microstate as an integer. Each position
+should be associated with a power of 2:
+```math
+\begin{matrix}
+2^0r_{(i,j)} & & 2^1r_{(i, j+2)} \\
+ & 2^2r_{(i+1, j+1)} & \\ 
+ 2^3r_{(i+2,j)} & & 2^4r_{(i+2, j+2)}
+\end{matrix}
+```
+
+Then, we write:
+```@example dev
+RecurrenceMicrostatesAnalysis.get_power_vector(::RecurrenceMicrostatesAnalysis.CPUCore, ::MyMicrostateShape) = SVector{5, Int}([1, 2, 4, 8, 16])
+```
+
+Finally, we need to define the set of offsets used to construct the microstate from the trajectory.
+Note that each offset must have the same index as the corresponding element in the power vector.
+```@example dev
+function RecurrenceMicrostatesAnalysis.get_offsets(::RecurrenceMicrostatesAnalysis.CPUCore, ::MyMicrostateShape)
+    elems = [
+        SVector{2, Int}([0, 0]),
+        SVector{2, Int}([0, 2]),
+        SVector{2, Int}([1, 1]),
+        SVector{2, Int}([2, 0]),
+        SVector{2, Int}([2, 2])
+    ]
+
+    return SVector{5, SVector{2, Int}}(elems)
+end
+```
+
+Now, we just need to define how our microstate will behave with respect to a sampling space. It is not necessary to define it
+for all available sampling spaces, but you need to do so for at least one of them.
+```@example dev
+RecurrenceMicrostatesAnalysis.SamplingSpace(
+    ::MyMicrostateShape, 
+    x::StateSpaceSet, 
+    y::StateSpaceSet
+) = RecurrenceMicrostatesAnalysis.SSRect2(length(x) - 2, length(y) - 2)
+```
+
+And that's it, we can now use our new microstate shape 🙂 (and why not combine it with the previous recurrence expression?!)
+```@example dev
+rmspace = RecurrenceMicrostates(MyRecurrenceExpr(0.27), MyMicrostateShape())
+```
+
+```@example dev
+probabilities(rmspace, X)
+```
+
+## Adding a new quantity estimator
+
+Since **RecurrenceMicrostatesAnalysis.jl** uses the same structure as **ComplexityMeasures.jl**
+to estimate or measure complexity values (e.g., determinism, disorder, etc.), the method to implement new
+features is very similar.
+
+To add new quantity estimators, refer to the [ComplexityMeasures.jl Dev Docs](https://juliadynamics.github.io/DynamicalSystemsDocs.jl/complexitymeasures/stable/devdocs/).
+
+Tests for new quantifiers implemented on **RecurrenceMicrostatesAnalysis.jl** need to be add to `test/rqa.jl`.
+
+## Adding a new GPU metric
+
+Due to the incompatibility of **Distances.jl** with GPUs, it may be necessary to redefine some metrics
+to use them with the **RecurrenceMicrostatesAnalysis.jl** GPU backend.
+
+### Steps
+
 1. Define a new type that is a subtype of [`GPUMetric`](@ref).
-2. Implement the dispatch  
-   `gpu_evaluate(::YourMetric, x, y, i, j, n)`  
-   where `x` and `y` are `AbstractGPUVector{SVector{N, Float32}}`, `i` and `j` are indices, and `n` is the dimensionality of the vectors.
-3. Add a docstring describing the metric, including its mathematical definition and parameters. Include references when applicable.
-4. Document the metric in the section [Implemented GPU metrics](@ref) in `docs/src/tutorial/gpu.md`.
-5. Add a reference to the metric in the [`GPUMetric`](@ref) docstring.
-
-!!! danger
-    GPU backends in **RecurrenceMicrostatesAnalysis.jl** operate exclusively with `Float32`. The use of `Float64` is not supported.
+2. Implement the dispatch `gpu_evaluate(::YourMetric, x, y, i, j, n)`. Here, `i` and `j` indicate which
+    positions of the `AbstractGPUVector` are accessed (`i` for `x`, and `j` for `y`), and `n` is the number
+    of dimensions of the system.
+3. Add a docstring to your metric describing it.
+4. Add your metric to `docs/src/api.md`.
+5. Add the expression to the [`GPUMetric`](@ref) docstring.
+6. Add tests to `test/utils.jl`.

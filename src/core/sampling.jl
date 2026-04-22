@@ -34,9 +34,9 @@ end
 #.........................................................................................
 SamplingSpace(
     shape::MicrostateShape, 
-    x::Union{StateSpaceSet, AbstractGPUVector{SVector{N, Float32}}}, 
-    y::Union{StateSpaceSet, AbstractGPUVector{SVector{N, Float32}}}
-) where {N} = throw(ArgumentError("`SamplingSpace` not implemented for a microstate shape $(typeof(shape)), and input data types $(typeof(x)) for `x`, and $(typeof(y)) for `y`."))
+    x::Union{StateSpaceSet, AbstractGPUVector{<: SVector}}, 
+    y::Union{StateSpaceSet, AbstractGPUVector{<: SVector}}
+) = throw(ArgumentError("`SamplingSpace` not implemented for a microstate shape $(typeof(shape)), and input data types $(typeof(x)) for `x`, and $(typeof(y)) for `y`."))
 #.........................................................................................
 #   Based on spatial data: SRP & CSRP (CPU)
 #.........................................................................................
