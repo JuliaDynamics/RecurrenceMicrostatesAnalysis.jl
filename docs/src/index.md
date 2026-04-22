@@ -1,5 +1,9 @@
 #   RecurrenceMicrostatesAnalysis.jl
 
+```@docs
+RecurrenceMicrostatesAnalysis
+```
+
 !!! info "Citation and credit"
     If you find this package useful, please consider giving it a star on GitHub and don't forget to cite [our work](https://doi.org/10.1063/5.0293708). 😉
 
