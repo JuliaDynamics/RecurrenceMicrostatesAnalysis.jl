@@ -1,6 +1,7 @@
 # API
 
 ### [Input data for RecurrenceMicrostatesAnalysis.jl](@id input_data)
+
 **RecurrenceMicrostatesAnalysis.jl** accepts three types of input, each associated with a different backend:
 - [`StateSpaceSet`](@ref) or `Vector{<:Real}`: used for multivariate time series, datasets, or state-space representations.
 - `AbstractArray{<:Real}`: used for spatial data, enabling RMA to be applied within the generalized framework of Spatial Recurrence Plots (SRP) [Marwan2007Spatial](@cite). We give some examples about its use in [Spatial data](@ref).
@@ -14,7 +15,8 @@ StateSpaceSet
 ```
 
 ### [Output data from RecurrenceMicrostatesAnalysis.jl](@id output_data)
-When computing the RMA distribution, **RecurrenceMicrostatesAnalysis.jl** returns a [`Probabilities`](@ref).
+
+When computing the RMA distribution, **RecurrenceMicrostatesAnalysis.jl** returns a [`Probabilities`](@ref) or [`Counts`](@ref).
 This type is provided by **ComplexityMeasures.jl**, allowing this package to interoperate naturally with its tools and workflows.
 
 ```@docs
@@ -23,11 +25,13 @@ Counts
 ```
 
 ## Recurrence Microstates
+
 ```@docs
 RecurrenceMicrostates
 ```
 
 ### Recurrence expressions
+
 ```@docs
 RecurrenceExpression
 recurrence
@@ -36,6 +40,7 @@ CorridorRecurrence
 ```
 
 ### Microstate shapes
+
 ```@docs
 MicrostateShape
 RectMicrostate
@@ -44,6 +49,7 @@ TriangleMicrostate
 ```
 
 ### Sampling modes
+
 ```@docs
 SamplingMode
 SRandom
@@ -51,16 +57,18 @@ Full
 ```
 
 ### Sampling space
+
 !!! todo "Future implementation"
     We pretend to expand the [`RecurrenceMicrostates`](@ref) structure to also consider
     a setted space from the recurrence plot as source of information to construct
     the RMA distribution.
-    
+
 ```@docs
 SamplingSpace
 ```
 
 ## Recurrence Quantification Analysis
+
 ```@docs
 RecurrenceRate
 RecurrenceDeterminism
@@ -72,6 +80,7 @@ rma
 ```
 
 ## Optimization
+
 ```@docs
 Parameter
 optimize
@@ -79,6 +88,7 @@ Threshold
 ```
 
 ## Operations
+
 ```@docs
 Operation
 operate

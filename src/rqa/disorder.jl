@@ -9,7 +9,7 @@ export Disorder, WindowedDisorder
 # Computed by maximizing the `PartialDisorder`.
 #
 # - `PartialDisorder`: it is an internal definition, which computes the entropy associated
-# wit disorder for an specific threshold. It is computed using the disorder for all 
+# wit disorder for an specific threshold. It is computed using the disorder for all
 # classes, which are computed using `ClassPartialDisorder`.
 #
 # - `ClassPartialDisorder`: it is the entropy quantity associated with disorder for an
@@ -86,20 +86,20 @@ This estimator is equivalent to [`Disorder`](@ref), but computes it by splitting
 length `W`, returning a vector of measured disorder values for each window.
 
 ## Keyword arguments
-- `metric::Metric`: The metric used to compute recurrence.
+- `metric`: The metric used to compute recurrence.
 - `threshold_range::Int`: The number of threshold values used to estimate disorder.
 - `step::Int`: The step between windows. The default is `W`.
 """
-struct WindowedDisorder{W, N} <: ComplexityEstimator
+struct WindowedDisorder{W, N, M} <: ComplexityEstimator
     labels::Vector{Vector{Int}}
-    metric::Metric
+    metric::M # Typically metric
     threshold_range::Int
     win_step::Int
 end
 
-struct PartialDisorder{N} <: ComplexityEstimator
+struct PartialDisorder{N, RM <: RecurrenceMicrostates} <: ComplexityEstimator
     labels::Vector{Vector{Int}}
-    rmspace::RecurrenceMicrostates
+    rmspace::RM
 end
 
 struct ClassPartialDisorder <: ComplexityEstimator
@@ -108,7 +108,7 @@ struct ClassPartialDisorder <: ComplexityEstimator
 end
 
 function complexity(
-        c::Disorder{N}, 
+        c::Disorder{N},
         x::Union{StateSpaceSet, Vector{<:Real}, <:AbstractGPUVector{<:SVector}}
     ) where {N}
 
@@ -145,7 +145,7 @@ function complexity(
     ) where {N, W}
 
     windowed_data = [ StateSpaceSet(x[(i + 1):(i + W)]) for i ∈ 0:c.win_step:(size(x, 1) - W) ]
-    
+
     #   We need to define the threshold range here.
     s = ceil(Int, length(windowed_data) * 0.1)
     opt_ths = zeros(Float64, s)
@@ -175,7 +175,7 @@ function complexity(
     for j ∈ eachindex(th_range)
         rmspace = RecurrenceMicrostates(th_range[j], N; sampling = Full(), metric = c.metric)
         partial = PartialDisorder{N}(c.labels, rmspace)
-        
+
         for i ∈ eachindex(windowed_data)
             ξ[i, j] = complexity(partial, windowed_data[i])
         end
@@ -234,7 +234,7 @@ function complexity(
     for j ∈ eachindex(th_range)
         rmspace = RecurrenceMicrostates(th_range[j], N; sampling = Full(), metric = c.metric)
         partial = PartialDisorder{N}(c.labels, rmspace)
-        
+
         for i ∈ eachindex(windowed_gpu)
             ξ[i, j] = complexity(partial, windowed_gpu[i])
         end
@@ -244,7 +244,7 @@ function complexity(
 end
 
 function complexity(
-        c::PartialDisorder{N}, 
+        c::PartialDisorder{N},
         x::Union{<: StateSpaceSet{D}, <:AbstractGPUVector{<: SVector{D}}}
     ) where {N, D}
 
@@ -260,7 +260,7 @@ function complexity(
 end
 
 function complexity(
-        c::ClassPartialDisorder, 
+        c::ClassPartialDisorder,
         x::Union{StateSpaceSet, <:AbstractGPUVector{<:SVector}}
     )
     probs = probabilities(c.rmspace, x)
@@ -280,7 +280,7 @@ ClassPartialDisorder(rexpr::RecurrenceExpression, c::Int, N::Int = 4) = ClassPar
 # outcome space, using a given probability distribution that was computed from this
 # outcome space.
 
-# This function works for [`DiagonalMicrostate`](@ref) with length 3, 
+# This function works for [`DiagonalMicrostate`](@ref) with length 3,
 # or \$3 \\times 3\$ [`RectMicrostate`](@ref). Any other input will returns an error.
 ##########################################################################################
 function measure(c::ClassPartialDisorder, probs::Probabilities)
@@ -358,7 +358,7 @@ function compute_labels(N::Int; S = collect(permutations(1:N)))
 
         #   Compute transposes
         for label in copy(labels[end])
-            
+
             #   Transpose the label
             microstate = operate(transposition, label)
 

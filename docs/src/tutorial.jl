@@ -7,7 +7,7 @@
 
 # !!! info "ComplexityMeasures.jl"
 #     RecurrenceMicrostatesAnalysis.jl interfaces with, and extends, ComplexityMeasures.jl.
-#     It can enhance your understanding if you have first view the [tutorial of ComplexityMeasures.jl](https://juliadynamics.github.io/DynamicalSystemsDocs.jl/complexitymeasures/stable/tutorial/). 
+#     It can enhance your understanding if you have first view the [tutorial of ComplexityMeasures.jl](https://juliadynamics.github.io/DynamicalSystemsDocs.jl/complexitymeasures/stable/tutorial/).
 #     Regardless the current tutorial is written to be self-contained.
 
 # ## Crash-course into RMA
@@ -48,7 +48,7 @@
 # is done via the ComplexityMeasures.jl interface and it is relatively straightforward.
 # We first specify the options of [`RecurrenceMicrostates`](@ref),
 # which essentially means e.g., what sort of distance threshold defines a recurrence,
-# and what is maximum microstate size to consider. Then we pass this to functions
+# and what maximum microstate size to consider. Then we pass this to functions
 # like `probabilities`, `entropy`, etc.
 
 # Let's first generate some data of a chaotic map using **DynamicalSystems.jl**:
@@ -71,7 +71,7 @@ X
 
 # Notice that `X` is already a [`StateSpaceSet`](@ref). Because  **RecurrenceMicrostatesAnalysis.jl**
 # is part of **DynamicalSystems.jl**, this data type is the preferred input type.
-# Other types are also possible as we described in the [API](@ref).
+# Other types are also possible as we described in the [API](@ref input_data).
 
 # Now, we specify the recurrence microstate configuration
 
@@ -231,7 +231,7 @@ lines(wd)
 # in the maximum observable disorder. Moreover, when working with RMA and
 # machine learning (see [this example](@ref example_ml)),
 # in most cases there is a correlation between the accuracy and the distribution
-# that maximizes the recurrence entropy [Spezzatto2024ML](@cite). Thus, it is a good 
+# that maximizes the recurrence entropy [Spezzatto2024ML](@cite). Thus, it is a good
 # idea to use this as a basis for defining an optimal value for the recurrence threshold.
 
 # With this in mind, we provide a function to optimize some [`Parameter`](@ref)
@@ -279,7 +279,7 @@ probabilities(rmspace, X)
 # **RecurrenceMicrostateAnalysis.jl** supports several configurations for the recurrence outcome space
 # while leveraging the same backend (see [`RecurrenceMicrostates`](@ref)).
 # If you want to contribute with new recurrence expressions, microstate shapes, or sampling modes,
-# read the section [for devs](@ref devs) and open an 
+# read the section [for devs](@ref devs) and open an
 # [issue](https://github.com/JuliaDynamics/RecurrenceMicrostatesAnalysis.jl/issues)
 # if you encounter any difficulties 🙂
 
@@ -359,7 +359,7 @@ entropy(Shannon(), probs)
 # Note that if you are using a grayscale image, you need to use an
 # `Array` with size `(1, H, W)`. The first dimension stores the
 # features of the data, which are used to compute the recurrences,
-# i.e., $\vec{x}_{\vec{i}}$. The same principle must be applied 
+# i.e., $\vec{x}_{\vec{i}}$. The same principle must be applied
 # to other types of spatial data.
 
 # ##   GPU
@@ -407,7 +407,7 @@ entropy(Shannon(), probs)
 #    4  0.0016157228214197196
 #    5  0.039249842118455266
 #    6  0.014588514785254093
-#    ⋮  
+#    ⋮
 #  507  0.0001702340127557486
 #  508  0.0006545307752488948
 #  509  0.00010442086328848504
@@ -499,7 +499,7 @@ using BenchmarkTools
 #  Time  (median):     1.600 s              ┊ GC (median):    26.32%
 #  Time  (mean ± σ):   1.620 s ± 70.701 ms  ┊ GC (mean ± σ):  25.31% ±  4.59%
 
-#   █ █                    █                                █  
+#   █ █                    █                                █
 #   █▁█▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█ ▁
 #   1.56 s         Histogram: frequency by time        1.72 s <
 
@@ -516,7 +516,7 @@ using BenchmarkTools
 #  Time  (median):     1.931 s              ┊ GC (median):    28.42%
 #  Time  (mean ± σ):   1.913 s ± 52.274 ms  ┊ GC (mean ± σ):  26.94% ±  3.07%
 
-#   █                                          █            █  
+#   █                                          █            █
 #   █▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█▁▁▁▁▁▁▁▁▁▁▁▁█ ▁
 #   1.85 s         Histogram: frequency by time        1.95 s <
 
@@ -536,7 +536,7 @@ using BenchmarkTools
 #  Time  (median):     194.991 ms               ┊ GC (median):    19.28%
 #  Time  (mean ± σ):   194.819 ms ±  49.483 ms  ┊ GC (mean ± σ):  31.77% ± 23.86%
 
-#   ▁           ▁ ▁▁▁▁ █▁ ▁   █▁ █▁▁ ▁█   █    ▁  ▁    ▁        ▁  
+#   ▁           ▁ ▁▁▁▁ █▁ ▁   █▁ █▁▁ ▁█   █    ▁  ▁    ▁        ▁
 #   █▁▁▁▁▁▁▁▁▁▁▁█▁████▁██▁█▁▁▁██▁███▁██▁▁▁█▁▁▁▁█▁▁█▁▁▁▁█▁▁▁▁▁▁▁▁█ ▁
 #   88 ms            Histogram: frequency by time          316 ms <
 
@@ -553,7 +553,7 @@ using BenchmarkTools
 #  Time  (median):     324.494 ms               ┊ GC (median):    22.84%
 #  Time  (mean ± σ):   325.391 ms ±  35.346 ms  ┊ GC (mean ± σ):  21.35% ± 14.70%
 
-#   █         █  █        ███  █  ███ █ █   █               █ █ █  
+#   █         █  █        ███  █  ███ █ █   █               █ █ █
 #   █▁▁▁▁▁▁▁▁▁█▁▁█▁▁▁▁▁▁▁▁███▁▁█▁▁███▁█▁█▁▁▁█▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█▁█▁█ ▁
 #   260 ms           Histogram: frequency by time          387 ms <
 
@@ -575,7 +575,7 @@ using BenchmarkTools
 #  Time  (median):     259.462 ms               ┊ GC (median):     6.82%
 #  Time  (mean ± σ):   274.213 ms ±  34.593 ms  ┊ GC (mean ± σ):  16.25% ± 11.64%
 
-#   █                                                              
+#   █
 #   █▅█▅▁▁▁▁▁▁▁▁▁▁▁▅▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▅▁▅███▁▁▁▁▁▅ ▁
 #   239 ms           Histogram: frequency by time          319 ms <
 
@@ -592,7 +592,7 @@ using BenchmarkTools
 #  Time  (median):     319.407 ms               ┊ GC (median):    1.60%
 #  Time  (mean ± σ):   322.378 ms ±  73.731 ms  ┊ GC (mean ± σ):  8.72% ± 10.56%
 
-#   █▁  ▁▁▁▁             ▁▁▁     ▁         ▁ ▁   ▁        ▁     ▁  
+#   █▁  ▁▁▁▁             ▁▁▁     ▁         ▁ ▁   ▁        ▁     ▁
 #   ██▁▁████▁▁▁▁▁▁▁▁▁▁▁▁▁███▁▁▁▁▁█▁▁▁▁▁▁▁▁▁█▁█▁▁▁█▁▁▁▁▁▁▁▁█▁▁▁▁▁█ ▁
 #   240 ms           Histogram: frequency by time          460 ms <
 

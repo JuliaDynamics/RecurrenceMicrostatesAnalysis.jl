@@ -6,8 +6,7 @@ export RecurrenceMicrostates
 """
     RecurrenceMicrostates <: CountBasedOutcomeSpace
 
-It defines an `OutcomeSpace` from **ComplexityMeasures.jl**, representing a recurrence microstate
-outcome space.
+An `OutcomeSpace` from **ComplexityMeasures.jl** representing recurrence microstates.
 
 ## Description
 
@@ -34,30 +33,33 @@ This matrix is known as a recurrence microstate [Corso2018Entropy](@cite) of len
 a local portion of the recurrence plot \$\\mathbf{R}(\\mathscr{X}, \\mathscr{X})\$.
 
 ## Implementation
+
 To define a recurrence microstate, three components are required:
 1. The recurrence function, \$r_{(i,j)}\$, used to compute recurrences (see [`RecurrenceExpression`](@ref)).
 2. The microstate shape and its size (see [`MicrostateShape`](@ref)).
 3. The method used to extract microstates from \$\\mathscr{X}\$ (see [`SamplingMode`](@ref)).
 
 ## Constructors
+
 ```julia
 RecurrenceMicrostates(expr::RecurrenceExpression, shape::MicrostateShape; kwargs...)
 RecurrenceMicrostates(expr::RecurrenceExpression, N::Int; kwargs...) # It uses square microstates.
 ```
 
-- Using [`ThresholdRecurrence`](@ref):
+Using [`ThresholdRecurrence`](@ref):
 ```julia
 RecurrenceMicrostates(ε::Real, N::Int; kwargs...)
 RecurrenceMicrostates(ε::Real, shape::MicrostateShape; kwargs...)
 ```
 
-- Using [`CorridorRecurrence`](@ref):
+Using [`CorridorRecurrence`](@ref):
 ```julia
 RecurrenceMicrostates(ε_min::Real, ε_max::Real, N::Int; kwargs...)
 RecurrenceMicrostates(ε_min::Real, ε_max::Real, shape::MicrostateShape; kwargs...)
 ```
 
 ## Spatial generalization
+
 We also implement a spatial generalization of recurrence microstate analysis based on [Marwan2007Spatial](@cite).
 It operates similarly to standard RMA, but retrieves microstates from a recurrence tensor constructed
 from the data (without explicitly constructing the full tensor). **This is an experimental feature included
@@ -91,6 +93,7 @@ Moreover, since RQA is defined differently for spatial recurrence plots, the imp
     Some shapes and sampling modes are not compatible with the spatial generalization, e.g. [`TriangleMicrostate`](@ref) and [`Full`](@ref).
 
 ### Spatial constructors
+
 These constructors use a hypergeometric version of [`RectMicrostate`](@ref), defined by an `NTuple` called `structure`.
 
 ```julia
@@ -100,7 +103,9 @@ RecurrenceMicrostates(ε_min::Real, ε_max::Real, structure::NTuple; kwargs...)
 ```
 
 ## Keyword arguments
-- `metric::Metric`: The metric used to compute recurrence.
+- `metric`: The metric used to compute distances between points. Typically it is a
+  subtype of `Metric` but it can be an arbitrary function of two points returning a real.
+  In the case of using GPUs, this must be an instance of [`GPUMetric`](@ref).
 - `ratio`: The sampling ratio. The default is `0.1`.
 - `sampling`: The sampling mode. The default is [`SRandom`](@ref).
 
@@ -110,9 +115,7 @@ RecurrenceMicrostates(ε_min::Real, ε_max::Real, structure::NTuple; kwargs...)
     This means that as the number of entries increases, the memory required to
     store the full distribution quickly becomes impractical. For example, a square
     \$6 \\times 6\$ microstate has 36 entries, resulting in \$2^{36} = 68,719,476,736\$
-    possible microstates. As another example, a 4-dimensional hypercubic microstate
-    with side length 3 has \$3^4 = 81\$ entries, leading to \$2^{81} \\approx 2.42 \\times 10^{24}\$
-    possible microstates. Clearly, allocating memory for such distributions is not feasible.
+    possible microstates.
 
 """
 struct RecurrenceMicrostates{MS <: MicrostateShape, RE <: RecurrenceExpression, SM <: SamplingMode} <: ComplexityMeasures.CountBasedOutcomeSpace
@@ -133,13 +136,13 @@ function RecurrenceMicrostates(expr::RecurrenceExpression, N::Int; ratio::Real =
     return RecurrenceMicrostates(shape, expr, sampling)
 end
 ##########################################################################################
-function RecurrenceMicrostates(ε::Real, N::Int; ratio::Real = 0.05, sampling::SamplingMode = SRandom(ratio), metric::Metric = DEFAULT_METRIC)
+function RecurrenceMicrostates(ε::Real, N::Int; ratio::Real = 0.05, sampling::SamplingMode = SRandom(ratio), metric = DEFAULT_METRIC)
     shape = RectMicrostate(N)
     expr = ThresholdRecurrence(ε; metric = metric)
     return RecurrenceMicrostates(shape, expr, sampling)
 end
 
-function RecurrenceMicrostates(ε::Real, shape::MicrostateShape; ratio::Real = 0.05, sampling::SamplingMode = SRandom(ratio), metric::Metric = DEFAULT_METRIC)
+function RecurrenceMicrostates(ε::Real, shape::MicrostateShape; ratio::Real = 0.05, sampling::SamplingMode = SRandom(ratio), metric = DEFAULT_METRIC)
     expr = ThresholdRecurrence(ε; metric = metric)
     return RecurrenceMicrostates(shape, expr, sampling)
 end

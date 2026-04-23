@@ -4,17 +4,17 @@
 RecurrenceMicrostatesAnalysis
 ```
 
-!!! info "Citation and credit"
-    If you find this package useful, please consider giving it a star on GitHub and don't forget to cite [our work](https://doi.org/10.1063/5.0293708). 😉
-
 ##  Latest news
-- Integration with **DynamicalSystems.jl** and **ComplexityMeasures.jl**.
-- See the **CHANGELOG.md** (at the GitHub repo) for more!
+
+- **RecurrenceMicrostateAnalysis.jl** is now integrated into **DynamicalSystems.jl**.
+- Realizing that RMA are complexity measures, the API of **RecurrenceMicrostateAnalysis.jl** has been updated to inherit and extend from **ComplexityMeasures.jl**.
+- Brand new comprehensive tutorial.
+
+You can always see the **CHANGELOG.md** (at the GitHub repo) for more!
 
 ##  Getting started
-Start by reviewing about [input](@ref input_data) and [output](@ref output_data) used by 
-**RecurrenceMicrostatesAnalysis.jl**. Next, you can explore the
-[tutorial](@ref tutorial) for a basic introduction to using the package.
+
+Start by reviewing the [tutorial](@ref tutorial) for a basic introduction to using the package.
 You can also consult individual functions in the [API](@ref), and find applied examples in the
 dedicated [Examples](@ref) section.
 
