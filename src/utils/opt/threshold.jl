@@ -115,7 +115,7 @@ function optimize(
     for _ ∈ 1:fraction
         for _ ∈ 1:fraction
             rmspace = RecurrenceMicrostates(ε, N; sampling = sampling, metric = metric)
-            partial = PartialDisorder{N}(q.labels, rmspace)
+            partial = PartialDisorder(rmspace, N; labels = q.labels)
             f = complexity(partial, x)
 
             if f > fmax
