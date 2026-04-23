@@ -32,20 +32,23 @@ All the parameters returned by `rma` are `Float64` numbers.
 """
 function rma(
         ε::Float64,
-        x::StateSpaceSet;
+        x::Union{<: StateSpaceSet{D}, <:AbstractGPUVector{<: SVector{D}}};
         metric::Metric = DEFAULT_METRIC,
-    )
+    ) where {D}
 
     #   Compute a recurrence distribution (3 × 3)
     rmspace = RecurrenceMicrostates(ε, 3; metric = metric, sampling = Full())
     probs = probabilities(rmspace, x)
+
+    #   Disorder normalization factor
+    A = _norm_factor(Val(3), Val(D))
 
     #   Compute quantifiers
     S = entropy(Shannon(), probs)
     rr = measure(RecurrenceRate(ε, 3), probs)
     det = measure(RecurrenceDeterminism(ε), rmspace, probs)
     lam = measure(RecurrenceLaminarity(ε), rmspace, probs)
-    Ξ = complexity(PartialDisorder{3}(compute_labels(3), rmspace), x)
+    Ξ = measure(PartialDisorder(rmspace, 3), A, probs)
 
     #   Construct a dict
     dict = Dict{Symbol, Float64}(

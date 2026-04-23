@@ -76,10 +76,10 @@ where \$p_3^{(3)}\$ is the probability of observing the microstate \$0~1~0\$.
     i.e., \$K \\leq 1000\$, we strongly recommend using standard RQA with
     [RecurrenceAnalysis.jl](https://juliadynamics.github.io/DynamicalSystemsDocs.jl/recurrenceanalysis/stable/quantification/#RecurrenceAnalysis.determinism).
 """
-struct RecurrenceDeterminism <: ComplexityEstimator 
+struct RecurrenceDeterminism{M, SM} <: ComplexityEstimator 
     ε::Real
-    metric::Metric
-    sampling::SamplingMode
+    metric::M
+    sampling::SM
 end
 
 function complexity(
@@ -94,7 +94,7 @@ function complexity(
 end
 
 # -- Constructors
-RecurrenceDeterminism(ε::Real; metric::Metric = DEFAULT_METRIC, ratio::Float64 = 0.1, sampling::SamplingMode = SRandom(ratio)) = RecurrenceDeterminism(ε, metric, sampling)
+RecurrenceDeterminism(ε::Real; metric::M = DEFAULT_METRIC, ratio::Float64 = 0.1, sampling::SM = SRandom(ratio)) where {M,SM} = RecurrenceDeterminism{M,SM}(ε, metric, sampling)
 
 ##########################################################################################
 #   Internal: measure from probabilities

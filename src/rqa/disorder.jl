@@ -72,9 +72,9 @@ The disorder measure is then defined as the maximum value of \$\\xi(\\varepsilon
     \$N \\in \\{2, 3, 4, 5\\}\$ due to computational limitations. In particular,
     computations for \$N = 5\$ are computationally expensive.
 """
-struct Disorder{N} <: ComplexityEstimator
+struct Disorder{N, M} <: ComplexityEstimator
     labels::Vector{Vector{Int}}
-    metric::Metric
+    metric::M
     threshold_range::Int
 end
 
@@ -92,7 +92,7 @@ length `W`, returning a vector of measured disorder values for each window.
 """
 struct WindowedDisorder{W, N, M} <: ComplexityEstimator
     labels::Vector{Vector{Int}}
-    metric::M # Typically metric
+    metric::M
     threshold_range::Int
     win_step::Int
 end
@@ -102,9 +102,9 @@ struct PartialDisorder{N, RM <: RecurrenceMicrostates} <: ComplexityEstimator
     rmspace::RM
 end
 
-struct ClassPartialDisorder <: ComplexityEstimator
+struct ClassPartialDisorder{RM <: RecurrenceMicrostates} <: ComplexityEstimator
     labels::Vector{Int}
-    rmspace::RecurrenceMicrostates
+    rmspace::RM
 end
 
 function complexity(
@@ -132,7 +132,7 @@ function complexity(
     #   Compute disorder for each threshold.
     for i ∈ eachindex(th_range)
         rmspace = RecurrenceMicrostates(th_range[i], N; sampling = Full(), metric = c.metric)
-        partial = PartialDisorder{N}(c.labels, rmspace)
+        partial = PartialDisorder(rmspace, N; labels = c.labels)
         ξ[i] = complexity(partial, data)
     end
 
@@ -140,9 +140,9 @@ function complexity(
 end
 
 function complexity(
-        c::WindowedDisorder{W, N},
+        c::WindowedDisorder{W, N, M},
         x::Union{StateSpaceSet, Vector{<:Real}}
-    ) where {N, W}
+    ) where {N, W, M}
 
     windowed_data = [ StateSpaceSet(x[(i + 1):(i + W)]) for i ∈ 0:c.win_step:(size(x, 1) - W) ]
 
@@ -152,7 +152,7 @@ function complexity(
 
     for i ∈ eachindex(s)
         idx = rand(1:length(windowed_data))
-        opt_ths[i] = optimize(Threshold(), Disorder{N}(c.labels, c.metric, c.threshold_range), windowed_data[idx])[1]
+        opt_ths[i] = optimize(Threshold(), Disorder{N, M}(c.labels, c.metric, c.threshold_range), windowed_data[idx])[1]
     end
 
     μ_th = mean(opt_ths)
@@ -174,7 +174,7 @@ function complexity(
     #   Finally, compute disorder for each window (note that it isn't just use "complexity(disorder, x)")
     for j ∈ eachindex(th_range)
         rmspace = RecurrenceMicrostates(th_range[j], N; sampling = Full(), metric = c.metric)
-        partial = PartialDisorder{N}(c.labels, rmspace)
+        partial = PartialDisorder(rmspace, N; labels = c.labels)
 
         for i ∈ eachindex(windowed_data)
             ξ[i, j] = complexity(partial, windowed_data[i])
@@ -250,13 +250,8 @@ function complexity(
 
     A = _norm_factor(Val(N), Val(D))
     probs = probabilities(c.rmspace, x)
-    ξ = 0.0
-    for i ∈ 2:(length(c.labels) - 1)
-        cpartial = ClassPartialDisorder(c.labels[i], c.rmspace)
-        ξ += measure(cpartial, probs)
-    end
-
-    return ξ / A
+    
+    return measure(c, A, probs)
 end
 
 function complexity(
@@ -268,9 +263,10 @@ function complexity(
 end
 
 # -- Constructors
-Disorder(N::Int = 4; metric::Metric = DEFAULT_METRIC, threshold_range::Int =  40) = Disorder{N}(compute_labels(N), metric, threshold_range)
-WindowedDisorder(W::Int, N::Int = 4; metric::Metric = DEFAULT_METRIC, threshold_range::Int = 40, step::Int = W) = WindowedDisorder{W,N}(compute_labels(N), metric, threshold_range, step)
-PartialDisorder(rexpr::RecurrenceExpression, N::Int = 4) = PartialDisorder{N}(compute_labels(N), RecurrenceMicrostates(rexpr, N; sampling = Full()))
+Disorder(N::Int = 4; metric::M = DEFAULT_METRIC, threshold_range::Int =  40) where{M} = Disorder{N,M}(compute_labels(N), metric, threshold_range)
+WindowedDisorder(W::Int, N::Int = 4; metric::M = DEFAULT_METRIC, threshold_range::Int = 40, step::Int = W) where {M} = WindowedDisorder{W,N,M}(compute_labels(N), metric, threshold_range, step)
+PartialDisorder(rexpr::RecurrenceExpression, N::Int = 4) = PartialDisorder(RecurrenceMicrostates(rexpr, N; sampling = Full()), N)
+PartialDisorder(rm::RM, N::Int = 4; labels = compute_labels(N)) where {RM <: RecurrenceMicrostates} = PartialDisorder{N,RM}(labels, rm)
 ClassPartialDisorder(rexpr::RecurrenceExpression, c::Int, N::Int = 4) = ClassPartialDisorder(compute_labels(N)[c], RecurrenceMicrostates(rexpr, N; sampling = Full()))
 
 ##########################################################################################
@@ -283,6 +279,16 @@ ClassPartialDisorder(rexpr::RecurrenceExpression, c::Int, N::Int = 4) = ClassPar
 # This function works for [`DiagonalMicrostate`](@ref) with length 3,
 # or \$3 \\times 3\$ [`RectMicrostate`](@ref). Any other input will returns an error.
 ##########################################################################################
+function measure(c::PartialDisorder, A::Int, probs::Probabilities)
+    ξ = 0.0
+    for i ∈ 2:(length(c.labels) - 1)
+        cpartial = ClassPartialDisorder(c.labels[i], c.rmspace)
+        ξ += measure(cpartial, probs)
+    end
+
+    return ξ / A
+end
+
 function measure(c::ClassPartialDisorder, probs::Probabilities)
 
     norm_factor = 0.0

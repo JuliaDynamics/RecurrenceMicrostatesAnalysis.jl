@@ -92,3 +92,13 @@ end
     RecurrenceMicrostatesAnalysis.PartialDisorder(ThresholdRecurrence(0.27), 2)
     RecurrenceMicrostatesAnalysis.ClassPartialDisorder(ThresholdRecurrence(0.27), 1, 2)
 end
+
+@testset "RMA function" begin
+    x = StateSpaceSet(rand(Uniform(0, 1), 1000))
+    r = rma(0.27, x)
+
+    @test 0 ≤ r[:DET] ≤ 1
+    @test 0 ≤ r[:LAM] ≤ 1
+    @test 0 ≤ r[:RR] ≤ 1
+    @test 0 ≤ r[:DISREM] ≤ 1
+end

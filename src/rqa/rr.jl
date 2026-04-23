@@ -37,10 +37,10 @@ where \$RR_i^{(N)}\$ denotes the recurrence rate of the \$i\$-th microstate.
     i.e., \$K \\leq 1000\$, we strongly recommend using standard RQA with
     [RecurrenceAnalysis.jl](https://juliadynamics.github.io/DynamicalSystemsDocs.jl/recurrenceanalysis/stable/quantification/#RecurrenceAnalysis.recurrencerate).
 """
-struct RecurrenceRate{N} <: ComplexityEstimator
+struct RecurrenceRate{N, M, SM} <: ComplexityEstimator
     ε::Real
-    metric::Metric
-    sampling::SamplingMode
+    metric::M
+    sampling::SM
 end
 
 function complexity(
@@ -54,7 +54,7 @@ function complexity(
 end
 
 # -- Constructors
-RecurrenceRate(ε::Real, N::Int = 1; metric::Metric = DEFAULT_METRIC, ratio::Float64 = 0.1, sampling::SamplingMode = SRandom(ratio)) = RecurrenceRate{N}(ε, metric, sampling)
+RecurrenceRate(ε::Real, N::Int = 1; metric::M = DEFAULT_METRIC, ratio::Float64 = 0.1, sampling::SM = SRandom(ratio)) where {M, SM} = RecurrenceRate{N, M, SM}(ε, metric, sampling)
 
 ##########################################################################################
 #   Internal: measure from probabilities
