@@ -250,13 +250,8 @@ function complexity(
 
     A = _norm_factor(Val(N), Val(D))
     probs = probabilities(c.rmspace, x)
-    ξ = 0.0
-    for i ∈ 2:(length(c.labels) - 1)
-        cpartial = ClassPartialDisorder(c.labels[i], c.rmspace)
-        ξ += measure(cpartial, probs)
-    end
-
-    return ξ / A
+    
+    return measure(c, A, probs)
 end
 
 function complexity(
@@ -284,6 +279,16 @@ ClassPartialDisorder(rexpr::RecurrenceExpression, c::Int, N::Int = 4) = ClassPar
 # This function works for [`DiagonalMicrostate`](@ref) with length 3,
 # or \$3 \\times 3\$ [`RectMicrostate`](@ref). Any other input will returns an error.
 ##########################################################################################
+function measure(c::PartialDisorder, A::Int, probs::Probabilities)
+    ξ = 0.0
+    for i ∈ 2:(length(c.labels) - 1)
+        cpartial = ClassPartialDisorder(c.labels[i], c.rmspace)
+        ξ += measure(cpartial, probs)
+    end
+
+    return ξ / A
+end
+
 function measure(c::ClassPartialDisorder, probs::Probabilities)
 
     norm_factor = 0.0
