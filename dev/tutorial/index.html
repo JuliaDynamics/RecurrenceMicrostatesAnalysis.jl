@@ -42,38 +42,38 @@ rmspace = RecurrenceMicrostates(ε, N)</code></pre><pre class="documenter-exampl
  expr = ThresholdRecurrence{Float64, Euclidean}(0.25, Euclidean(0.0))
  sampling = SRandom{Float64}(0.05)
 </code></pre><p>and finally call</p><pre><code class="language-julia hljs">probs = probabilities(rmspace, X)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi"><span class="sgr33"> Probabilities{Float64,1} over 16 outcomes</span>
-  <span class="sgr90">1</span>  0.6039808
-  <span class="sgr90">2</span>  0.04397
-  <span class="sgr90">3</span>  0.0961402
-  <span class="sgr90">4</span>  0.0024996
-  <span class="sgr90">5</span>  0.0962492
-  <span class="sgr90">6</span>  0.0025166
-  <span class="sgr90">7</span>  0.0157082
-  <span class="sgr90">8</span>  0.004689
-  <span class="sgr90">9</span>  0.0392596
- <span class="sgr90">10</span>  0.0710492
- <span class="sgr90">11</span>  0.0072016
- <span class="sgr90">12</span>  0.0017688
- <span class="sgr90">13</span>  0.0072042
- <span class="sgr90">14</span>  0.0017666
- <span class="sgr90">15</span>  0.0
- <span class="sgr90">16</span>  0.0059964</code></pre><p>The <code>probabilities</code> function is the same function as in <strong>ComplexityMeasures.jl</strong>. Given an outcome space, that is a way to <em>symbolize</em> input data into discrete outcomes, <code>probabilities</code> return the probability (relative occurrence frequency) for each outcome. And indeed, the recurrence microstates is an outcome space.</p><p>If instead of the probabilities of the microstates you want their direct count simply replace <code>probabilities</code> with <code>counts</code>.</p><pre><code class="language-julia hljs">counts(rmspace, X)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">16-element Vector{Int64}:
- 3020899
-  219559
-  480978
-   12844
-  480456
-   12773
-   78631
-   23187
-  196485
-  355095
-   35900
-    8804
-   35621
-    8564
-       3
-   30201</code></pre><h2 id="Recurrence-microstates-analysis-(RMA)"><a class="docs-heading-anchor" href="#Recurrence-microstates-analysis-(RMA)">Recurrence microstates analysis (RMA)</a><a id="Recurrence-microstates-analysis-(RMA)-1"></a><a class="docs-heading-anchor-permalink" href="#Recurrence-microstates-analysis-(RMA)" title="Permalink"></a></h2><p>To actually analyze your data, there are two ways forwards. One way, is to utilize these probabilities within the interface provided by <strong>ComplexityMeasures.jl</strong> to calculate entropies. For example, the corresponding Shannon entropy is</p><pre><code class="language-julia hljs">entropy(Shannon(), probs)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">2.0947011514348612</code></pre><p>(note that the API of <code>ComplexityMeasures</code> is re-exported by <code>RecurrenceMicrostateAnalysis</code>). This number corresponds to the <strong>recurrence microstate entropy</strong> as defined in our publication (<a href="../refs/#Corso2018Entropy">Corso <em>et al.</em>, 2018</a>).</p><p><code>ComplexityMeasures</code> allows the convenience syntax of</p><pre><code class="language-julia hljs">entropy(Shannon(), rmspace, X)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">2.0953441663121333</code></pre><p>so in this case we wouldn&#39;t need to calculate the probabilities directly. Naturally, any other entropy could be estimated instead,</p><pre><code class="language-julia hljs">entropy(Tsallis(), rmspace, X)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">2.096690839110805</code></pre><p>although we haven&#39;t explored alternative entropies in research yet.</p><p>The second way forward is the more traditional recurrence quantification analysis route, where you estimate (approximately, really) various quantities such as laminarity that fundamentally relate to the context of recurrences.</p><p>These quantities are estimated using a <code>ComplexityEstimator</code>, similar to <strong>ComplexityMeasures.jl</strong>. We begin by defining our estimators:</p><ul><li>For recurrence rate:</li></ul><pre><code class="language-julia hljs">rr_estimator = RecurrenceRate(ε)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi"><span class="sgr31"><span class="sgr1">RecurrenceRate</span></span>, with 3 fields:
+  <span class="sgr90">1</span>  0.603332
+  <span class="sgr90">2</span>  0.0439766
+  <span class="sgr90">3</span>  0.0965204
+  <span class="sgr90">4</span>  0.0025168
+  <span class="sgr90">5</span>  0.0962426
+  <span class="sgr90">6</span>  0.0024852
+  <span class="sgr90">7</span>  0.015818
+  <span class="sgr90">8</span>  0.0046346
+  <span class="sgr90">9</span>  0.039366
+ <span class="sgr90">10</span>  0.0710846
+ <span class="sgr90">11</span>  0.0072462
+ <span class="sgr90">12</span>  0.0017774
+ <span class="sgr90">13</span>  0.0071792
+ <span class="sgr90">14</span>  0.0017574
+ <span class="sgr90">15</span>  2.0e-7
+ <span class="sgr90">16</span>  0.0060628</code></pre><p>The <code>probabilities</code> function is the same function as in <strong>ComplexityMeasures.jl</strong>. Given an outcome space, that is a way to <em>symbolize</em> input data into discrete outcomes, <code>probabilities</code> return the probability (relative occurrence frequency) for each outcome. And indeed, the recurrence microstates is an outcome space.</p><p>If instead of the probabilities of the microstates you want their direct count simply replace <code>probabilities</code> with <code>counts</code>.</p><pre><code class="language-julia hljs">counts(rmspace, X)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">16-element Vector{Int64}:
+ 3016337
+  219949
+  482196
+   12743
+  482058
+   12610
+   79195
+   23513
+  196871
+  355157
+   36033
+    8567
+   35971
+    8651
+       0
+   30149</code></pre><h2 id="Recurrence-microstates-analysis-(RMA)"><a class="docs-heading-anchor" href="#Recurrence-microstates-analysis-(RMA)">Recurrence microstates analysis (RMA)</a><a id="Recurrence-microstates-analysis-(RMA)-1"></a><a class="docs-heading-anchor-permalink" href="#Recurrence-microstates-analysis-(RMA)" title="Permalink"></a></h2><p>To actually analyze your data, there are two ways forwards. One way, is to utilize these probabilities within the interface provided by <strong>ComplexityMeasures.jl</strong> to calculate entropies. For example, the corresponding Shannon entropy is</p><pre><code class="language-julia hljs">entropy(Shannon(), probs)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">2.0968927816909178</code></pre><p>(note that the API of <code>ComplexityMeasures</code> is re-exported by <code>RecurrenceMicrostateAnalysis</code>). This number corresponds to the <strong>recurrence microstate entropy</strong> as defined in our publication (<a href="../refs/#Corso2018Entropy">Corso <em>et al.</em>, 2018</a>).</p><p><code>ComplexityMeasures</code> allows the convenience syntax of</p><pre><code class="language-julia hljs">entropy(Shannon(), rmspace, X)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">2.0952202405306375</code></pre><p>so in this case we wouldn&#39;t need to calculate the probabilities directly. Naturally, any other entropy could be estimated instead,</p><pre><code class="language-julia hljs">entropy(Tsallis(), rmspace, X)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">2.0945113078566613</code></pre><p>although we haven&#39;t explored alternative entropies in research yet.</p><p>The second way forward is the more traditional recurrence quantification analysis route, where you estimate (approximately, really) various quantities such as laminarity that fundamentally relate to the context of recurrences.</p><p>These quantities are estimated using a <code>ComplexityEstimator</code>, similar to <strong>ComplexityMeasures.jl</strong>. We begin by defining our estimators:</p><ul><li>For recurrence rate:</li></ul><pre><code class="language-julia hljs">rr_estimator = RecurrenceRate(ε)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi"><span class="sgr31"><span class="sgr1">RecurrenceRate</span></span>, with 3 fields:
  ε = 0.25
  metric = Euclidean(0.0)
  sampling = SRandom{Float64}(0.1)
@@ -89,7 +89,7 @@ rmspace = RecurrenceMicrostates(ε, N)</code></pre><pre class="documenter-exampl
 lam = complexity(lam_estimator, X)
 det = complexity(det_estimator, X)
 
-rr, lam, det</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">(0.13418684921147278, 0.1679222827189315, 0.8259148622821866)</code></pre><p>We can compare these values with the exact values computed using <strong>RecurrenceAnalysis.jl</strong>.</p><pre><code class="language-julia hljs">using RecurrenceAnalysis
+rr, lam, det</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">(0.13421084441003356, 0.1702132891170789, 0.8259468741711286)</code></pre><p>We can compare these values with the exact values computed using <strong>RecurrenceAnalysis.jl</strong>.</p><pre><code class="language-julia hljs">using RecurrenceAnalysis
 
 rp = RecurrenceMatrix(X, ε)
 qt = rqa(rp)
@@ -108,33 +108,33 @@ win_disorder = WindowedDisorder(window_len; step = 100)</code></pre><pre class="
  threshold_range = 40
  win_step = 100
 </code></pre><p>Here, we are using windows of length 1000 points, moved in steps of 100 points. Finally, we compute the quantifier for each window:</p><pre><code class="language-julia hljs">wd = complexity(win_disorder, X)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">91-element Vector{Float64}:
- 0.27528625978648663
- 0.27476901428870143
- 0.2713188319512794
- 0.2737836583999166
- 0.2725456691929083
- 0.2701287224474154
- 0.2668768663634233
- 0.26424001088179727
- 0.2654649794233784
- 0.2641789852706428
+ 0.2815937641673062
+ 0.2807072187852628
+ 0.27740509067832936
+ 0.27871983005417106
+ 0.2779784748034279
+ 0.2773162289514717
+ 0.2747049389165887
+ 0.2698053300700184
+ 0.2699015918737406
+ 0.26859694840795767
  ⋮
- 0.26487383846041385
- 0.2667003624930091
- 0.27034478381531224
- 0.26965133560883375
- 0.27686287785083796
- 0.2753658175185181
- 0.2768402618268643
- 0.27173726140959287
- 0.2721900271416575</code></pre><p>Plotting it:</p><pre><code class="language-julia hljs">using CairoMakie
-lines(wd)</code></pre><img src="111e8907.png" alt="Example block output"/><div class="admonition is-compat" id="Disorder-specifications-620de93a378b4e84"><header class="admonition-header">Disorder specifications<a class="admonition-anchor" href="#Disorder-specifications-620de93a378b4e84" title="Permalink"></a></header><div class="admonition-body"><p>Disorder is only available for the standard outcome space extracted from an RP using square microstates. Therefore, it is not compatible with different microstate shapes or input variations such as CRP and SRP, which will be introduced later.</p></div></div><div class="admonition is-info" id="Performance-91256a1b056a5b89"><header class="admonition-header">Performance<a class="admonition-anchor" href="#Performance-91256a1b056a5b89" title="Permalink"></a></header><div class="admonition-body"><p>Disorder uses several recurrence microstate distributions computed using a full sampling mode. It is a heavy quantifier that can have a high computational cost. For large time series, we recommend computing this quantifier using <a href="#GPU">GPU</a>.</p></div></div><h2 id="Optimization-of-free-parameters"><a class="docs-heading-anchor" href="#Optimization-of-free-parameters">Optimization of free parameters</a><a id="Optimization-of-free-parameters-1"></a><a class="docs-heading-anchor-permalink" href="#Optimization-of-free-parameters" title="Permalink"></a></h2><p>It is known that recurrence analysis has some free parameters. The most important of them is the recurrence threshold, <span>$\varepsilon$</span>, used to define which elements from a sequence are recurrent and which are not. In practice, these free parameters are not a major issue and allow different analyses of the same system. Of course, <strong>RecurrenceMicrostateAnalysis.jl</strong> considers this and allows you to use any value as your threshold.</p><p>Nevertheless, RMA has two situations where it is necessary to set a specific recurrence threshold: when computing disorder and when using RMA distributions as input for machine learning.</p><p>In both of these situations, it is important to use a threshold that maximizes a certain quantity. Disorder is defined as the maximum total entropy per class; therefore, the recurrence threshold is not truly a free parameter in this case, since there is an optimal threshold that results in the maximum observable disorder. Moreover, when working with RMA and machine learning (see <a href="../examples/#example_ml">this example</a>), in most cases there is a correlation between the accuracy and the distribution that maximizes the recurrence entropy (<a href="../refs/#Spezzatto2024ML">Spezzatto <em>et al.</em>, 2024</a>). Thus, it is a good idea to use this as a basis for defining an optimal value for the recurrence threshold.</p><p>With this in mind, we provide a function to optimize some <a href="../api/#RecurrenceMicrostatesAnalysis.Parameter"><code>Parameter</code></a> based on a given quantity. Currently, the only available parameter is <a href="../api/#RecurrenceMicrostatesAnalysis.Threshold"><code>Threshold</code></a>, which can be optimized using the function <a href="../api/#RecurrenceMicrostatesAnalysis.optimize"><code>optimize</code></a> by maximizing recurrence entropy or disorder.</p><p>Using recurrence entropy as an example:</p><pre><code class="language-julia hljs">ε, S = optimize(Threshold(), Shannon(), N, X)
+ 0.2690599873817855
+ 0.2713162261377402
+ 0.2747571965328729
+ 0.27414815767685524
+ 0.2817628341593187
+ 0.2800752032045793
+ 0.27851693524956317
+ 0.27585253898600187
+ 0.27632418681108295</code></pre><p>Plotting it:</p><pre><code class="language-julia hljs">using CairoMakie
+lines(wd)</code></pre><img src="b22b177e.png" alt="Example block output"/><div class="admonition is-compat" id="Disorder-specifications-620de93a378b4e84"><header class="admonition-header">Disorder specifications<a class="admonition-anchor" href="#Disorder-specifications-620de93a378b4e84" title="Permalink"></a></header><div class="admonition-body"><p>Disorder is only available for the standard outcome space extracted from an RP using square microstates. Therefore, it is not compatible with different microstate shapes or input variations such as CRP and SRP, which will be introduced later.</p></div></div><div class="admonition is-info" id="Performance-91256a1b056a5b89"><header class="admonition-header">Performance<a class="admonition-anchor" href="#Performance-91256a1b056a5b89" title="Permalink"></a></header><div class="admonition-body"><p>Disorder uses several recurrence microstate distributions computed using a full sampling mode. It is a heavy quantifier that can have a high computational cost. For large time series, we recommend computing this quantifier using <a href="#GPU">GPU</a>.</p></div></div><h2 id="Optimization-of-free-parameters"><a class="docs-heading-anchor" href="#Optimization-of-free-parameters">Optimization of free parameters</a><a id="Optimization-of-free-parameters-1"></a><a class="docs-heading-anchor-permalink" href="#Optimization-of-free-parameters" title="Permalink"></a></h2><p>It is known that recurrence analysis has some free parameters. The most important of them is the recurrence threshold, <span>$\varepsilon$</span>, used to define which elements from a sequence are recurrent and which are not. In practice, these free parameters are not a major issue and allow different analyses of the same system. Of course, <strong>RecurrenceMicrostateAnalysis.jl</strong> considers this and allows you to use any value as your threshold.</p><p>Nevertheless, RMA has two situations where it is necessary to set a specific recurrence threshold: when computing disorder and when using RMA distributions as input for machine learning.</p><p>In both of these situations, it is important to use a threshold that maximizes a certain quantity. Disorder is defined as the maximum total entropy per class; therefore, the recurrence threshold is not truly a free parameter in this case, since there is an optimal threshold that results in the maximum observable disorder. Moreover, when working with RMA and machine learning (see <a href="../examples/#example_ml">this example</a>), in most cases there is a correlation between the accuracy and the distribution that maximizes the recurrence entropy (<a href="../refs/#Spezzatto2024ML">Spezzatto <em>et al.</em>, 2024</a>). Thus, it is a good idea to use this as a basis for defining an optimal value for the recurrence threshold.</p><p>With this in mind, we provide a function to optimize some <a href="../api/#RecurrenceMicrostatesAnalysis.Parameter"><code>Parameter</code></a> based on a given quantity. Currently, the only available parameter is <a href="../api/#RecurrenceMicrostatesAnalysis.Threshold"><code>Threshold</code></a>, which can be optimized using the function <a href="../api/#RecurrenceMicrostatesAnalysis.optimize"><code>optimize</code></a> by maximizing recurrence entropy or disorder.</p><p>Using recurrence entropy as an example:</p><pre><code class="language-julia hljs">ε, S = optimize(Threshold(), Shannon(), N, X)
 rmspace = RecurrenceMicrostates(ε, N)
 h = entropy(Shannon(), rmspace, X)
-(h, S)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">(3.762470304968991, 3.7630481422218027)</code></pre><p>Or for disorder:</p><pre><code class="language-julia hljs">ε, ξ = optimize(Threshold(), disorder, X)
+(h, S)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">(3.7623465992319147, 3.762590214959438)</code></pre><p>Or for disorder:</p><pre><code class="language-julia hljs">ε, ξ = optimize(Threshold(), disorder, X)
 Ξ = complexity(disorder, X)
 
-(Ξ, ξ)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">(0.3408210212303565, 0.3401000490324616)</code></pre><p>Note that there is a difference between <code>Ξ</code> and <code>ξ</code>. The <code>optimize</code> function uses a sampling ratio of <span>$10\%$</span>, which can result in a considerably different value. Internally, this optimization structure is used to define an optimal threshold range, from which we extract the disorder using the sampling mode <a href="../api/#RecurrenceMicrostatesAnalysis.Full"><code>Full</code></a>. If you want to compute the &quot;disorder&quot; for a specific threshold, it is possible using the internal struct <code>PartialDisorder</code>:</p><pre><code class="language-julia hljs">partial = RecurrenceMicrostatesAnalysis.PartialDisorder(ThresholdRecurrence(ε), N)
+(Ξ, ξ)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">(0.3406158690941305, 0.3391104813622358)</code></pre><p>Note that there is a difference between <code>Ξ</code> and <code>ξ</code>. The <code>optimize</code> function uses a sampling ratio of <span>$10\%$</span>, which can result in a considerably different value. Internally, this optimization structure is used to define an optimal threshold range, from which we extract the disorder using the sampling mode <a href="../api/#RecurrenceMicrostatesAnalysis.Full"><code>Full</code></a>. If you want to compute the &quot;disorder&quot; for a specific threshold, it is possible using the internal struct <code>PartialDisorder</code>:</p><pre><code class="language-julia hljs">partial = RecurrenceMicrostatesAnalysis.PartialDisorder(ThresholdRecurrence(ε), N)
 complexity(partial, X)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">0.9642523423726026</code></pre><h2 id="Custom-specification-of-recurrence-microstates"><a class="docs-heading-anchor" href="#Custom-specification-of-recurrence-microstates">Custom specification of recurrence microstates</a><a id="Custom-specification-of-recurrence-microstates-1"></a><a class="docs-heading-anchor-permalink" href="#Custom-specification-of-recurrence-microstates" title="Permalink"></a></h2><p>When we write <code>rmspace = RecurrenceMicrostates(ε, N)</code>, we are in fact accepting a default definition for both what counts as a recurrence and which recurrence microstates to examine. We can alter either by choosing the recurrence expression, the specific microstate(s) we wish to analyze, or the sampling method used to extract these microstates from the input data. For example:</p><pre><code class="language-julia hljs">expr = CorridorRecurrence(0.05, 0.27)
 shape = TriangleMicrostate(3)
 sampling = Full()
@@ -197,26 +197,26 @@ for i in 1:H, j in 1:W
 end
 
 size(arr) == (3, H, W)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">true</code></pre><p>Finally, we can use the <code>probabilities</code> function to estimate our recurrence microstate distribution.</p><pre><code class="language-julia hljs">probs = probabilities(srmspace, arr)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi"><span class="sgr33"> Probabilities{Float64,1} over 512 outcomes</span>
-   <span class="sgr90">1</span>  0.32528105321394774
-   <span class="sgr90">2</span>  5.506090228682036e-5
-   <span class="sgr90">3</span>  7.178139900867736e-6
-   <span class="sgr90">4</span>  2.1678866871039562e-5
-   <span class="sgr90">5</span>  5.5131651920340205e-5
-   <span class="sgr90">6</span>  6.629830241088928e-6
-   <span class="sgr90">7</span>  2.1401764139753498e-5
-   <span class="sgr90">8</span>  0.004372636881173148
-   <span class="sgr90">9</span>  7.060223845001325e-6
-  <span class="sgr90">10</span>  2.189406367299576e-5
+   <span class="sgr90">1</span>  0.3252767433821058
+   <span class="sgr90">2</span>  5.477495585134431e-5
+   <span class="sgr90">3</span>  7.036640633828043e-6
+   <span class="sgr90">4</span>  2.1932386391152343e-5
+   <span class="sgr90">5</span>  5.425612520553211e-5
+   <span class="sgr90">6</span>  6.671100860642171e-6
+   <span class="sgr90">7</span>  2.1581586124949772e-5
+   <span class="sgr90">8</span>  0.0043681206962334655
+   <span class="sgr90">9</span>  7.1869836050577165e-6
+  <span class="sgr90">10</span>  2.1622856744503016e-5
    ⋮  
- <span class="sgr90">504</span>  1.5626825303696046e-5
- <span class="sgr90">505</span>  0.004431367920698811
- <span class="sgr90">506</span>  5.5287890694363196e-5
- <span class="sgr90">507</span>  6.791964817905242e-6
- <span class="sgr90">508</span>  7.645382272238388e-5
- <span class="sgr90">509</span>  5.5057954385423696e-5
- <span class="sgr90">510</span>  1.5612085796712744e-5
- <span class="sgr90">511</span>  7.472930040533762e-5
- <span class="sgr90">512</span>  0.6370202109180999</code></pre><p>Although Marwan adapted some RQA quantities for spatial recurrence plots, they cannot be estimated using RMA. The only exception here is the recurrence rate, which can be estimated as:</p><pre><code class="language-julia hljs">RecurrenceMicrostatesAnalysis.measure(rr_estimator, probs)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">0.6560840131302044</code></pre><p>Another quantity that can be computed is the recurrence microstate entropy:</p><pre><code class="language-julia hljs">entropy(Shannon(), probs)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">1.2540624261816165</code></pre><p>RMA with spatial data is a very interesting and complex topic, and we have implemented it to motivate possible research using this feature. So feel free to try it and notify us if you have some success 😁</p><p>Note that if you are using a grayscale image, you need to use an <code>Array</code> with size <code>(1, H, W)</code>. The first dimension stores the features of the data, which are used to compute the recurrences, i.e., <span>$\vec{x}_{\vec{i}}$</span>. The same principle must be applied to other types of spatial data.</p><h2 id="GPU"><a class="docs-heading-anchor" href="#GPU">GPU</a><a id="GPU-1"></a><a class="docs-heading-anchor-permalink" href="#GPU" title="Permalink"></a></h2><p>Computation of recurrence microstate distributions via <strong>RecurrenceMicrostatesAnalysis.jl</strong> is compatible with different GPU devices due to an abstract kernel written using <strong>KernelAbstractions.jl</strong>.</p><p>The use of the GPU backend is very similar to the CPU backend; however, the input type must be an <code>AbstractGPUVector{&lt;:SVector}</code>, instead of a <a href="../api/#StateSpaceSets.StateSpaceSet"><code>StateSpaceSet</code></a> or a <code>Vector{&lt;:Real}</code>.</p><div class="admonition is-compat" id="Spatial-data-88c25b2899286b8f"><header class="admonition-header">Spatial data<a class="admonition-anchor" href="#Spatial-data-88c25b2899286b8f" title="Permalink"></a></header><div class="admonition-body"><p>The current GPU backend is not compatible with spatial data. It only works with time series.</p></div></div><h3 id="Computing-recurrence-microstate-distributions"><a class="docs-heading-anchor" href="#Computing-recurrence-microstate-distributions">Computing recurrence microstate distributions</a><a id="Computing-recurrence-microstate-distributions-1"></a><a class="docs-heading-anchor-permalink" href="#Computing-recurrence-microstate-distributions" title="Permalink"></a></h3><p>The first step to compute a recurrence microstate distribution using a GPU is to import the package associated with your device, such as <strong>CUDA.jl</strong> or <strong>Metal.jl</strong>. Next, you need to move your <a href="../api/#StateSpaceSets.StateSpaceSet"><code>StateSpaceSet</code></a> to the GPU. For example:</p><pre><code class="language-julia hljs">using CUDA
+ <span class="sgr90">504</span>  1.569757493721589e-5
+ <span class="sgr90">505</span>  0.004441650200770362
+ <span class="sgr90">506</span>  5.565637836894573e-5
+ <span class="sgr90">507</span>  6.809652226285203e-6
+ <span class="sgr90">508</span>  7.553407748662588e-5
+ <span class="sgr90">509</span>  5.50284753714571e-5
+ <span class="sgr90">510</span>  1.5774220373529058e-5
+ <span class="sgr90">511</span>  7.549575476846929e-5
+ <span class="sgr90">512</span>  0.6370142708967856</code></pre><p>Although Marwan adapted some RQA quantities for spatial recurrence plots, they cannot be estimated using RMA. The only exception here is the recurrence rate, which can be estimated as:</p><pre><code class="language-julia hljs">RecurrenceMicrostatesAnalysis.measure(rr_estimator, probs)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">0.6560845751967372</code></pre><p>Another quantity that can be computed is the recurrence microstate entropy:</p><pre><code class="language-julia hljs">entropy(Shannon(), probs)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">1.2541564928151039</code></pre><p>RMA with spatial data is a very interesting and complex topic, and we have implemented it to motivate possible research using this feature. So feel free to try it and notify us if you have some success 😁</p><p>Note that if you are using a grayscale image, you need to use an <code>Array</code> with size <code>(1, H, W)</code>. The first dimension stores the features of the data, which are used to compute the recurrences, i.e., <span>$\vec{x}_{\vec{i}}$</span>. The same principle must be applied to other types of spatial data.</p><h2 id="GPU"><a class="docs-heading-anchor" href="#GPU">GPU</a><a id="GPU-1"></a><a class="docs-heading-anchor-permalink" href="#GPU" title="Permalink"></a></h2><p>Computation of recurrence microstate distributions via <strong>RecurrenceMicrostatesAnalysis.jl</strong> is compatible with different GPU devices due to an abstract kernel written using <strong>KernelAbstractions.jl</strong>.</p><p>The use of the GPU backend is very similar to the CPU backend; however, the input type must be an <code>AbstractGPUVector{&lt;:SVector}</code>, instead of a <a href="../api/#StateSpaceSets.StateSpaceSet"><code>StateSpaceSet</code></a> or a <code>Vector{&lt;:Real}</code>.</p><div class="admonition is-compat" id="Spatial-data-88c25b2899286b8f"><header class="admonition-header">Spatial data<a class="admonition-anchor" href="#Spatial-data-88c25b2899286b8f" title="Permalink"></a></header><div class="admonition-body"><p>The current GPU backend is not compatible with spatial data. It only works with time series.</p></div></div><h3 id="Computing-recurrence-microstate-distributions"><a class="docs-heading-anchor" href="#Computing-recurrence-microstate-distributions">Computing recurrence microstate distributions</a><a id="Computing-recurrence-microstate-distributions-1"></a><a class="docs-heading-anchor-permalink" href="#Computing-recurrence-microstate-distributions" title="Permalink"></a></h3><p>The first step to compute a recurrence microstate distribution using a GPU is to import the package associated with your device, such as <strong>CUDA.jl</strong> or <strong>Metal.jl</strong>. Next, you need to move your <a href="../api/#StateSpaceSets.StateSpaceSet"><code>StateSpaceSet</code></a> to the GPU. For example:</p><pre><code class="language-julia hljs">using CUDA
 X_float32 = [Float32.(x) for x ∈ X]
 X_gpu = CuVector(X_float32)</code></pre><div class="admonition is-compat" id="Float-type-b772bad3bc3f659c"><header class="admonition-header">Float type<a class="admonition-anchor" href="#Float-type-b772bad3bc3f659c" title="Permalink"></a></header><div class="admonition-body"><p>GPUs usually only accept <code>Float32</code>.</p></div></div><p>This GPU vector <code>X_gpu</code> can be used as input for the <code>probabilities</code> function:</p><pre><code class="language-julia hljs">ε = 0.27f0
 N = 3
@@ -304,4 +304,4 @@ rmspace = RecurrenceMicrostates(0.27f0, 5; sampling = Full(), metric = GPUEuclid
  with a memory estimate of 534.26 MiB, over 600348 allocations.</code></pre><pre><code class="language-julia hljs">X_gpu = MtlVector(X_float32[1:9000])
 @benchmark complexity(Disorder(4; metric = GPUEuclidean()), X_gpu)</code></pre><pre><code class="language-julia hljs">BenchmarkTools.Trial: 1 sample with 1 evaluation per sample.
  Single result which took 9.918 s (0.22% GC) to evaluate,
- with a memory estimate of 264.68 MiB, over 614802 allocations.</code></pre><p>And now, computation is faster on the GPU than on the CPU. Therefore, it is important to note that the GPU is not a magic solution: for long time series when computing recurrence microstate probabilities, the GPU will be faster; however, for smaller cases, it may be better to use the CPU.</p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../">« Welcome</a><a class="docs-footer-nextpage" href="../api/">API »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.17.0 on <span class="colophon-date" title="Thursday 23 April 2026 14:41">Thursday 23 April 2026</span>. Using Julia version 1.12.6.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+ with a memory estimate of 264.68 MiB, over 614802 allocations.</code></pre><p>And now, computation is faster on the GPU than on the CPU. Therefore, it is important to note that the GPU is not a magic solution: for long time series when computing recurrence microstate probabilities, the GPU will be faster; however, for smaller cases, it may be better to use the CPU.</p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../">« Welcome</a><a class="docs-footer-nextpage" href="../api/">API »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.17.0 on <span class="colophon-date" title="Friday 24 April 2026 15:30">Friday 24 April 2026</span>. Using Julia version 1.12.6.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
