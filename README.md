@@ -1,6 +1,6 @@
 # RecurrenceMicrostatesAnalysis.jl
 
-[![](https://img.shields.io/badge/docs-stable-blue.svg)](https://juliadynamics.github.io/RecurrenceMicrostatesAnalysis.jl/stable/)
+[![](https://img.shields.io/badge/docs-stable-blue.svg)](https://juliadynamics.github.io/DynamicalSystemsDocs.jl/recurrencemicrostatesanalysis/stable/)
 [![Publication](https://img.shields.io/badge/publication-Chaos-blue.svg)](https://doi.org/10.1063/5.0293708)
 [![CI](https://github.com/JuliaDynamics/RecurrenceMicrostatesAnalysis.jl/workflows/CI/badge.svg)](https://github.com/JuliaDynamics/RecurrenceMicrostatesAnalysis.jl/actions)
 [![codecov](https://codecov.io/gh/JuliaDynamics/RecurrenceMicrostatesAnalysis.jl/graph/badge.svg?token=NR3S4JOE4R)](https://codecov.io/gh/JuliaDynamics/RecurrenceMicrostatesAnalysis.jl)
