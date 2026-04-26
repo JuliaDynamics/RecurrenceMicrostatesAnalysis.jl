@@ -1,6 +1,6 @@
 name = "RecurrenceMicrostatesAnalysis"
 uuid = "cb83a08b-85c6-4e94-91aa-4e946c7d4f0c"
-version = "0.5.0"
+version = "0.5.1"
 repo = "https://github.com/DynamicsUFPR/RecurrenceMicrostatesAnalysis.jl"
 authors = ["Gabriel V. Ferreira", "George Datseris"]
 
