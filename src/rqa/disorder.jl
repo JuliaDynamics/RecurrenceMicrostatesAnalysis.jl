@@ -150,7 +150,7 @@ function complexity(
     s = ceil(Int, length(windowed_data) * 0.1)
     opt_ths = zeros(Float64, s)
 
-    for i ∈ eachindex(s)
+    for i ∈ eachindex(opt_ths)
         idx = rand(1:length(windowed_data))
         opt_ths[i] = optimize(Threshold(), Disorder{N, M}(c.labels, c.metric, c.threshold_range), windowed_data[idx])[1]
     end
@@ -209,7 +209,7 @@ function complexity(
     s = ceil(Int, length(windowed_data) * 0.1) + 2
     opt_ths = zeros(Float64, s)
 
-    for i ∈ eachindex(s)
+    for i ∈ eachindex(opt_ths)
         idx = rand(1:length(windowed_data))
         opt_ths[i] = optimize(Threshold(), Disorder{N}(c.labels, c.metric, c.threshold_range), windowed_data[idx])[1]
     end
