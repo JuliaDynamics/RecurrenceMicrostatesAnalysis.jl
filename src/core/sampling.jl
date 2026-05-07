@@ -49,6 +49,9 @@ struct RectSamplingSpace <: AbstractSamplingSpace end
 This sampling space defines that a recurrence microstate can be only retrived from
 the part ahead the line of identity of a recurrence plot. It means, \$ i < j \$ for
 \$ j \\leq K - N + 1\$.
+
+!!! compat "GPU"
+    Triangle sampling space is not available for GPU.
 """
 struct TriangleSamplingSpace <: AbstractSamplingSpace end
 

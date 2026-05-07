@@ -97,23 +97,44 @@ X = randn(1000)
 probabilities(rmspace, X)
 ```
 
+## Adding a new Sampling Space
+
+### Steps
+1. Define the sampling space shape: from which region microstates are sampled.
+2. Define a new struct that is a subtype of [`AbstractSamplingSpace`](@ref). It is used to initialize
+    a sampling space; being it user interface.
+3. Internally, you need to also define a new struct that is a subtype of `InternalSamplingSpace`, or
+    use some of the currently implemented. The [`AbstractSamplingSpace`](@ref) is independent of a
+    time-series, and (as the name say) is the abstract definition of the sampling space. When we
+    call the function `histogram` to compute the recurrence microstates distribution given an input,
+    this abstract sampling space is combinated with the input to define the definitivly sampling space,
+    that is a `InternalSamplingSpace`.
+4. Define how this [`AbstractSamplingSpace`](@ref) is converted to a `InternalSamplingSpace` for each
+    [`MicrostateShape`](@ref), implementing a overload to `SamplingSpace` function.
+5. If you had defined a new `InternalSamplingSpace`, you also must define how this `InternalSamplingSpace`
+    is used by a sampling mode, writting a `get_num_samples` and a `get_sample` function.
+6. Add a docstring to your sampling space describring it.
+7. Add your sampling space to `docs/src/api.md`.
+8. Add the expression to the [`AbstractSamplingSpace`](@ref) docstring.
+9. Add tests to `test/distributions.jl` and `test/sampling.jl`.
+
 ## Adding a new Sampling Mode
 
 ### Steps
 
-1. Define how the sampling mode operates: which microstates are sampled, from which regions, and in what quantity.
-    The [`SamplingSpace`](@ref) must be taken into account when designing the sampling logic.
+1. Define how the sampling mode operates: which microstates are sampled, and in what quantity.
+    The [`AbstractSamplingSpace`](@ref) must be taken into account when designing the sampling logic.
 2. Define a new struct that is a subtype of [`SamplingMode`](@ref). The struct may be empty (e.g., [`Full`](@ref)) or
     contain parameters such as a sampling ratio (e.g., [`SRandom`](@ref)).
-3. Implement the dispatch `get_num_samples(mode::YourType, ::SamplingSpace)`, which determines the number of samples
+3. Implement the dispatch `get_num_samples(mode::YourType, ::InternalSamplingSpace)`, which determines the number of samples
     to be drawn given the sampling mode and the sampling space.
-4. Implement the dispatch `get_sample(::RMACore, ::YourType, space::SamplingSpace, rng, m)`, which returns the starting
+4. Implement the dispatch `get_sample(::RMACore, ::YourType, space::InternalSamplingSpace, rng, m)`, which returns the starting
     pair $(i, j)$ to construct the microstate. Here, `RMACore` defines whether it is running on the CPU or GPU, `rng` is
     a random number generator, and `m` is a counter of microstates.
 5. Add a docstring to your sampling mode describing its behavior and initialization.
 6. Add your sampling mode to `docs/src/api.md`.
 7. Add the expression to the [`SamplingMode`](@ref) docstring.
-8. Add tests to `test/distributions.jl` and `test/sampling.jl`.
+8. Add tests to `test/distributions.jl`.
 
 ## Adding a new Microstate Shape
 
@@ -129,7 +150,7 @@ probabilities(rmspace, X)
     read the microstate as an integer.
 5. Implement the dispatch `get_offsets(::RMACore, ::MyShape)`, which returns which positions are accessed from $(i, j)$
     to construct the microstate.
-6. Define how your shape reacts to a [`SamplingSpace`](@ref) by implementing `SamplingSpace(::MyType, x, y)`.
+6. Define how your shape reacts to a [`AbstractSamplingSpace`](@ref) by implementing `SamplingSpace(::MyType, x, y)`.
 7. Add a docstring to your microstate shape describing its behavior and initialization.
 8. Add your microstate shape to `docs/src/api.md`.
 9. Add the expression to the [`MicrostateShape`](@ref) docstring.
@@ -194,7 +215,8 @@ Now, we just need to define how our microstate will behave with respect to a sam
 for all available sampling spaces, but you need to do so for at least one of them.
 ```@example dev
 RecurrenceMicrostatesAnalysis.SamplingSpace(
-    ::MyMicrostateShape, 
+    ::MyMicrostateShape,
+    ::RectSamplingSpace,
     x::StateSpaceSet, 
     y::StateSpaceSet
 ) = RecurrenceMicrostatesAnalysis.SSRect2(length(x) - 2, length(y) - 2)
