@@ -30,10 +30,10 @@ end
 end
 
 @testset "Sampling structure" begin
-    @test_throws ArgumentError SamplingSpace(TestShape(), rand(100) |> StateSpaceSet, rand(100) |> StateSpaceSet)
-    @test_throws ArgumentError SamplingSpace(TestShape(), rand(2, 100), rand(2, 100))
+    @test_throws ArgumentError RecurrenceMicrostatesAnalysis.SamplingSpace(TestShape(), RectSamplingSpace(), rand(100) |> StateSpaceSet, rand(100) |> StateSpaceSet)
+    @test_throws ArgumentError RecurrenceMicrostatesAnalysis.SamplingSpace(TestShape(), RectSamplingSpace(), rand(2, 100), rand(2, 100))
 
-    space = SamplingSpace(RectMicrostate(2), rand(100) |> StateSpaceSet, rand(100) |> StateSpaceSet)
+    space = RecurrenceMicrostatesAnalysis.SamplingSpace(RectMicrostate(2), RectSamplingSpace(), rand(100) |> StateSpaceSet, rand(100) |> StateSpaceSet)
     @test_throws ArgumentError RecurrenceMicrostatesAnalysis.get_sample(RecurrenceMicrostatesAnalysis.CPUCore(), TestSampling(), space)
     @test_throws ArgumentError RecurrenceMicrostatesAnalysis.get_num_samples(TestSampling(), space)
 end

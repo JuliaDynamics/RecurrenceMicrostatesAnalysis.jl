@@ -13,6 +13,22 @@ using RecurrenceMicrostatesAnalysis
     @test abs(sum(probabilities(RecurrenceMicrostates(0.27, 3; ratio = 0.1, metric = Cityblock()), x)) - 1) <= 1e-3
     @test abs(sum(probabilities(RecurrenceMicrostates(0.27, 3; sampling = Full(), metric = Cityblock()), x)) - 1) <= 1e-3
 
+    @test abs(sum(probabilities(RecurrenceMicrostates(0.27, 3; ratio = 0.5, space = TriangleSamplingSpace()), x)) - 1) <= 1e-3
+    @test abs(sum(probabilities(RecurrenceMicrostates(0.27, DiagonalMicrostate(3); ratio = 0.5, space = TriangleSamplingSpace()), x)) - 1) <= 1e-3
+    @test abs(sum(probabilities(RecurrenceMicrostates(0.27, TriangleMicrostate(3); ratio = 0.5, space = TriangleSamplingSpace()), x)) - 1) <= 1e-3
+    @test abs(sum(probabilities(RecurrenceMicrostates(0.27, 3; space = TriangleSamplingSpace(), sampling = Full()), x)) - 1) <= 1e-3
+    @test abs(sum(probabilities(RecurrenceMicrostates(0.27, DiagonalMicrostate(3); space = TriangleSamplingSpace(), sampling = Full()), x)) - 1) <= 1e-3
+    @test abs(sum(probabilities(RecurrenceMicrostates(0.27, TriangleMicrostate(3); space = TriangleSamplingSpace(), sampling = Full()), x)) - 1) <= 1e-3
+
+    for i ∈ 1:(100 - 2)
+        @test abs(sum(probabilities(RecurrenceMicrostates(0.27, 3; ratio = 0.5, space = ColumnSamplingSpace(i)), x)) - 1) <= 1e-3
+        @test abs(sum(probabilities(RecurrenceMicrostates(0.27, DiagonalMicrostate(3); ratio = 0.5, space = ColumnSamplingSpace(i)), x)) - 1) <= 1e-3
+        @test abs(sum(probabilities(RecurrenceMicrostates(0.27, TriangleMicrostate(3); ratio = 0.5, space = ColumnSamplingSpace(i)), x)) - 1) <= 1e-3
+        @test abs(sum(probabilities(RecurrenceMicrostates(0.27, 3; space = ColumnSamplingSpace(i), sampling = Full()), x)) - 1) <= 1e-3
+        @test abs(sum(probabilities(RecurrenceMicrostates(0.27, DiagonalMicrostate(3); space = ColumnSamplingSpace(i), sampling = Full()), x)) - 1) <= 1e-3
+        @test abs(sum(probabilities(RecurrenceMicrostates(0.27, TriangleMicrostate(3); space = ColumnSamplingSpace(i), sampling = Full()), x)) - 1) <= 1e-3
+    end
+
     @test abs(sum(probabilities(RecurrenceMicrostates(ThresholdRecurrence(0.27), 3; sampling = Full()), x)) - 1) <= 1e-3
     @test abs(sum(probabilities(RecurrenceMicrostates(ThresholdRecurrence(0.27), 3; ratio = 0.1), x)) - 1) <= 1e-3
     @test abs(sum(probabilities(RecurrenceMicrostates(ThresholdRecurrence(0.27; metric = Cityblock()), 3; sampling = Full()), x)) - 1) <= 1e-3
