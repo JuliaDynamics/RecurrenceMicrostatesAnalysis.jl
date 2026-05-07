@@ -34,10 +34,11 @@ a local portion of the recurrence plot \$\\mathbf{R}(\\mathscr{X}, \\mathscr{X})
 
 ## Implementation
 
-To define a recurrence microstate, three components are required:
+To define a recurrence microstate, four components are required:
 1. The recurrence function, \$r_{(i,j)}\$, used to compute recurrences (see [`RecurrenceExpression`](@ref)).
 2. The microstate shape and its size (see [`MicrostateShape`](@ref)).
 3. The method used to extract microstates from \$\\mathscr{X}\$ (see [`SamplingMode`](@ref)).
+4. The segment of a trajectory from where each index \$i\$ or \$j\$ can be extracted.
 
 ## Constructors
 
@@ -108,6 +109,7 @@ RecurrenceMicrostates(ε_min::Real, ε_max::Real, structure::NTuple; kwargs...)
   In the case of using GPUs, this must be an instance of [`GPUMetric`](@ref).
 - `ratio`: The sampling ratio. The default is `0.1`.
 - `sampling`: The sampling mode. The default is [`SRandom`](@ref).
+- `space`: The sampling space. The default is [`RectSamplingSpace`](@ref).
 
 !!! warning "Memory"
     Note that the number of possible microstates is \$2^\\sigma\$, where
@@ -118,64 +120,65 @@ RecurrenceMicrostates(ε_min::Real, ε_max::Real, structure::NTuple; kwargs...)
     possible microstates.
 
 """
-struct RecurrenceMicrostates{MS <: MicrostateShape, RE <: RecurrenceExpression, SM <: SamplingMode} <: ComplexityMeasures.CountBasedOutcomeSpace
+struct RecurrenceMicrostates{MS <: MicrostateShape, RE <: RecurrenceExpression, SM <: SamplingMode, SS <: AbstractSamplingSpace} <: ComplexityMeasures.CountBasedOutcomeSpace
     shape::MS
     expr::RE
     sampling::SM
+    space::SS
 end
 
 ##########################################################################################
 #   Recurrence Microstate: Convenience constructors
 ##########################################################################################
-function RecurrenceMicrostates(expr::RecurrenceExpression, shape::MicrostateShape; ratio::Real = 0.05, sampling::SamplingMode = SRandom(ratio))
-    return RecurrenceMicrostates(shape, expr, sampling)
+function RecurrenceMicrostates(expr::RecurrenceExpression, shape::MicrostateShape; ratio::Real = 0.05, sampling::SamplingMode = SRandom(ratio), space::AbstractSamplingSpace = RectSamplingSpace())
+    return RecurrenceMicrostates(shape, expr, sampling, space)
 end
 
-function RecurrenceMicrostates(expr::RecurrenceExpression, N::Int; ratio::Real = 0.05, sampling::SamplingMode = SRandom(ratio))
+function RecurrenceMicrostates(expr::RecurrenceExpression, N::Int; ratio::Real = 0.05, sampling::SamplingMode = SRandom(ratio), space::AbstractSamplingSpace = RectSamplingSpace())
     shape = RectMicrostate(N)
-    return RecurrenceMicrostates(shape, expr, sampling)
+    return RecurrenceMicrostates(shape, expr, sampling, space)
 end
 ##########################################################################################
-function RecurrenceMicrostates(ε::Real, N::Int; ratio::Real = 0.05, sampling::SamplingMode = SRandom(ratio), metric = DEFAULT_METRIC)
+function RecurrenceMicrostates(ε::Real, N::Int; ratio::Real = 0.05, sampling::SamplingMode = SRandom(ratio), metric = DEFAULT_METRIC, space::AbstractSamplingSpace = RectSamplingSpace())
     shape = RectMicrostate(N)
     expr = ThresholdRecurrence(ε; metric = metric)
-    return RecurrenceMicrostates(shape, expr, sampling)
+    return RecurrenceMicrostates(shape, expr, sampling, space)
 end
 
-function RecurrenceMicrostates(ε::Real, shape::MicrostateShape; ratio::Real = 0.05, sampling::SamplingMode = SRandom(ratio), metric = DEFAULT_METRIC)
+function RecurrenceMicrostates(ε::Real, shape::MicrostateShape; ratio::Real = 0.05, sampling::SamplingMode = SRandom(ratio), metric = DEFAULT_METRIC, space::AbstractSamplingSpace = RectSamplingSpace())
     expr = ThresholdRecurrence(ε; metric = metric)
-    return RecurrenceMicrostates(shape, expr, sampling)
+    return RecurrenceMicrostates(shape, expr, sampling, space)
 end
 
 ##########################################################################################
-function RecurrenceMicrostates(ε_min::Real, ε_max::Real, N::Int; ratio::Real = 0.05, sampling::SamplingMode = SRandom(ratio), metric = DEFAULT_METRIC)
+function RecurrenceMicrostates(ε_min::Real, ε_max::Real, N::Int; ratio::Real = 0.05, sampling::SamplingMode = SRandom(ratio), metric = DEFAULT_METRIC, space::AbstractSamplingSpace = RectSamplingSpace())
     shape = RectMicrostate(N)
     expr = CorridorRecurrence(ε_min, ε_max; metric = metric)
-    return RecurrenceMicrostates(shape, expr, sampling)
+    return RecurrenceMicrostates(shape, expr, sampling, space)
 end
 
-function RecurrenceMicrostates(ε_min::Real, ε_max::Real, shape::MicrostateShape; ratio::Real = 0.05, sampling::SamplingMode = SRandom(ratio), metric = DEFAULT_METRIC)
+function RecurrenceMicrostates(ε_min::Real, ε_max::Real, shape::MicrostateShape; ratio::Real = 0.05, sampling::SamplingMode = SRandom(ratio), metric = DEFAULT_METRIC, space::AbstractSamplingSpace = RectSamplingSpace())
     expr = CorridorRecurrence(ε_min, ε_max; metric = metric)
-    return RecurrenceMicrostates(shape, expr, sampling)
+    return RecurrenceMicrostates(shape, expr, sampling, space)
 end
 ##########################################################################################
-function RecurrenceMicrostates(expr::RecurrenceExpression, structure::NTuple; ratio::Real = 0.05, sampling::SamplingMode = SRandom(ratio))
+function RecurrenceMicrostates(expr::RecurrenceExpression, structure::NTuple; ratio::Real = 0.05, sampling::SamplingMode = SRandom(ratio), space::AbstractSamplingSpace = RectSamplingSpace())
     shape = RectMicrostate(structure)
-    return RecurrenceMicrostates(shape, expr, sampling)
+    return RecurrenceMicrostates(shape, expr, sampling, space)
 end
 
 ##########################################################################################
-function RecurrenceMicrostates(ε::Real, structure::NTuple; ratio::Real = 0.05, sampling::SamplingMode = SRandom(ratio), metric = DEFAULT_METRIC)
+function RecurrenceMicrostates(ε::Real, structure::NTuple; ratio::Real = 0.05, sampling::SamplingMode = SRandom(ratio), metric = DEFAULT_METRIC, space::AbstractSamplingSpace = RectSamplingSpace())
     shape = RectMicrostate(structure)
     expr = ThresholdRecurrence(ε; metric = metric)
-    return RecurrenceMicrostates(shape, expr, sampling)
+    return RecurrenceMicrostates(shape, expr, sampling, space)
 end
 
 ##########################################################################################
-function RecurrenceMicrostates(ε_min::Real, ε_max::Real, structure::NTuple; ratio::Real = 0.05, sampling::SamplingMode = SRandom(ratio), metric = DEFAULT_METRIC)
+function RecurrenceMicrostates(ε_min::Real, ε_max::Real, structure::NTuple; ratio::Real = 0.05, sampling::SamplingMode = SRandom(ratio), metric = DEFAULT_METRIC, space::AbstractSamplingSpace = RectSamplingSpace())
     shape = RectMicrostate(structure)
     expr = CorridorRecurrence(ε_min, ε_max; metric = metric)
-    return RecurrenceMicrostates(shape, expr, sampling)
+    return RecurrenceMicrostates(shape, expr, sampling, space)
 end
 
 

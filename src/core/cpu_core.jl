@@ -34,11 +34,11 @@ end
 #.........................................................................................
 
 function histogram(
-    rmspace::RecurrenceMicrostates{MS, RE, SM},
+    rmspace::RecurrenceMicrostates{MS, RE, SM, SS},
     x::Union{StateSpaceSet, Vector{<: Real}},
     y::Union{StateSpaceSet, Vector{<: Real}} = x;
     threads::Int = 0
-) where {MS <: MicrostateShape, RE <: RecurrenceExpression, SM <: SamplingMode}
+) where {MS <: MicrostateShape, RE <: RecurrenceExpression, SM <: SamplingMode, SS <: AbstractSamplingSpace}
 
     #   Threads, input and core
     threads = threads <= 0 ? Threads.nthreads() : threads
@@ -47,7 +47,7 @@ function histogram(
     core = CPUCore()
 
     #   Info
-    space = SamplingSpace(rmspace.shape, x_input, y_input)
+    space = SamplingSpace(rmspace.shape, rmspace.space, x_input, y_input)
     samples = get_num_samples(rmspace.sampling, space)
 
     #   Allocate memory
@@ -83,17 +83,17 @@ end
 #   Based on spatial data: (CPU only)
 #.........................................................................................
 function histogram(
-    rmspace::RecurrenceMicrostates{MS, RE, SM},
+    rmspace::RecurrenceMicrostates{MS, RE, SM, SS},
     x::AbstractArray{<: Real},
     y::AbstractArray{<: Real} = x;
     threads::Int = 0
-) where {MS <: MicrostateShape, RE <: RecurrenceExpression, SM <: SamplingMode}
+) where {MS <: MicrostateShape, RE <: RecurrenceExpression, SM <: SamplingMode, SS <: AbstractSamplingSpace}
     #   Core and threads
     threads = threads <= 0 ? Threads.nthreads() : threads
     core = CPUCore()
 
     #   Info
-    space = SamplingSpace(rmspace.shape, x, y)
+    space = SamplingSpace(rmspace.shape, rmspace.space, x, y)
     samples = get_num_samples(rmspace.sampling, space)
     dim_x = ndims(x) - 1
     dim_y = ndims(y) - 1

@@ -35,9 +35,30 @@ TriangleMicrostate(N::Int; B::Int = 2) = TriangleMicrostate{N, B}()
 #.........................................................................................
 SamplingSpace(
     ::TriangleMicrostate{N}, 
+    ::RectSamplingSpace,
     x::Union{StateSpaceSet, AbstractGPUVector{<: SVector}}, 
     y::Union{StateSpaceSet, AbstractGPUVector{<: SVector}}
 ) where {N} = SSRect2(length(x) - N + 1, length(y) - N + 1)
+
+function SamplingSpace(
+    ::TriangleMicrostate{N},
+    ::TriangleSamplingSpace,
+    x::Union{StateSpaceSet, AbstractGPUVector{<: SVector}}, 
+    y::Union{StateSpaceSet, AbstractGPUVector{<: SVector}}
+) where {N}
+    @assert length(x) == length(y) "Triangle sample space requires length(x) == length(y)."
+    return SSTriangle(N, length(x))
+end
+
+function SamplingSpace(
+    ::TriangleMicrostate{N},
+    s::ColumnSamplingSpace,
+    x::Union{StateSpaceSet, AbstractGPUVector{<: SVector}}, 
+    y::Union{StateSpaceSet, AbstractGPUVector{<: SVector}}
+) where {N}
+    @assert 1 ≤ s.I ≤ length(x) - N + 1 "The column index is out of range."
+    return SSColumn(s.I, length(y) - N + 1)
+end
 
 ##########################################################################################
 #   Implementations: utils — histogram size, power vector, and offsets
