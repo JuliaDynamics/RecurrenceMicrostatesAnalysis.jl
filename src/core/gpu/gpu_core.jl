@@ -25,18 +25,18 @@ end
 #   Based on time series: (GPU)
 #.........................................................................................
 function histogram(
-    rmspace::RecurrenceMicrostates{MS, <: RecurrenceExpression{T, M}, SM},
+    rmspace::RecurrenceMicrostates{MS, <: RecurrenceExpression{T, M}, SM, SS},
     x::AbstractGPUVector{SVector{N, T}},
     y::AbstractGPUVector{SVector{N, T}} = x;
     groupsize::Int = 256
-) where {MS <: MicrostateShape, SM <: SamplingMode, N, T <: Real, M <: GPUMetric}
+) where {MS <: MicrostateShape, SM <: SamplingMode, SS <: AbstractSamplingSpace, N, T <: Real, M <: GPUMetric}
 
     #   Get backend.
     backend = KernelAbstractions.get_backend(x)
     core = GPUCore()
 
     #   Info
-    space = SamplingSpace(rmspace.shape, x, y)
+    space = SamplingSpace(rmspace.shape, rmspace.space, x, y)
     samples = get_num_samples(rmspace.sampling, space)
 
     #   Allocate memory

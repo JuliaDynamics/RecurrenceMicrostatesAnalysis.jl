@@ -70,18 +70,16 @@ end
 ##########################################################################################
 #   Implementations: SamplingSpace
 ##########################################################################################
-#   Based on time series: (CPU & GPU)
-#.........................................................................................
 SamplingSpace(
     ::Rect2Microstate{W, H}, 
+    ::RectSamplingSpace,
     x::Union{StateSpaceSet, AbstractGPUVector{<: SVector}}, 
     y::Union{StateSpaceSet, AbstractGPUVector{<: SVector}}
 ) where {W, H} = SSRect2(length(x) - W + 1, length(y) - H + 1)
-#.........................................................................................
-#   Based on spatial data: (CPU only)
-#.........................................................................................
+
 function SamplingSpace(
     shape::RectNMicrostate{D, B}, 
+    ::RectSamplingSpace,
     x::AbstractArray{<: Real}, 
     y::AbstractArray{<: Real}
 ) where {D, B}
@@ -95,6 +93,27 @@ function SamplingSpace(
     
     space = ntuple(i -> dims[i] - shape.structure[i] + 1, D)
     return SSRectN{D}(space)
+end
+
+function SamplingSpace(
+    ::Rect2Microstate{W, H},
+    ::TriangleSamplingSpace,
+    x::Union{StateSpaceSet, AbstractGPUVector{<: SVector}}, 
+    y::Union{StateSpaceSet, AbstractGPUVector{<: SVector}}
+) where {W, H}
+    @assert W == H "Triangle sampling space is not available for rectangular motifs."
+    @assert length(x) == length(y) "Triangle sampling space requires length(x) == length(y)."
+    return SSTriangle(W, length(x))
+end
+
+function SamplingSpace(
+    ::Rect2Microstate{W, H},
+    s::ColumnSamplingSpace,
+    x::Union{StateSpaceSet, AbstractGPUVector{<: SVector}}, 
+    y::Union{StateSpaceSet, AbstractGPUVector{<: SVector}}
+) where {W, H}
+    @assert 1 ≤ s.I ≤ length(x) - W + 1 "The column index is out of range."
+    return SSColumn(s.I, length(y) - H + 1)
 end
 
 ##########################################################################################

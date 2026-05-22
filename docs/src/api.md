@@ -58,13 +58,11 @@ Full
 
 ### Sampling space
 
-!!! todo "Future implementation"
-    We pretend to expand the [`RecurrenceMicrostates`](@ref) structure to also consider
-    a setted space from the recurrence plot as source of information to construct
-    the RMA distribution.
-
 ```@docs
-SamplingSpace
+AbstractSamplingSpace
+RectSamplingSpace
+TriangleSamplingSpace
+ColumnSamplingSpace
 ```
 
 ## Recurrence Quantification Analysis

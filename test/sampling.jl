@@ -12,7 +12,7 @@ using RecurrenceMicrostatesAnalysis
 
     @testset "num samples" begin
         data = rand(100) |> StateSpaceSet
-        space = SamplingSpace(RectMicrostate(2), data, data)
+        space = RecurrenceMicrostatesAnalysis.SamplingSpace(RectMicrostate(2), RectSamplingSpace(), data, data)
 
         @test RecurrenceMicrostatesAnalysis.get_num_samples(Full(), space) == space.W * space.H
         @test RecurrenceMicrostatesAnalysis.get_num_samples(Full(), space) isa Integer
@@ -22,7 +22,7 @@ using RecurrenceMicrostatesAnalysis
         @testset "CPU" begin
             data_1 = rand(50) |> StateSpaceSet
             data_2 = rand(20) |> StateSpaceSet
-            space = SamplingSpace(RectMicrostate(2), data_1, data_2)
+            space = RecurrenceMicrostatesAnalysis.SamplingSpace(RectMicrostate(2), RectSamplingSpace(), data_1, data_2)
             core = RecurrenceMicrostatesAnalysis.CPUCore()
 
             @test RecurrenceMicrostatesAnalysis.get_sample(core, Full(), space, nothing, 10) isa Tuple{<: Integer, <: Integer}
@@ -38,7 +38,7 @@ using RecurrenceMicrostatesAnalysis
         @testset "GPU" begin
             data_1 = rand(50) |> StateSpaceSet
             data_2 = rand(20) |> StateSpaceSet
-            space = SamplingSpace(RectMicrostate(2), data_1, data_2)
+            space = RecurrenceMicrostatesAnalysis.SamplingSpace(RectMicrostate(2), RectSamplingSpace(), data_1, data_2)
             core = RecurrenceMicrostatesAnalysis.GPUCore()
 
             @test RecurrenceMicrostatesAnalysis.get_sample(core, Full(), space, nothing, 10) isa Tuple{<: Integer, <: Integer}
@@ -70,7 +70,7 @@ end
     @testset "num samples" begin
         @testset "time series" begin
             data = rand(100) |> StateSpaceSet
-            space = SamplingSpace(RectMicrostate(2), data, data)
+            space = RecurrenceMicrostatesAnalysis.SamplingSpace(RectMicrostate(2), RectSamplingSpace(), data, data)
 
             sampling = SRandom(0.05)
             @test RecurrenceMicrostatesAnalysis.get_num_samples(sampling, space) == ceil(Int, sampling.sampling_factor * space.W * space.H)
@@ -83,7 +83,7 @@ end
         
         @testset "spatial data" begin
             data = rand(2, 100)
-            space = SamplingSpace(RectMicrostate((2, 2)), data, data)
+            space = RecurrenceMicrostatesAnalysis.SamplingSpace(RectMicrostate((2, 2)), RectSamplingSpace(), data, data)
 
             sampling = SRandom(0.05)
             @test RecurrenceMicrostatesAnalysis.get_num_samples(sampling, space) == ceil(Int, sampling.sampling_factor * reduce(*, space.space))
@@ -99,7 +99,7 @@ end
         @testset "CPU" begin
             data_1 = rand(50) |> StateSpaceSet
             data_2 = rand(20) |> StateSpaceSet
-            space = SamplingSpace(RectMicrostate(2), data_1, data_2)
+            space = RecurrenceMicrostatesAnalysis.SamplingSpace(RectMicrostate(2), RectSamplingSpace(), data_1, data_2)
             sampling = SRandom(50)
             core = RecurrenceMicrostatesAnalysis.CPUCore()
 
@@ -116,7 +116,7 @@ end
         @testset "GPU" begin
             data_1 = rand(50) |> StateSpaceSet
             data_2 = rand(20) |> StateSpaceSet
-            space = SamplingSpace(RectMicrostate(2), data_1, data_2)
+            space = RecurrenceMicrostatesAnalysis.SamplingSpace(RectMicrostate(2), RectSamplingSpace(), data_1, data_2)
             sampling = SRandom(50)
             core = RecurrenceMicrostatesAnalysis.GPUCore()
 
@@ -134,7 +134,7 @@ end
         @testset "spatial data" begin
             data_1 = rand(2, 50, 50)
             data_2 = rand(2, 20, 20)
-            space = SamplingSpace(RectMicrostate((2, 1, 1, 2)), data_1, data_2)
+            space = RecurrenceMicrostatesAnalysis.SamplingSpace(RectMicrostate((2, 1, 1, 2)), RectSamplingSpace(), data_1, data_2)
             sampling = SRandom(50)
             core = RecurrenceMicrostatesAnalysis.CPUCore()
 
