@@ -273,7 +273,8 @@ complexity(partial, X)
 expr = CorridorRecurrence(0.05, 0.27)
 shape = TriangleMicrostate(3)
 sampling = Full()
-rmspace = RecurrenceMicrostates(expr, shape; sampling)
+space = TriangleSamplingSpace()
+rmspace = RecurrenceMicrostates(expr, shape; sampling, space)
 probabilities(rmspace, X)
 
 # **RecurrenceMicrostateAnalysis.jl** supports several configurations for the recurrence outcome space
