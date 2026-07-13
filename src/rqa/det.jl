@@ -28,7 +28,7 @@ H_D(l) = \\sum_{i,j=1}^{K} (1 - r_{i-1, j-1})(1 - r_{i+l,j+l})\\prod_{k=0}^{l-1}
 ```
 By inverting the determinism expression, we can rewrite it as [daCruz2025RQAMeasures](@cite)
 ```math
-DET = 1 - \\frac{1}{K^2 \\sum_{i,j=1}^{K} r_{(i,j)}} \\sum_{l=1}^{l_{min} - 1} l H_D(l).
+DET = 1 - \\frac{1}{K^2 RR} \\sum_{l=1}^{l_{min} - 1} l H_D(l).
 ```
 
 An approximate value for DET can be estimated using recurrence microstates, as introduced by
@@ -41,7 +41,7 @@ square microstates of size \$3 \\times 3\$. Here, we use the relation:
 
 For the commonly used case \$l_{min} = 2\$, this leads to the approximation
 ```math
-DET \\approx  1 - \\frac{\\vec{d}^{(1)}\\cdot\\mathcal{R}^{(3)}\\vec{p}^{(3)}}{\\sum_{i,j=1}^{K} r_{(i,j)}}.
+DET \\approx  1 - \\frac{\\vec{d}^{(1)}\\cdot\\mathcal{R}^{(3)}\\vec{p}^{(3)}}{RR}.
 ```
 
 The correlation term \$\\vec{d}^{(1)} \\cdot \\mathcal{R}^{(3)} \\vec{p}^{(3)}\$ can be 
@@ -49,16 +49,16 @@ simplified by explicitly identifying the microstates selected by \$\\vec{d}^{(1)
 to selecting only microstates of the form:
 ```math
 \\begin{pmatrix}
-\\xi & \\xi & 0 \\\\
+0 & \\xi & \\xi \\\\
 \\xi & 1 & \\xi \\\\
-0 & \\xi & \\xi
+\\xi & \\xi & 0
 \\end{pmatrix},
 ```
 where \$\\xi\$ denotes an unconstrained entry. There are 64 microstates with this structure among
 the 512 possible \$3 \\times 3\$ microstates. Defining the class \$C_D\$ as the set of microstates 
 with this structure, DET can be estimated as:
 ```math
-DET \\approx 1 - \\frac{\\sum_{i\\in C_D} p_i^{(3)}}{\\sum_{i,j=1}^{K} r_{(i,j)}}.
+DET \\approx 1 - \\frac{\\sum_{i\\in C_D} p_i^{(3)}}{RR}.
 ```
 
 The implementation used by [complexity](https://juliadynamics.github.io/DynamicalSystemsDocs.jl/complexitymeasures/stable/complexity/#ComplexityMeasures.complexity)
@@ -66,7 +66,7 @@ is an optimized version of this process using [`DiagonalMicrostate`](@ref) [Ferr
 Since this microstate shape is symmetric with respect to the desired information, it is not necessary to account for
 \$\\xi\$ values as in the square microstate case. Thus, determinism can be estimated as
 ```math
-DET \\approx 1 - \\frac{p_3^{(3)}}{\\sum_{i,j=1}^{K} r_{(i,j)}},
+DET \\approx 1 - \\frac{p_3^{(3)}}{RR},
 ```
 where \$p_3^{(3)}\$ is the probability of observing the microstate \$0~1~0\$.
 

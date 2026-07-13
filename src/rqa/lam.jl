@@ -28,7 +28,7 @@ H_V(l) = \\sum_{i,j=1}^{K} (1 - r_{i, j-1})(1 - r_{i,j+l})\\prod_{k=0}^{l-1} r_{
 ```
 By inverting the laminarity expression, we can rewrite it as [daCruz2025RQAMeasures](@cite)
 ```math
-LAM = 1 - \\frac{1}{K^2 \\sum_{i,j=1}^{K} r_{(i,j)}} \\sum_{l=1}^{l_{min} - 1} l H_V(l).
+LAM = 1 - \\frac{1}{K^2 RR} \\sum_{l=1}^{l_{min} - 1} l H_V(l).
 ```
 
 An approximate value for LAM can be estimated using recurrence microstates, as introduced by
@@ -41,7 +41,7 @@ square microstates of size \$3 \\times 3\$. Here, we use the relation:
 
 For the commonly used case \$l_{min} = 2\$, this leads to the approximation
 ```math
-LAM \\approx  1 - \\frac{\\vec{v}^{(1)}\\cdot\\mathcal{R}^{(3)}\\vec{p}^{(3)}}{\\sum_{i,j=1}^{K} r_{(i,j)}}.
+LAM \\approx  1 - \\frac{\\vec{v}^{(1)}\\cdot\\mathcal{R}^{(3)}\\vec{p}^{(3)}}{RR}.
 ```
 
 The correlation term \$\\vec{v}^{(1)} \\cdot \\mathcal{R}^{(3)} \\vec{p}^{(3)}\$ can be 
@@ -58,7 +58,7 @@ where \$\\xi\$ denotes an unconstrained entry. There are 64 microstates with thi
 the 512 possible \$3 \\times 3\$ microstates. Defining the class \$C_V\$ as the set of microstates 
 with this structure, LAM can be estimated as:
 ```math
-LAM \\approx 1 - \\frac{\\sum_{i\\in C_V} p_i^{(3)}}{\\sum_{i,j=1}^{K} r_{(i,j)}}.
+LAM \\approx 1 - \\frac{\\sum_{i\\in C_V} p_i^{(3)}}{RR}.
 ```
 
 The implementation used by [complexity](https://juliadynamics.github.io/DynamicalSystemsDocs.jl/complexitymeasures/stable/complexity/#ComplexityMeasures.complexity)
@@ -66,7 +66,7 @@ is an optimized version of this process using \$1 \\times 3\$ [`RectMicrostate`]
 Since this microstate shape is symmetric with respect to the desired information, it is not necessary to account for
 \$\\xi\$ values as in the square microstate case. Thus, laminarity can be estimated as
 ```math
-LAM \\approx 1 - \\frac{p_3^{(3)}}{\\sum_{i,j=1}^{K} r_{(i,j)}},
+LAM \\approx 1 - \\frac{p_3^{(3)}}{RR},
 ```
 where \$p_3^{(3)}\$ is the probability of observing the microstate \$0~1~0\$.
 
