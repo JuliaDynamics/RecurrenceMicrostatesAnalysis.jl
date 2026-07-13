@@ -101,7 +101,7 @@ function SamplingSpace(
     x::Union{StateSpaceSet, AbstractGPUVector{<: SVector}}, 
     y::Union{StateSpaceSet, AbstractGPUVector{<: SVector}}
 ) where {W, H}
-    @assert W == H "Triangle sampling space is not available for rectangular motifs."
+    @assert W <= H "Triangle sampling space is not available if the number of microstate's rows is greater than the number of columns."
     @assert length(x) == length(y) "Triangle sampling space requires length(x) == length(y)."
     return SSTriangle(W, length(x))
 end
