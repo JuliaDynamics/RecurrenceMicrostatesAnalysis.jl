@@ -1,6 +1,6 @@
 name = "RecurrenceMicrostatesAnalysis"
 uuid = "cb83a08b-85c6-4e94-91aa-4e946c7d4f0c"
-version = "0.5.2"
+version = "0.5.3"
 repo = "https://github.com/JuliaDynamics/RecurrenceMicrostatesAnalysis.jl"
 authors = ["Gabriel V. Ferreira", "George Datseris"]
 
@@ -23,7 +23,7 @@ Distributions = "0.25"
 RecurrenceAnalysis = "2.1"
 Test = "1.11"
 Atomix = "1.1.2"
-Combinatorics = "1.1.0"
+Combinatorics = "1"
 ComplexityMeasures = "3.8.5"
 Distances = "0.10.12"
 GPUArraysCore = "0.2.0"
