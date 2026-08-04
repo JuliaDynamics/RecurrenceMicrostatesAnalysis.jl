@@ -82,7 +82,7 @@ struct RecurrenceLaminarity{M, SM} <: ComplexityEstimator
     sampling::SM
 end
 
-function complexity(
+function ComplexityMeasures.complexity(
         c::RecurrenceLaminarity, 
         x::Union{StateSpaceSet, Vector{<:Real}, <:AbstractGPUVector{<:SVector}}, 
         y::Union{StateSpaceSet, Vector{<:Real}, <:AbstractGPUVector{<:SVector}} = x;

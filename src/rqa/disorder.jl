@@ -107,7 +107,7 @@ struct ClassPartialDisorder{RM <: RecurrenceMicrostates} <: ComplexityEstimator
     rmspace::RM
 end
 
-function complexity(
+function ComplexityMeasures.complexity(
         c::Disorder{N},
         x::Union{StateSpaceSet, Vector{<:Real}, <:AbstractGPUVector{<:SVector}}
     ) where {N}
@@ -139,7 +139,7 @@ function complexity(
     return maximum(ξ)
 end
 
-function complexity(
+function ComplexityMeasures.complexity(
         c::WindowedDisorder{W, N, M},
         x::Union{StateSpaceSet, Vector{<:Real}}
     ) where {N, W, M}
@@ -184,7 +184,7 @@ function complexity(
     return [ maximum(ξ[i, :]) for i ∈ eachindex(windowed_data) ]
 end
 
-function complexity(
+function ComplexityMeasures.complexity(
         c::WindowedDisorder{W, N},
         x::AbstractGPUVector{SVector{D, T}}
     ) where {N, W, D, T}
@@ -243,7 +243,7 @@ function complexity(
     return [ maximum(ξ[i, :]) for i ∈ eachindex(windowed_data) ]
 end
 
-function complexity(
+function ComplexityMeasures.complexity(
         c::PartialDisorder{N},
         x::Union{<: StateSpaceSet{D}, <:AbstractGPUVector{<: SVector{D}}}
     ) where {N, D}
@@ -254,7 +254,7 @@ function complexity(
     return measure(c, A, probs)
 end
 
-function complexity(
+function ComplexityMeasures.complexity(
         c::ClassPartialDisorder,
         x::Union{StateSpaceSet, <:AbstractGPUVector{<:SVector}}
     )
