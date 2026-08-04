@@ -82,7 +82,7 @@ struct RecurrenceDeterminism{M, SM} <: ComplexityEstimator
     sampling::SM
 end
 
-function complexity(
+function ComplexityMeasures.complexity(
         c::RecurrenceDeterminism, 
         x::Union{StateSpaceSet, Vector{<:Real}, <:AbstractGPUVector{<:SVector}}, 
         y::Union{StateSpaceSet, Vector{<:Real}, <:AbstractGPUVector{<:SVector}} = x;

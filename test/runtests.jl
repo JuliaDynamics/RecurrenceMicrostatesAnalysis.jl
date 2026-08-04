@@ -1,5 +1,6 @@
 using Test
 using Aqua
+using ComplexityMeasures
 using RecurrenceMicrostatesAnalysis
 
 defaultname(file) = uppercasefirst(replace(splitext(basename(file))[1], '_' => ' '))

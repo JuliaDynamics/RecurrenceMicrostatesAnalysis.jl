@@ -43,7 +43,7 @@ struct RecurrenceRate{N, M, SM} <: ComplexityEstimator
     sampling::SM
 end
 
-function complexity(
+function ComplexityMeasures.complexity(
         c::RecurrenceRate{N},
         x::Union{StateSpaceSet, Vector{<:Real}, <:AbstractGPUVector{<:SVector}}, 
         y::Union{StateSpaceSet, Vector{<:Real}, <:AbstractGPUVector{<:SVector}} = x;
