@@ -170,7 +170,7 @@ rma(ε, X)
 # "Disorder index via symmetry in recurrence microstates" (DISREM). This quantifier
 # uses the equiprobability property of recurrence microstates, due to the disorder
 # condition, to quantify the disorder of a sequence of data elements. We also estimate
-# disorder using a complexity estimator:
+# disorder using a complexity estimator [`Disorder`](@ref):
 
 disorder = Disorder()
 
